@@ -70,20 +70,20 @@ void handle_execvp_error() {
     exit(1);
 }
 
-void allocate_args(command_args* const args) {
+void allocate_args(command_args* args) {
     args->count = 0;
     args->capacity = INITIAL_ARGS_CAPACITY;
     args->args = safe_malloc(args->capacity * sizeof(char*));
 }
 
-void free_args(const command_args* const args) {
+void free_args(const command_args* args) {
     for (size_t i = 0; i < args->count; ++i) {
         free(args->args[i]);
     }
     free(args->args);
 }
 
-void reallocate_args_if_needed(command_args* const args) {
+void reallocate_args_if_needed(command_args* args) {
     if (args->count >= args->capacity) {
         args->capacity *= 2;
         args->args =
@@ -92,9 +92,9 @@ void reallocate_args_if_needed(command_args* const args) {
 }
 
 void execute_command(
-    const options* const opts,
-    const command_args* const fixed_args,
-    const command_args* const input_args) {
+    const options* opts,
+    const command_args* fixed_args,
+    const command_args* input_args) {
 
     pid_t pid = fork();
     handle_fork_error(pid);
@@ -133,8 +133,8 @@ void execute_command(
 }
 
 void add_argument(
-    command_args* const args,
-    const char* const new_arg) {
+    command_args* args,
+    const char* new_arg) {
 
     reallocate_args_if_needed(args);
 
@@ -143,11 +143,11 @@ void add_argument(
 }
 
 void process_chunk(
-    tokenizing_buffer* const buf,
-    const options* const opts,
-    const command_args* const fixed_args,
-    command_args* const input_args,
-    parser_state* const pstate) {
+    tokenizing_buffer* buf,
+    const options* opts,
+    const command_args* fixed_args,
+    command_args* input_args,
+    parser_state* pstate) {
 
     for (size_t i = buf->processed; i < buf->size; ++i) {
         char ch = buf->buffer[i];
@@ -199,8 +199,8 @@ void process_chunk(
 }
 
 void run_xargs(
-    const options* const opts,
-    const command_args* const fixed_args) {
+    const options* opts,
+    const command_args* fixed_args) {
 
     tokenizing_buffer buf = {0};
     buf.buffer = safe_malloc(CHUNK_SIZE + 1);
@@ -254,8 +254,8 @@ long parse_number_arg(int opt, const char* arg, char** endptr) {
 void parse_args(
     int argc,
     char** argv,
-    options* const opts,
-    command_args* const fixed_args) {
+    options* opts,
+    command_args* fixed_args) {
 
     int opt;
     while ((opt = getopt(argc, argv, ":n:t")) != -1) {
