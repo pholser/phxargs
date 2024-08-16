@@ -1,40 +1,34 @@
-# Compiler and Linker
 CC := cc
 
-# The Target Binary Program
-TARGET := pxargs
+TARGET := phxargs
 
-# The Directories, Source, Includes, Objects, Binary and Resources
 SRCDIR := src
 BUILDDIR := build
+TESTDIR := tests
 
-# Flags, Libraries and Includes
 CFLAGS := -g -Wall -Wextra -O2
 LIB :=
 INC :=
 
-# Define the source and object files
 SOURCES := $(wildcard $(SRCDIR)/*.c)
 OBJECTS := $(patsubst $(SRCDIR)/%, $(BUILDDIR)/%, $(SOURCES:.c=.o))
 
-# Default make
-all: directories $(BUILDDIR)/$(TARGET)
+all: directories $(BUILDDIR)/$(TARGET) test
 
-# Create the directories used in the build
 directories:
 	mkdir -p $(BUILDDIR)
 
-# Link the executable
 $(BUILDDIR)/$(TARGET): $(OBJECTS)
 	$(CC) $^ -o $@ $(LIB)
 
-# Compile the source files into object files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-# Clean out the build directory
+test:
+	@for script in $(TESTDIR)/test_*.sh ; do bash $$script ; done
+
 clean:
 	$(RM) -r $(BUILDDIR)/*
+	$(RM) $(TESTDIR)/*.err $(TESTDIR)/*.out
 
-# Non-file targets
-.PHONY: all clean directories
+.PHONY: all clean test directories

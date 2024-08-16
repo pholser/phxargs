@@ -12,7 +12,8 @@
 #define INITIAL_ARGS_CAPACITY 10
 #define DEFAULT_MAX_ARGS 5000
 
-const char *option_flags = ":n:";
+const char* default_command = "/bin/echo";
+const char* option_flags = ":n:";
 
 struct options {
     size_t max_args;
@@ -134,7 +135,7 @@ void execute_command(
 
 void add_argument(
     struct command_args* args,
-    char* new_arg) {
+    const char* new_arg) {
 
     reallocate_args_if_needed(args);
 
@@ -278,8 +279,12 @@ void parse_args(
         }
     }
 
-    for (int i = optind; i < argc; ++i) {
-        add_argument(fixed_args, argv[i]);
+    if (optind == argc) {
+        add_argument(fixed_args, default_command);
+    } else {
+        for (int i = optind; i < argc; ++i) {
+            add_argument(fixed_args, argv[i]);
+        }
     }
 }
 
