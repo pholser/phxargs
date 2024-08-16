@@ -1,8 +1,6 @@
 #ifndef PHXARGS_TOKENIZER_H
 #define PHXARGS_TOKENIZER_H
 
-#include <stdbool.h>
-
 #include "buffer.h"
 #include "options.h"
 

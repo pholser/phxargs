@@ -1,6 +1,9 @@
 #ifndef PHXARGS_COMMAND_H
 #define PHXARGS_COMMAND_H
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include "command_args.h"
 #include "options.h"
 
@@ -8,8 +11,8 @@ typedef struct {
   size_t max_lines;
   size_t max_args;
   size_t max_length;
-  bool prompt;
-  bool trace;
+  uint8_t prompt;
+  uint8_t trace;
 
   size_t line_count;
   command_args* fixed_args;
@@ -18,9 +21,9 @@ typedef struct {
 
 void init_command(command* cmd, const options* opts);
 
-bool arg_would_exceed_limits(const command* cmd, const char* new_arg);
+uint8_t arg_would_exceed_limits(const command* cmd, const char* new_arg);
 
-bool should_execute_command(const command* cmd);
+uint8_t should_execute_command(const command* cmd);
 
 int execute_command(command* cmd);
 

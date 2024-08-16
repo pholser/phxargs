@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "util.h"
 
 void* safe_malloc(size_t size) {

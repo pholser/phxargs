@@ -1,4 +1,4 @@
-#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -59,7 +59,7 @@ char* tokenizer_end_token(tokenizer* t) {
 }
 
 char* next_token(tokenizer* t, command* cmd) {
-  bool line_has_token = false;
+  uint8_t line_has_token = 0;
 
   int ch;
   while ((ch = getc(stdin)) != EOF) {
@@ -71,17 +71,17 @@ char* next_token(tokenizer* t, command* cmd) {
         } else if (ch == '\n') {
           if (line_has_token) {
             ++cmd->line_count;
-            line_has_token = false;
+            line_has_token = 0;
           }
         } else if (ch == '\'' || ch == '"') {
           tokenizer_start_quoted_token(t, ch);
-          line_has_token = true;
+          line_has_token = 1;
         } else if (ch == '\\') {
           tokenizer_start_escape(t);
-          line_has_token = true;
+          line_has_token = 1;
         } else {
           tokenizer_start_token(t, ch);
-          line_has_token = true;
+          line_has_token = 1;
         }
         break;
 
@@ -91,7 +91,7 @@ char* next_token(tokenizer* t, command* cmd) {
         } else if (ch == '\n') {
           if (line_has_token) {
             ++cmd->line_count;
-            line_has_token = false;
+            line_has_token = 0;
           }
           return tokenizer_end_token(t);
         } else if (ch == '\\') {

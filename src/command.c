@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,8 +6,6 @@
 #include <unistd.h>
 
 #include "command.h"
-#include "command_args.h"
-#include "options.h"
 #include "util.h"
 
 pid_t safe_fork() {
@@ -77,20 +76,20 @@ char** build_exec_args(command* cmd) {
   return exec_args;
 }
 
-bool arg_would_exceed_limits(const command* cmd, const char* new_arg) {
+uint8_t arg_would_exceed_limits(const command* cmd, const char* new_arg) {
   return cmd->input_args->count + 1 == cmd->max_args
     || command_length(cmd) + strlen(new_arg) + 1 > cmd->max_length
     ;
 }
 
-bool should_execute_command(const command* cmd) {
+uint8_t should_execute_command(const command* cmd) {
   return cmd->input_args->count == cmd->max_args
     || cmd->line_count == cmd->max_lines
     || command_length(cmd) >= cmd->max_length
     ;
 }
 
-bool confirm_execution() {
+uint8_t confirm_execution() {
   FILE* tty = fopen("/dev/tty", "r");
   if (tty == NULL) {
     perror("fopen");
@@ -129,7 +128,7 @@ int execute_command(command* cmd) {
       }
     }
 
-    bool execute = true;
+    uint8_t execute = 1;
     if (cmd->prompt) {
       fprintf(stderr, "?...");
       execute = confirm_execution();

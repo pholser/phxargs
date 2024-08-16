@@ -1,12 +1,11 @@
 #include <assert.h>
-#include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/errno.h>
 #include <unistd.h>
 
 #include "options.h"
-#include "util.h"
 
 size_t parse_number_arg(int opt, const char* arg, char** endptr) {
   errno = 0;
@@ -27,7 +26,7 @@ size_t parse_number_arg(int opt, const char* arg, char** endptr) {
 }
 
 void options_set_nul_char_as_argument_separator(options* opts) {
-  opts->use_nul_char_as_arg_separator = true;
+  opts->use_nul_char_as_arg_separator = 1;
 }
 
 void options_set_logical_end_of_input_marker(options* opts, char* marker) {
@@ -62,28 +61,28 @@ void options_set_max_command_length(options* opts, int opt, char* new_val) {
 }
 
 void options_enable_trace(options* opts) {
-  opts->trace = true;
+  opts->trace = 1;
 }
 
 void options_enable_prompt(options* opts) {
-  opts->prompt = true;
+  opts->prompt = 1;
   options_enable_trace(opts);
 }
 
 void options_enable_terminate_on_too_large_command(options* opts) {
-  opts->terminate_on_too_large_command = true;
+  opts->terminate_on_too_large_command = 1;
 }
 
 void init_options(options* opts) {
-  opts->use_nul_char_as_arg_separator = false;
+  opts->use_nul_char_as_arg_separator = 0;
   opts->logical_end_of_input_marker = NULL;
   options_reset_max_lines_per_command(opts);
   options_reset_max_args_per_command(opts);
-  opts->prompt = false;
+  opts->prompt = 0;
   opts->max_command_length = (size_t) (sysconf(_SC_ARG_MAX) - 4096);
   opts->max_command_length_endptr = NULL;
-  opts->trace = false;
-  opts->terminate_on_too_large_command = false;
+  opts->trace = 0;
+  opts->terminate_on_too_large_command = 0;
 }
 
 int parse_options(options* opts, int argc, char** argv) {
