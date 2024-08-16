@@ -8,24 +8,11 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define CHUNK_SIZE 64
+#define CHUNK_SIZE 8192
 #define INITIAL_ARGS_CAPACITY 10
 #define DEFAULT_MAX_ARGS 5000
 
 const char *option_flags = ":n:";
-
-enum state {
-    STATE_DEFAULT,
-    STATE_IN_TOKEN,
-    STATE_IN_QUOTE,
-    STATE_ESCAPE
-};
-
-struct parsing_state {
-    enum state state;
-    char quote_char;
-    size_t token_start;
-};
 
 struct options {
     long max_args;
@@ -44,6 +31,13 @@ struct tokenizing_buffer {
     char* buffer;
     size_t size;
     size_t processed;
+};
+
+struct parser_state {
+    bool in_quote;
+    char quote_char;
+    bool escape;
+    size_t token_start;
 };
 
 void* safe_malloc(size_t size) {
@@ -100,8 +94,7 @@ void reallocate_args_if_needed(struct command_args *args) {
 void execute_command(
     struct options* opts,
     struct command_args* fixed_args,
-    struct command_args* input_args,
-    bool reallocate_input_args_after_execution) {
+    struct command_args* input_args) {
 
     pid_t pid = fork();
     handle_fork_error(pid);
@@ -137,9 +130,6 @@ void execute_command(
 //        }
 
         free_args(input_args);
-        if (reallocate_input_args_after_execution) {
-            allocate_args(input_args);
-        }
     }
 }
 
@@ -157,46 +147,69 @@ void process_chunk(
     struct tokenizing_buffer* buf,
     struct options* opts,
     struct command_args* fixed_args,
-    struct command_args* input_args) {
+    struct command_args* input_args,
+    struct parser_state* pstate) {
 
-    size_t token_start = buf->processed;
     for (size_t i = buf->processed; i < buf->size; ++i) {
         char ch = buf->buffer[i];
 
+        if (pstate->escape) {
+            pstate->escape = false;
+            continue;
+        }
+        if (ch == '\\') {
+            pstate->escape = true;
+            continue;
+        }
+        if (pstate->in_quote) {
+            if (ch == pstate->quote_char) {
+                pstate->in_quote = false;
+            }
+            continue;
+        }
+        if (ch == '\'' || ch == '"') {
+            pstate->in_quote = true;
+            pstate->quote_char = ch;
+            continue;
+        }
+
         if (ch == '\n' || ch == '\t' || ch == ' ' || ch == '\0') {
-            if (token_start < i) {
+            if (pstate->token_start < i) {
                 buf->buffer[i] = '\0';
+                add_argument(input_args, buf->buffer + pstate->token_start);
 
                 if (input_args->count == opts->max_args) {
-                    execute_command(opts, fixed_args, input_args, true);
+                    execute_command(opts, fixed_args, input_args);
+                    allocate_args(input_args);
                 }
 
-                add_argument(input_args, buf->buffer + token_start);
             }
-            token_start = i + 1;
+            pstate->token_start = i + 1;
         }
     }
 
-    if (token_start < buf->size) {
-        size_t leftover_size = buf->size - token_start;
-        memmove(buf->buffer, buf->buffer + token_start, leftover_size);
+    if (pstate->token_start < buf->size) {
+        size_t leftover_size = buf->size - pstate->token_start;
+        memmove(buf->buffer, buf->buffer + pstate->token_start, leftover_size);
         buf->processed = leftover_size;
     } else {
         buf->processed = 0;
     }
+
+    pstate->token_start = 0;
 }
 
 void run_xargs(
     struct options* opts,
     struct command_args* fixed_args) {
 
-    struct tokenizing_buffer buf;
-    memset(&buf, 0, sizeof(struct tokenizing_buffer));
+    struct tokenizing_buffer buf = {0};
     buf.buffer = safe_malloc(CHUNK_SIZE + 1);
 
-    struct command_args input_args;
-    memset(&input_args, 0, sizeof(struct command_args));
+    struct command_args input_args = {0};
     allocate_args(&input_args);
+
+    struct parser_state pstate = {0};
 
     while ((buf.size = fread(
         buf.buffer + buf.processed,
@@ -206,7 +219,7 @@ void run_xargs(
 
         buf.size += buf.processed;
         buf.buffer[buf.size] = '\0';
-        process_chunk(&buf, opts, fixed_args, &input_args);
+        process_chunk(&buf, opts, fixed_args, &input_args, &pstate);
     }
     if (ferror(stdin)) {
         fprintf(stderr, "xargs: I/O error\n");
@@ -219,11 +232,10 @@ void run_xargs(
     }
 
     if (input_args.count > 0) {
-        execute_command(opts, fixed_args, &input_args, false);
+        execute_command(opts, fixed_args, &input_args);
     }
 
     free(buf.buffer);
-    free_args(&input_args);
 }
 
 long parse_number_arg(int opt, const char *arg, char **endptr) {
@@ -273,12 +285,10 @@ void parse_args(
 }
 
 int main(int argc, char** argv) {
-    struct options opts;
-    memset(&opts, 0, sizeof(struct options));
+    struct options opts = {0};
     opts.max_args = DEFAULT_MAX_ARGS;
 
-    struct command_args fixed_args;
-    memset(&fixed_args, 0, sizeof(struct command_args));
+    struct command_args fixed_args = {0};
     allocate_args(&fixed_args);
 
     parse_args(argc, argv, &opts, &fixed_args);
