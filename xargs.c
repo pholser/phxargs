@@ -102,7 +102,7 @@ void execute_command(
     if (pid == 0) {
         // Child process
         size_t exec_args_count = fixed_args->count + input_args->count;
-        char** exec_args = safe_malloc((exec_args_count + 1) * sizeof(char *));
+        char** exec_args = safe_malloc((exec_args_count + 1) * sizeof(char*));
         for (int i = 0; i < fixed_args->count; ++i) {
             exec_args[i] = fixed_args->args[i];
         }
@@ -111,23 +111,22 @@ void execute_command(
         }
         exec_args[exec_args_count] = NULL;
 
+        if (opts->trace) {
+            for (int i = 0; i < exec_args_count; ++i) {
+                fprintf(
+                    stderr,
+                    "%s%c",
+                    exec_args[i],
+                    (i == exec_args_count - 1) ? '\n' : ' ');
+            }
+        }
+
         execvp(exec_args[0], exec_args);
         handle_execvp_error();
     } else {
         // Parent process
         int status;
         waitpid(pid, &status, 0);
-//        if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-//            fprintf(
-//                stderr,
-//                "command failed with exit code: %d\n",
-//                WEXITSTATUS(status));
-//        } else if (WIFSIGNALED(status)) {
-//            fprintf(
-//                stderr,
-//                "command killed by signal: %d\n",
-//                WTERMSIG(status));
-//        }
 
         free_args(input_args);
     }
