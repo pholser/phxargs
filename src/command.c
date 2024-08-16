@@ -54,6 +54,7 @@ void init_command(command* cmd, const options* opts) {
   cmd->trace = opts->trace;
 
   cmd->line_count = 0;
+  cmd->line_mode = options_line_mode(opts);
 }
 
 void recycle_command(command* cmd) {
@@ -84,7 +85,7 @@ uint8_t arg_would_exceed_limits(const command* cmd, const char* new_arg) {
 
 uint8_t should_execute_command(const command* cmd) {
   return cmd->input_args->count == cmd->max_args
-    || cmd->line_count == cmd->max_lines
+    || (cmd->line_mode && (cmd->line_count == cmd->max_lines))
     || command_length(cmd) >= cmd->max_length
     ;
 }

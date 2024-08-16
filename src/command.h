@@ -14,6 +14,7 @@ typedef struct {
   uint8_t prompt;
   uint8_t trace;
 
+  uint8_t line_mode;
   size_t line_count;
   command_args* fixed_args;
   command_args* input_args;

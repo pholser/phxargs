@@ -6,6 +6,7 @@
 #include "command.h"
 #include "options.h"
 #include "tokenizer.h"
+#include "util.h"
 
 void tokenizer_no_token(tokenizer* t) {
   t->state = NO_TOKEN;
@@ -14,7 +15,11 @@ void tokenizer_no_token(tokenizer* t) {
 }
 
 void init_tokenizer(tokenizer* t, const options* opts) {
+  t->buf = safe_malloc(sizeof(buffer));
   init_buffer(t->buf, opts->max_command_length);
+
+  t->terminate_on_too_large_token = opts->terminate_on_too_large_command;
+  t->line_mode = options_line_mode(opts);
   tokenizer_no_token(t);
 }
 
@@ -41,6 +46,10 @@ void tokenizer_start_token(tokenizer* t, int ch) {
 }
 
 void tokenizer_append_to_token(const tokenizer* t, int ch) {
+  if (t->terminate_on_too_large_token && buffer_full(t->buf)) {
+    fprintf(stderr, "phxargs: insufficient space for argument\n");
+    exit(EXIT_FAILURE);
+  }
   buffer_put(t->buf, (char) ch);
 }
 
@@ -55,17 +64,16 @@ char* tokenizer_end_token(tokenizer* t) {
 char* next_token(tokenizer* t, command* cmd) {
   uint8_t line_has_token = 0;
 
+  int last_char = 0;
   int ch;
   while ((ch = getc(stdin)) != EOF) {
     switch (t->state) {
       case NO_TOKEN:
         if (ch == ' ' || ch == '\t') {
-          // nothing to do, ignore the character
-          // call out to cmd .... when line advances? should_execute/execute
+          continue;
         } else if (ch == '\n') {
-          if (line_has_token) {
+          if (line_has_token && last_char != ' ') {
             ++cmd->line_count;
-            line_has_token = 0;
           }
         } else if (ch == '\'' || ch == '"') {
           tokenizer_start_quoted_token(t, ch);
@@ -81,16 +89,17 @@ char* next_token(tokenizer* t, command* cmd) {
 
       case IN_TOKEN:
         if (ch == ' ' || ch == '\t') {
+          last_char = ch;
           return tokenizer_end_token(t);
         } else if (ch == '\n') {
           if (line_has_token) {
             ++cmd->line_count;
-            line_has_token = 0;
           }
           return tokenizer_end_token(t);
         } else if (ch == '\\') {
           tokenizer_start_escape(t);
         } else {
+          last_char = ch;
           tokenizer_append_to_token(t, ch);
         }
         break;
@@ -104,6 +113,7 @@ char* next_token(tokenizer* t, command* cmd) {
         } else {
           tokenizer_append_to_token(t, ch);
         }
+        break;
 
       case IN_TOKEN_ESCAPE:
         tokenizer_end_escape(t, ch);
@@ -115,6 +125,10 @@ char* next_token(tokenizer* t, command* cmd) {
     fprintf(stderr, "phxargs: I/O error\n");
     exit(EXIT_FAILURE);
   } else {
+    if (line_has_token) {
+      ++cmd->line_count;
+      return tokenizer_end_token(t);
+    }
     return NULL;
   }
 }

@@ -13,7 +13,7 @@ INC :=
 SOURCES := $(wildcard $(SRCDIR)/*.c)
 OBJECTS := $(patsubst $(SRCDIR)/%, $(BUILDDIR)/%, $(SOURCES:.c=.o))
 
-all: directories $(BUILDDIR)/$(TARGET) test
+all: directories $(BUILDDIR)/$(TARGET)
 
 directories:
 	mkdir -p $(BUILDDIR)

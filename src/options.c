@@ -34,7 +34,7 @@ void options_set_logical_end_of_input_marker(options* opts, char* marker) {
 }
 
 void options_reset_max_lines_per_command(options* opts) {
-  opts->max_lines_per_command = -1;
+  opts->max_lines_per_command = 0;
   opts->max_lines_endptr = NULL;
 }
 
@@ -126,4 +126,8 @@ int parse_options(options* opts, int argc, char** argv) {
   }
 
   return optind;
+}
+
+uint8_t options_line_mode(const options* opts) {
+  return opts->max_lines_endptr != NULL;
 }

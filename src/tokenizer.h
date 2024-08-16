@@ -13,9 +13,13 @@ typedef enum {
 
 typedef struct {
   buffer* buf;
+
   tokenizer_state state;
   int quote_char;
   size_t token_start;
+
+  uint8_t terminate_on_too_large_token;
+  uint8_t line_mode;
 } tokenizer;
 
 void init_tokenizer(tokenizer* t, const options* opts);

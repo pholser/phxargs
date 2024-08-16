@@ -37,4 +37,6 @@ void init_options(options* opts);
 
 int parse_options(options* opts, int argc, char** argv);
 
+uint8_t options_line_mode(const options* opts);
+
 #endif  // PHXARGS_OPTIONS_H

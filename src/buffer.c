@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -18,6 +19,10 @@ size_t buffer_pos(buffer* buf) {
 
 void buffer_put(buffer* buf, char ch) {
   buf->buf[buf->pos++] = ch;
+}
+
+uint8_t buffer_full(buffer* buf) {
+  return buf->pos == buf->sz;
 }
 
 void free_buffer(buffer* buf) {
