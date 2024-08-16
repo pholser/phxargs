@@ -15,15 +15,15 @@
 const char *option_flags = ":n:";
 
 struct options {
-    long max_args;
+    size_t max_args;
     char *max_args_endptr;
 
     bool trace;
 };
 
 struct command_args {
-    int count;
-    int capacity;
+    size_t count;
+    size_t capacity;
     char** args;
 };
 
@@ -77,7 +77,7 @@ void allocate_args(struct command_args* args) {
 }
 
 void free_args(struct command_args* args) {
-    for (int i = 0; i < args->count; ++i) {
+    for (size_t i = 0; i < args->count; ++i) {
         free(args->args[i]);
     }
     free(args->args);
@@ -103,16 +103,16 @@ void execute_command(
         // Child process
         size_t exec_args_count = fixed_args->count + input_args->count;
         char** exec_args = safe_malloc((exec_args_count + 1) * sizeof(char*));
-        for (int i = 0; i < fixed_args->count; ++i) {
+        for (size_t i = 0; i < fixed_args->count; ++i) {
             exec_args[i] = fixed_args->args[i];
         }
-        for (int i = 0; i < input_args->count; ++i) {
+        for (size_t i = 0; i < input_args->count; ++i) {
             exec_args[fixed_args->count + i] = input_args->args[i];
         }
         exec_args[exec_args_count] = NULL;
 
         if (opts->trace) {
-            for (int i = 0; i < exec_args_count; ++i) {
+            for (size_t i = 0; i < exec_args_count; ++i) {
                 fprintf(
                     stderr,
                     "%s%c",
@@ -221,7 +221,7 @@ void run_xargs(
         process_chunk(&buf, opts, fixed_args, &input_args, &pstate);
     }
     if (ferror(stdin)) {
-        fprintf(stderr, "xargs: I/O error\n");
+        fprintf(stderr, "phxargs: I/O error\n");
         exit(1);
     }
 
@@ -245,7 +245,7 @@ long parse_number_arg(int opt, const char *arg, char **endptr) {
         || errno != 0
         || (errno == 0 && **endptr != '\0')) {
 
-        fprintf(stderr, "xargs: -%c %s: Invalid\n", opt, arg);
+        fprintf(stderr, "phxargs: -%c %s: Invalid\n", opt, arg);
     }
 
     return parsed;
@@ -268,11 +268,11 @@ void parse_args(
                 opts->trace = true;
                 break;
             case ':':
-                fprintf(stderr, "xargs: -%c needs an argument\n", optopt);
+                fprintf(stderr, "phxargs: -%c needs an argument\n", optopt);
                 exit(1);
                 break;
             case '?':
-                fprintf(stderr, "xargs: unknown option -%c\n", optopt);
+                fprintf(stderr, "phxargs: unknown option -%c\n", optopt);
                 exit(1);
                 break;
         }
