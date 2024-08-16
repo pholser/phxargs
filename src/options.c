@@ -34,12 +34,12 @@ void options_set_logical_end_of_input_marker(options* opts, char* marker) {
 }
 
 void options_reset_max_lines_per_command(options* opts) {
-  opts->max_lines_per_command = 0;
+  opts->max_lines_per_command = -1;
   opts->max_lines_endptr = NULL;
 }
 
 void options_reset_max_args_per_command(options* opts) {
-  opts->max_lines_per_command = 5000;
+  opts->max_args_per_command = 5000;
   opts->max_args_endptr = NULL;
 }
 
