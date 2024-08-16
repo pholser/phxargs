@@ -169,9 +169,18 @@ bool confirm_execution() {
 }
 
 bool should_execute_command(const command* cmd, const options* opts) {
+//  fprintf(stderr, "max command length: %zu\n", opts->max_command_length);
+//  fprintf(stderr, "max args per command: %zu\n", opts->max_args_per_command);
+//  fprintf(stderr, "max lines per command: %zu\n", opts->max_lines_per_command);
+//
+//  fprintf(stderr, "most recent arg: %s\n", cmd->input_args.args[cmd->input_args.count - 1]);
+//  fprintf(stderr, "command length: %zu\n", cmd->length);
+//  fprintf(stderr, "line count: %zu\n", cmd->line_count);
+//
   return cmd->input_args.count == opts->max_args_per_command
-//    || cmd->line_count == opts->max_lines_per_command
-//    || cmd->length >= opts->max_command_length
+    || (opts->max_lines_endptr != NULL
+        && cmd->line_count == opts->max_lines_per_command)
+    || cmd->length >= opts->max_command_length
   ;
 }
 
@@ -213,9 +222,8 @@ int execute_command(const options* opts, command* cmd) {
     if (execute) {
       execvp(exec_args[0], exec_args);
       handle_execvp_error();
+      return EXIT_FAILURE;
     }
-
-    return EXIT_FAILURE;
   } else {
     // Parent process
     int status = command_status(pid);
@@ -224,6 +232,9 @@ int execute_command(const options* opts, command* cmd) {
     recycle_command(cmd);
     return status;
   }
+
+  recycle_command(cmd);
+  return EXIT_SUCCESS;
 }
 
 void add_argument(command_args* args, const char* new_arg) {
@@ -274,6 +285,10 @@ void process_chunk(
     }
 
     if (ch == '\n' || ch == '\t' || ch == ' ' || ch == '\0') {
+      if (ch == '\n') {
+        cmd->line_count++;
+      }
+
       if (pstate->token_start < i) {
         buf->buffer[i] = '\0';
         add_input_argument(cmd, buf->buffer + pstate->token_start);
