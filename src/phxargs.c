@@ -1,5 +1,5 @@
-#include <ctype.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -18,6 +18,7 @@ typedef struct {
     size_t max_args;
     char *max_args_endptr;
 
+    bool prompt;
     bool trace;
 } options;
 
@@ -43,8 +44,8 @@ typedef struct {
 void* safe_malloc(size_t size) {
     void* ptr = malloc(size);
     if (ptr == NULL) {
-        perror("malloc failed");
-        exit(1);
+        perror("malloc");
+        exit(EXIT_FAILURE);
     }
     return ptr;
 }
@@ -52,22 +53,22 @@ void* safe_malloc(size_t size) {
 void* safe_realloc(void* ptr, size_t size) {
     ptr = realloc(ptr, size);
     if (ptr == NULL) {
-        perror("realloc failed");
-        exit(1);
+        perror("realloc");
+        exit(EXIT_FAILURE);
     }
     return ptr;
 }
 
 void handle_fork_error(pid_t pid) {
     if (pid < 0) {
-        perror("fork failed");
-        exit(1);
+        perror("fork");
+        exit(EXIT_FAILURE);
     }
 }
 
 void handle_execvp_error() {
-    perror("execvp failed");
-    exit(1);
+    perror("execvp");
+    exit(EXIT_FAILURE);
 }
 
 void allocate_args(command_args* args) {
@@ -89,6 +90,24 @@ void reallocate_args_if_needed(command_args* args) {
         args->args =
             safe_realloc(args->args, args->capacity * sizeof(char*));
     }
+}
+
+bool confirm_execution() {
+    FILE* tty = fopen("/dev/tty", "r");
+    if (tty == NULL) {
+        perror("fopen");
+        exit(EXIT_FAILURE);
+    }
+
+    char buf[4];
+    if (fgets(buf, sizeof(buf), tty) == NULL) {
+        perror("fgets");
+        fclose(tty);
+        exit(EXIT_FAILURE);
+    }
+
+    fclose(tty);
+    return (buf[0] == 'y' || buf[0] == 'Y');
 }
 
 void execute_command(
@@ -115,14 +134,25 @@ void execute_command(
             for (size_t i = 0; i < exec_args_count; ++i) {
                 fprintf(
                     stderr,
-                    "%s%c",
+                    "%s%s",
                     exec_args[i],
-                    (i == exec_args_count - 1) ? '\n' : ' ');
+                    (i < exec_args_count - 1) ? " " : "");
+            }
+            if (!opts->prompt) {
+                fprintf(stderr, "\n");
             }
         }
 
-        execvp(exec_args[0], exec_args);
-        handle_execvp_error();
+        bool execute = true;
+        if (opts->prompt) {
+            fprintf(stderr, "?...");
+            execute = confirm_execution();
+        }
+
+        if (execute) {
+            execvp(exec_args[0], exec_args);
+            handle_execvp_error();
+        }
     } else {
         // Parent process
         int status;
@@ -258,11 +288,15 @@ void parse_args(
     command_args* fixed_args) {
 
     int opt;
-    while ((opt = getopt(argc, argv, ":n:t")) != -1) {
+    while ((opt = getopt(argc, argv, ":n:pt")) != -1) {
         switch (opt) {
             case 'n':
                 opts->max_args =
                     parse_number_arg(opt, optarg, &(opts->max_args_endptr));
+                break;
+            case 'p':
+                opts->prompt = true;
+                opts->trace = true;
                 break;
             case 't':
                 opts->trace = true;
