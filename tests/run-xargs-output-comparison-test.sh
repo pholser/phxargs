@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 test_name=$1
-xargs_input_producer_cmd=$2
+test_input=$2
 xargs_options=$3
 xargs_cmd_line=$4
 
@@ -12,12 +12,12 @@ build_dir="$test_dir/../build"
 test_output_dir="$build_dir/output"
 mkdir -p "$test_output_dir"
 
-$xargs_input_producer_cmd \
-  | xargs $xargs_options $xargs_cmd_line \
+xargs $xargs_options $xargs_cmd_line \
+  < "$test_input" \
   > "$test_output_dir/xargs-$test_name.out" \
   2> "$test_output_dir/xargs-$test_name.err"
-$xargs_input_producer_cmd \
-  | "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
+"$build_dir/phxargs" $xargs_options $xargs_cmd_line \
+  < "$test_input" \
   > "$test_output_dir/phxargs-$test_name.out" \
   2> "$test_output_dir/phxargs-$test_name.err"
 
