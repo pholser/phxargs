@@ -42,6 +42,13 @@ typedef struct {
 } command_args;
 
 typedef struct {
+  size_t line_count;
+  size_t length;
+  command_args fixed_args;
+  command_args input_args;
+} command;
+
+typedef struct {
   char* buffer;
   size_t size;
   size_t processed;
@@ -84,6 +91,25 @@ void handle_execvp_error() {
   exit(EXIT_FAILURE);
 }
 
+int command_status(pid_t child_pid) {
+  int status;
+
+  pid_t wait_result = waitpid(child_pid, &status, 0);
+
+  if (wait_result == -1) {
+    perror("waitpid failed");
+    exit(EXIT_FAILURE);
+  }
+  if (WIFEXITED(status)) {
+    return WEXITSTATUS(status);
+  }
+  if (WIFSIGNALED(status)) {
+    return WTERMSIG(status);
+  }
+
+  return EXIT_FAILURE;
+}
+
 void allocate_args(command_args* args) {
   args->count = 0;
   args->capacity = INITIAL_ARGS_CAPACITY;
@@ -105,6 +131,25 @@ void reallocate_args_if_needed(command_args* args) {
   }
 }
 
+void init_command(command* cmd) {
+  cmd->line_count = 0;
+  cmd->length = 0;
+  allocate_args(&cmd->fixed_args);
+  allocate_args(&cmd->input_args);
+}
+
+void recycle_command(command* cmd) {
+  cmd->line_count = 0;
+  cmd->length = 0;
+  free_args(&cmd->input_args);
+  allocate_args(&cmd->input_args);
+}
+
+void free_command(command* cmd) {
+  free_args(&cmd->fixed_args);
+  free_args(&cmd->input_args);
+}
+
 bool confirm_execution() {
   FILE* tty = fopen("/dev/tty", "r");
   if (tty == NULL) {
@@ -123,23 +168,26 @@ bool confirm_execution() {
   return (buf[0] == 'y' || buf[0] == 'Y');
 }
 
-void execute_command(
-  const options* opts,
-  const command_args* fixed_args,
-  const command_args* input_args) {
+bool should_execute_command(const command* cmd, const options* opts) {
+  return cmd->input_args.count == opts->max_args_per_command
+//    || cmd->line_count == opts->max_lines_per_command
+//    || cmd->length >= opts->max_command_length
+  ;
+}
 
+int execute_command(const options* opts, command* cmd) {
   pid_t pid = fork();
   handle_fork_error(pid);
 
   if (pid == 0) {
     // Child process
-    size_t exec_args_count = fixed_args->count + input_args->count;
+    size_t exec_args_count = cmd->fixed_args.count + cmd->input_args.count;
     char** exec_args = safe_malloc((exec_args_count + 1) * sizeof(char*));
-    for (size_t i = 0; i < fixed_args->count; ++i) {
-      exec_args[i] = fixed_args->args[i];
+    for (size_t i = 0; i < cmd->fixed_args.count; ++i) {
+      exec_args[i] = cmd->fixed_args.args[i];
     }
-    for (size_t i = 0; i < input_args->count; ++i) {
-      exec_args[fixed_args->count + i] = input_args->args[i];
+    for (size_t i = 0; i < cmd->input_args.count; ++i) {
+      exec_args[cmd->fixed_args.count + i] = cmd->input_args.args[i];
     }
     exec_args[exec_args_count] = NULL;
 
@@ -166,31 +214,41 @@ void execute_command(
       execvp(exec_args[0], exec_args);
       handle_execvp_error();
     }
+
+    return EXIT_FAILURE;
   } else {
     // Parent process
-    int status;
+    int status = command_status(pid);
     waitpid(pid, &status, 0);
 
-    free_args(input_args);
+    recycle_command(cmd);
+    return status;
   }
 }
 
-void add_argument(
-  command_args* args,
-  const char* new_arg) {
-
+void add_argument(command_args* args, const char* new_arg) {
   reallocate_args_if_needed(args);
 
   args->args[args->count] = strdup(new_arg);
   args->count++;
 }
 
+void add_fixed_argument(command* cmd, const char* new_arg) {
+  add_argument(&(cmd->fixed_args), new_arg);
+  cmd->length += strlen(new_arg) + 1;
+}
+
+void add_input_argument(command* cmd, const char* new_arg) {
+  add_argument(&(cmd->input_args), new_arg);
+  cmd->length += strlen(new_arg) + 1;
+}
+
 void process_chunk(
   tokenizing_buffer* buf,
   const options* opts,
-  const command_args* fixed_args,
-  command_args* input_args,
-  parser_state* pstate) {
+  command* cmd,
+  parser_state* pstate,
+  int* execution_status) {
 
   for (size_t i = buf->processed; i < buf->size; ++i) {
     char ch = buf->buffer[i];
@@ -218,14 +276,13 @@ void process_chunk(
     if (ch == '\n' || ch == '\t' || ch == ' ' || ch == '\0') {
       if (pstate->token_start < i) {
         buf->buffer[i] = '\0';
-        add_argument(input_args, buf->buffer + pstate->token_start);
+        add_input_argument(cmd, buf->buffer + pstate->token_start);
 
-        if (input_args->count == opts->max_args_per_command) {
-          execute_command(opts, fixed_args, input_args);
-          allocate_args(input_args);
+        if (should_execute_command(cmd, opts)) {
+          *execution_status |= execute_command(opts, cmd);
         }
-
       }
+
       pstate->token_start = i + 1;
     }
   }
@@ -241,17 +298,13 @@ void process_chunk(
   pstate->token_start = 0;
 }
 
-void run_xargs(
-  const options* opts,
-  const command_args* fixed_args) {
-
+int run_xargs(const options* opts, command* cmd) {
   tokenizing_buffer buf = {0};
   buf.buffer = safe_malloc(CHUNK_SIZE + 1);
 
-  command_args input_args = {0};
-  allocate_args(&input_args);
-
   parser_state pstate = {0};
+
+  int execution_status = EXIT_SUCCESS;
 
   while ((buf.size = fread(
     buf.buffer + buf.processed,
@@ -261,7 +314,7 @@ void run_xargs(
 
     buf.size += buf.processed;
     buf.buffer[buf.size] = '\0';
-    process_chunk(&buf, opts, fixed_args, &input_args, &pstate);
+    process_chunk(&buf, opts, cmd, &pstate, &execution_status);
   }
   if (ferror(stdin)) {
     fprintf(stderr, "phxargs: I/O error\n");
@@ -270,14 +323,15 @@ void run_xargs(
 
   if (buf.size > 0) {
     buf.buffer[buf.size] = '\0';
-    add_argument(&input_args, buf.buffer);
+    add_input_argument(cmd, buf.buffer);
   }
 
-  if (input_args.count > 0) {
-    execute_command(opts, fixed_args, &input_args);
+  if (cmd->input_args.count > 0) {
+    execution_status |= execute_command(opts, cmd);
   }
 
   free(buf.buffer);
+  return execution_status;
 }
 
 long parse_number_arg(int opt, const char* arg, char** endptr) {
@@ -294,12 +348,7 @@ long parse_number_arg(int opt, const char* arg, char** endptr) {
   return parsed;
 }
 
-void parse_args(
-  int argc,
-  char** argv,
-  options* opts,
-  command_args* fixed_args) {
-
+void parse_args(int argc, char** argv, options* opts, command* cmd) {
   opts->max_args_per_command = DEFAULT_MAX_ARGS_PER_COMMAND;
   opts->max_command_length = DEFAULT_MAX_COMMAND_LENGTH;
 
@@ -339,22 +388,22 @@ void parse_args(
   }
 
   if (optind == argc) {
-    add_argument(fixed_args, default_command);
+    add_fixed_argument(cmd, default_command);
   } else {
     for (int i = optind; i < argc; ++i) {
-      add_argument(fixed_args, argv[i]);
+      add_fixed_argument(cmd, argv[i]);
     }
   }
 }
 
 int main(int argc, char** argv) {
   options opts = {0};
-  command_args fixed_args = {0};
+  command cmd = {0};
 
-  allocate_args(&fixed_args);
-  parse_args(argc, argv, &opts, &fixed_args);
-  run_xargs(&opts, &fixed_args);
-  free_args(&fixed_args);
+  init_command(&cmd);
+  parse_args(argc, argv, &opts, &cmd);
+  int execution_status = run_xargs(&opts, &cmd);
+  free_command(&cmd);
 
-  return 0;
+  return execution_status;
 }
