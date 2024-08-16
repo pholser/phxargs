@@ -12,12 +12,10 @@ build_dir="$test_dir/../build"
 test_output_dir="$build_dir/output"
 mkdir -p "$test_output_dir"
 
-xargs $xargs_options $cmd_line \
-  < "$xargs_input" \
+$xargs_input | xargs $xargs_options $cmd_line \
   > "$test_output_dir/xargs_$test_name.out" \
   2> "$test_output_dir/xargs_$test_name.err"
-"$build_dir/phxargs" $xargs_options $cmd_line \
-  < "$xargs_input" \
+$xargs_input | "$build_dir/phxargs" $xargs_options $cmd_line \
   > "$test_output_dir/phxargs_$test_name.out" \
   2> "$test_output_dir/phxargs_$test_name.err"
 

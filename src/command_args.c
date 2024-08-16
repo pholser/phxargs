@@ -15,7 +15,7 @@ command_args* allocate_args() {
   return args;
 }
 
-void reallocate_args_if_needed(command_args* args) {
+void reallocate_args_if_needed(command_args* const args) {
   if (args->count >= args->capacity) {
     args->capacity *= 2;
     args->args =
@@ -23,7 +23,7 @@ void reallocate_args_if_needed(command_args* args) {
   }
 }
 
-void add_arg(command_args* args, const char* new_arg) {
+void add_arg(command_args* const args, const char* const new_arg) {
   reallocate_args_if_needed(args);
 
   args->args[args->count] = strdup(new_arg);
@@ -31,7 +31,7 @@ void add_arg(command_args* args, const char* new_arg) {
   args->length += strlen(new_arg) + 1;
 }
 
-void free_args(const command_args* args) {
+void free_args(const command_args* const args) {
   for (size_t i = 0; i < args->count; ++i) {
     free(args->args[i]);
   }

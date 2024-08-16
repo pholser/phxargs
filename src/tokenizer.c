@@ -8,13 +8,13 @@
 #include "tokenizer.h"
 #include "util.h"
 
-void tokenizer_no_token(tokenizer* t) {
+void tokenizer_no_token(tokenizer* const t) {
   t->state = NO_TOKEN;
   t->quote_char = '\0';
   t->token_start = 0;
 }
 
-void init_tokenizer(tokenizer* t, const options* opts) {
+void init_tokenizer(tokenizer* const t, const options* opts) {
   t->buf = safe_malloc(sizeof(buffer));
   init_buffer(t->buf, opts->max_command_length);
 
@@ -23,29 +23,29 @@ void init_tokenizer(tokenizer* t, const options* opts) {
   tokenizer_no_token(t);
 }
 
-void tokenizer_start_quoted_token(tokenizer* t, int quote_char) {
+void tokenizer_start_quoted_token(tokenizer* const t, int quote_char) {
   t->state = IN_QUOTED_TOKEN;
   t->quote_char = quote_char;
   t->token_start = buffer_pos(t->buf);
 }
 
-void tokenizer_start_escape(tokenizer* t) {
+void tokenizer_start_escape(tokenizer* const t) {
   t->state = IN_TOKEN_ESCAPE;
   t->token_start = buffer_pos(t->buf);
 }
 
-void tokenizer_end_escape(tokenizer* t, int ch) {
+void tokenizer_end_escape(tokenizer* const t, int ch) {
   t->state = IN_TOKEN;
-  buffer_put(t->buf, ch);
+  buffer_put(t->buf, (char) ch);
 }
 
-void tokenizer_start_token(tokenizer* t, int ch) {
+void tokenizer_start_token(tokenizer* const t, int ch) {
   t->state = IN_TOKEN;
   t->token_start = buffer_pos(t->buf);
   buffer_put(t->buf, (char) ch);
 }
 
-void tokenizer_append_to_token(const tokenizer* t, int ch) {
+void tokenizer_append_to_token(const tokenizer* const t, int ch) {
   if (t->terminate_on_too_large_token && buffer_full(t->buf)) {
     fprintf(stderr, "phxargs: insufficient space for argument\n");
     exit(EXIT_FAILURE);
@@ -53,7 +53,7 @@ void tokenizer_append_to_token(const tokenizer* t, int ch) {
   buffer_put(t->buf, (char) ch);
 }
 
-char* tokenizer_end_token(tokenizer* t) {
+char* tokenizer_end_token(tokenizer* const t) {
   buffer_put(t->buf, '\0');
   char* token = t->buf->buf + t->token_start;
   tokenizer_no_token(t);
@@ -61,7 +61,7 @@ char* tokenizer_end_token(tokenizer* t) {
   return token;
 }
 
-char* next_token(tokenizer* t, command* cmd) {
+char* next_token(tokenizer* const t, command* const cmd) {
   uint8_t line_has_token = 0;
 
   int last_char = 0;
@@ -92,7 +92,7 @@ char* next_token(tokenizer* t, command* cmd) {
           last_char = ch;
           return tokenizer_end_token(t);
         } else if (ch == '\n') {
-          if (line_has_token) {
+          if (line_has_token && last_char != ' ') {
             ++cmd->line_count;
           }
           return tokenizer_end_token(t);
@@ -133,6 +133,6 @@ char* next_token(tokenizer* t, command* cmd) {
   }
 }
 
-void free_tokenizer(const tokenizer* t) {
+void free_tokenizer(const tokenizer* const t) {
   free_buffer(t->buf);
 }

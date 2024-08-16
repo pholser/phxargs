@@ -2,4 +2,4 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set_test_context.sh
 
-./run_xargs_output_comparison_test.sh "$test_name" usrlocal.txt "-L 3" ""
+./run_xargs_output_comparison_test.sh $test_name 'echo "a b c"' "" ""

@@ -10,14 +10,14 @@ typedef struct {
   size_t pos;
 } buffer;
 
-void init_buffer(buffer* buf, size_t sz);
+void init_buffer(buffer* const buf, size_t sz);
 
-size_t buffer_pos(buffer* buf);
+size_t buffer_pos(const buffer* const buf);
 
-void buffer_put(buffer* buf, char ch);
+void buffer_put(buffer* const buf, char ch);
 
-uint8_t buffer_full(buffer* buf);
+uint8_t buffer_full(const buffer* const buf);
 
-void free_buffer(buffer* buf);
+void free_buffer(const buffer* const buf);
 
 #endif  // PHXARGS_BUFFER_H

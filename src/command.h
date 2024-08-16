@@ -20,20 +20,20 @@ typedef struct {
   command_args* input_args;
 } command;
 
-void init_command(command* cmd, const options* opts);
+void init_command(command* const cmd, const options* const opts);
 
-uint8_t arg_would_exceed_limits(const command* cmd, const char* new_arg);
+uint8_t arg_would_exceed_limits(const command* const cmd, const char* new_arg);
 
-uint8_t should_execute_command(const command* cmd);
+uint8_t should_execute_command(const command* const cmd);
 
-int execute_command(command* cmd);
+int execute_command(command* const cmd);
 
-void add_fixed_argument(const command* cmd, const char* new_arg);
+void add_fixed_argument(const command* const cmd, const char* const new_arg);
 
-void add_input_argument(const command* cmd, const char* new_arg);
+void add_input_argument(const command* const cmd, const char* const new_arg);
 
-size_t command_length(const command* cmd);
+size_t command_length(const command* const cmd);
 
-void free_command(const command* cmd);
+void free_command(const command* const cmd);
 
 #endif  // PHXARGS_COMMAND_H

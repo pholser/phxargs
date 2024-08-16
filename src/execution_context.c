@@ -7,7 +7,7 @@
 
 #define DEFAULT_CMD "/bin/echo"
 
-void establish_context(execution_context* ctx, int argc, char** argv) {
+void establish_context(execution_context* const ctx, int argc, char** argv) {
   options opts;
   init_options(&opts);
 
@@ -24,7 +24,7 @@ void establish_context(execution_context* ctx, int argc, char** argv) {
   }
 }
 
-int run_xargs(execution_context* ctx) {
+int run_xargs(execution_context* const ctx) {
   int execution_status = EXIT_SUCCESS;
 
   char* token;
@@ -46,7 +46,7 @@ int run_xargs(execution_context* ctx) {
   return execution_status;
 }
 
-void release_context(const execution_context* ctx) {
+void release_context(const execution_context* const ctx) {
   free_command(&(ctx->cmd));
   free_tokenizer(&(ctx->tokenizer));
 }

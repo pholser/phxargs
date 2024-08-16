@@ -25,7 +25,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
 test:
-	@for script in $(TESTDIR)/test_*.sh ; do bash $$script ; done
+	@for script in $(TESTDIR)/test-*.sh ; do bash $$script ; done
 
 clean:
 	$(RM) -r $(BUILDDIR)/*

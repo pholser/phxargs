@@ -25,55 +25,70 @@ size_t parse_number_arg(int opt, const char* arg, char** endptr) {
   return (size_t) parsed;
 }
 
-void options_set_nul_char_as_argument_separator(options* opts) {
+void options_set_nul_char_as_argument_separator(options* const opts) {
   opts->use_nul_char_as_arg_separator = 1;
 }
 
-void options_set_logical_end_of_input_marker(options* opts, char* marker) {
+void options_set_logical_end_of_input_marker(
+  options* const opts,
+  char* marker) {
+
   opts->logical_end_of_input_marker = marker;
 }
 
-void options_reset_max_lines_per_command(options* opts) {
+void options_reset_max_lines_per_command(options* const opts) {
   opts->max_lines_per_command = 0;
   opts->max_lines_endptr = NULL;
 }
 
-void options_reset_max_args_per_command(options* opts) {
+void options_reset_max_args_per_command(options* const opts) {
   opts->max_args_per_command = 5000;
   opts->max_args_endptr = NULL;
 }
 
-void options_set_max_lines_per_command(options* opts, int opt, char* new_val) {
+void options_set_max_lines_per_command(
+  options* opts,
+  int opt,
+  const char* new_val) {
+
   opts->max_lines_per_command =
     parse_number_arg(opt, new_val, &(opts->max_lines_endptr));
   options_reset_max_args_per_command(opts);
 }
 
-void options_set_max_args_per_command(options* opts, int opt, char* new_val) {
+void options_set_max_args_per_command(
+  options* opts,
+  int opt,
+  const char* new_val) {
+
   opts->max_args_per_command =
     parse_number_arg(opt, new_val, &(opts->max_args_endptr));
   options_reset_max_lines_per_command(opts);
 }
 
-void options_set_max_command_length(options* opts, int opt, char* new_val) {
+void options_set_max_command_length(
+  options* const opts,
+  int opt,
+  const char* new_val) {
+
   opts->max_command_length =
     parse_number_arg(opt, new_val, &(opts->max_command_length_endptr));
 }
 
-void options_enable_trace(options* opts) {
+void options_enable_trace(options* const opts) {
   opts->trace = 1;
 }
 
-void options_enable_prompt(options* opts) {
+void options_enable_prompt(options* const opts) {
   opts->prompt = 1;
   options_enable_trace(opts);
 }
 
-void options_enable_terminate_on_too_large_command(options* opts) {
+void options_enable_terminate_on_too_large_command(options* const opts) {
   opts->terminate_on_too_large_command = 1;
 }
 
-void init_options(options* opts) {
+void init_options(options* const opts) {
   opts->use_nul_char_as_arg_separator = 0;
   opts->logical_end_of_input_marker = NULL;
   options_reset_max_lines_per_command(opts);
@@ -85,7 +100,7 @@ void init_options(options* opts) {
   opts->terminate_on_too_large_command = 0;
 }
 
-int parse_options(options* opts, int argc, char** argv) {
+int parse_options(options* const opts, int argc, char** argv) {
   int opt;
   while ((opt = getopt(argc, argv, ":0E:L:n:ps:tx")) != -1) {
     switch (opt) {
@@ -128,6 +143,6 @@ int parse_options(options* opts, int argc, char** argv) {
   return optind;
 }
 
-uint8_t options_line_mode(const options* opts) {
+uint8_t options_line_mode(const options* const opts) {
   return opts->max_lines_endptr != NULL;
 }

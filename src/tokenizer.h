@@ -22,10 +22,10 @@ typedef struct {
   uint8_t line_mode;
 } tokenizer;
 
-void init_tokenizer(tokenizer* t, const options* opts);
+void init_tokenizer(tokenizer* const t, const options* opts);
 
-char* next_token(tokenizer* t, command* cmd);
+char* next_token(tokenizer* const t, command* const cmd);
 
-void free_tokenizer(const tokenizer* t);
+void free_tokenizer(const tokenizer* const t);
 
 #endif  // PHXARGS_TOKENIZER_H

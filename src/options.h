@@ -33,10 +33,10 @@ typedef struct {
   uint8_t terminate_on_too_large_command;
 } options;
 
-void init_options(options* opts);
+void init_options(options* const opts);
 
-int parse_options(options* opts, int argc, char** argv);
+int parse_options(options* const opts, int argc, char** argv);
 
-uint8_t options_line_mode(const options* opts);
+uint8_t options_line_mode(const options* const opts);
 
 #endif  // PHXARGS_OPTIONS_H
