@@ -16,7 +16,7 @@ const char* default_command = "/bin/echo";
 
 typedef struct {
     size_t max_args;
-    char *max_args_endptr;
+    char* max_args_endptr;
 
     bool prompt;
     bool trace;
@@ -252,7 +252,7 @@ void run_xargs(
     }
     if (ferror(stdin)) {
         fprintf(stderr, "phxargs: I/O error\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     if (buf.size > 0) {
@@ -303,12 +303,10 @@ void parse_args(
                 break;
             case ':':
                 fprintf(stderr, "phxargs: -%c needs an argument\n", optopt);
-                exit(1);
-                break;
+                exit(EXIT_FAILURE);
             case '?':
                 fprintf(stderr, "phxargs: unknown option -%c\n", optopt);
-                exit(1);
-                break;
+                exit(EXIT_FAILURE);
         }
     }
 
