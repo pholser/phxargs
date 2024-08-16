@@ -13,33 +13,32 @@
 #define DEFAULT_MAX_ARGS 5000
 
 const char* default_command = "/bin/echo";
-const char* option_flags = ":n:";
 
-struct options {
+typedef struct {
     size_t max_args;
     char *max_args_endptr;
 
     bool trace;
-};
+} options;
 
-struct command_args {
+typedef struct {
     size_t count;
     size_t capacity;
     char** args;
-};
+} command_args;
 
-struct tokenizing_buffer {
+typedef struct {
     char* buffer;
     size_t size;
     size_t processed;
-};
+} tokenizing_buffer;
 
-struct parser_state {
+typedef struct {
     bool in_quote;
     char quote_char;
     bool escape;
     size_t token_start;
-};
+} parser_state;
 
 void* safe_malloc(size_t size) {
     void* ptr = malloc(size);
@@ -71,20 +70,20 @@ void handle_execvp_error() {
     exit(1);
 }
 
-void allocate_args(struct command_args* args) {
+void allocate_args(command_args* const args) {
     args->count = 0;
     args->capacity = INITIAL_ARGS_CAPACITY;
     args->args = safe_malloc(args->capacity * sizeof(char*));
 }
 
-void free_args(struct command_args* args) {
+void free_args(const command_args* const args) {
     for (size_t i = 0; i < args->count; ++i) {
         free(args->args[i]);
     }
     free(args->args);
 }
 
-void reallocate_args_if_needed(struct command_args *args) {
+void reallocate_args_if_needed(command_args* const args) {
     if (args->count >= args->capacity) {
         args->capacity *= 2;
         args->args =
@@ -93,9 +92,9 @@ void reallocate_args_if_needed(struct command_args *args) {
 }
 
 void execute_command(
-    struct options* opts,
-    struct command_args* fixed_args,
-    struct command_args* input_args) {
+    const options* const opts,
+    const command_args* const fixed_args,
+    const command_args* const input_args) {
 
     pid_t pid = fork();
     handle_fork_error(pid);
@@ -134,8 +133,8 @@ void execute_command(
 }
 
 void add_argument(
-    struct command_args* args,
-    const char* new_arg) {
+    command_args* const args,
+    const char* const new_arg) {
 
     reallocate_args_if_needed(args);
 
@@ -144,11 +143,11 @@ void add_argument(
 }
 
 void process_chunk(
-    struct tokenizing_buffer* buf,
-    struct options* opts,
-    struct command_args* fixed_args,
-    struct command_args* input_args,
-    struct parser_state* pstate) {
+    tokenizing_buffer* const buf,
+    const options* const opts,
+    const command_args* const fixed_args,
+    command_args* const input_args,
+    parser_state* const pstate) {
 
     for (size_t i = buf->processed; i < buf->size; ++i) {
         char ch = buf->buffer[i];
@@ -200,16 +199,16 @@ void process_chunk(
 }
 
 void run_xargs(
-    struct options* opts,
-    struct command_args* fixed_args) {
+    const options* const opts,
+    const command_args* const fixed_args) {
 
-    struct tokenizing_buffer buf = {0};
+    tokenizing_buffer buf = {0};
     buf.buffer = safe_malloc(CHUNK_SIZE + 1);
 
-    struct command_args input_args = {0};
+    command_args input_args = {0};
     allocate_args(&input_args);
 
-    struct parser_state pstate = {0};
+    parser_state pstate = {0};
 
     while ((buf.size = fread(
         buf.buffer + buf.processed,
@@ -238,7 +237,7 @@ void run_xargs(
     free(buf.buffer);
 }
 
-long parse_number_arg(int opt, const char *arg, char **endptr) {
+long parse_number_arg(int opt, const char* arg, char** endptr) {
     errno = 0;
     long parsed = strtol(arg, endptr, 10);
 
@@ -255,11 +254,11 @@ long parse_number_arg(int opt, const char *arg, char **endptr) {
 void parse_args(
     int argc,
     char** argv,
-    struct options* opts,
-    struct command_args* fixed_args) {
+    options* const opts,
+    command_args* const fixed_args) {
 
     int opt;
-    while ((opt = getopt(argc, argv, option_flags)) != -1) {
+    while ((opt = getopt(argc, argv, ":n:t")) != -1) {
         switch (opt) {
             case 'n':
                 opts->max_args =
@@ -289,15 +288,14 @@ void parse_args(
 }
 
 int main(int argc, char** argv) {
-    struct options opts = {0};
+    options opts = {0};
     opts.max_args = DEFAULT_MAX_ARGS;
 
-    struct command_args fixed_args = {0};
-    allocate_args(&fixed_args);
+    command_args fixed_args = {0};
 
+    allocate_args(&fixed_args);
     parse_args(argc, argv, &opts, &fixed_args);
     run_xargs(&opts, &fixed_args);
-
     free_args(&fixed_args);
 
     return 0;
