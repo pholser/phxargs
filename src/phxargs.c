@@ -10,15 +10,28 @@
 
 #define CHUNK_SIZE 8192
 #define INITIAL_ARGS_CAPACITY 10
-#define DEFAULT_MAX_ARGS 5000
+#define DEFAULT_MAX_ARGS_PER_COMMAND 5000
+#define DEFAULT_MAX_COMMAND_LENGTH -1
 
 const char* default_command = "/bin/echo";
 
 typedef struct {
-  size_t max_args;
+  /* -L option */
+  unsigned long max_lines_per_command;
+  char* max_lines_endptr;
+
+  /* -n option */
+  unsigned long max_args_per_command;
   char* max_args_endptr;
 
+  /* -p option */
   bool prompt;
+
+  /* -s option */
+  unsigned long max_command_length;
+  char* max_command_length_endptr;
+
+  /* -t option */
   bool trace;
 } options;
 
@@ -207,7 +220,7 @@ void process_chunk(
         buf->buffer[i] = '\0';
         add_argument(input_args, buf->buffer + pstate->token_start);
 
-        if (input_args->count == opts->max_args) {
+        if (input_args->count == opts->max_args_per_command) {
           execute_command(opts, fixed_args, input_args);
           allocate_args(input_args);
         }
@@ -287,16 +300,31 @@ void parse_args(
   options* opts,
   command_args* fixed_args) {
 
+  opts->max_args_per_command = DEFAULT_MAX_ARGS_PER_COMMAND;
+  opts->max_command_length = DEFAULT_MAX_COMMAND_LENGTH;
+
+  long num;
   int opt;
-  while ((opt = getopt(argc, argv, ":n:pt")) != -1) {
+
+  while ((opt = getopt(argc, argv, ":L:n:ps:t")) != -1) {
     switch (opt) {
+      case 'L':
+        num = parse_number_arg(opt, optarg, &(opts->max_lines_endptr));
+        opts->max_lines_per_command = (num > 0) ? num : -1;
+        break;
       case 'n':
-        opts->max_args =
+        opts->max_args_per_command =
           parse_number_arg(opt, optarg, &(opts->max_args_endptr));
         break;
       case 'p':
         opts->prompt = true;
         opts->trace = true;
+        break;
+      case 's':
+        num =
+          parse_number_arg(opt, optarg, &(opts->max_command_length_endptr));
+        opts->max_command_length =
+          (num > 0) ? num : DEFAULT_MAX_COMMAND_LENGTH;
         break;
       case 't':
         opts->trace = true;
@@ -321,8 +349,6 @@ void parse_args(
 
 int main(int argc, char** argv) {
   options opts = {0};
-  opts.max_args = DEFAULT_MAX_ARGS;
-
   command_args fixed_args = {0};
 
   allocate_args(&fixed_args);
