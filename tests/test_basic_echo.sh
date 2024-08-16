@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-test_dir=$(dirname "$(readlink -f "$0")")
-test_name=$(basename "$(readlink -f "$0")" | sed 's/^test_//')
-
-cd "$test_dir" || exit 3
+source "$(dirname "$(readlink -f "$0")")"/set_test_context.sh
 
 ./run_xargs_output_comparison_test.sh "$test_name" usrlocal.txt "" ""
