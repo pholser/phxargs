@@ -9,16 +9,6 @@ build_dir="$test_dir/../build"
 test_output_dir="$build_dir/output"
 mkdir -p "$test_output_dir"
 
-test_input=$(mktemp)
-[ $? -eq 0 ] || {
-  printf "error: mktemp had non-zero exit code.\n" >&2
-  exit 4
-}
-
-[ -f "$test_input" ] || {
-  printf "error: tempfile does not exist.\n" >&2
-  exit 4
-}
-
-## set trap to remove temp file on termination, interrupt or exit
-trap 'rm -f "$test_input"' SIGTERM SIGINT EXIT
+test_input=$(mktemp -p "$test_output_dir" || exit 4)
+expected_output=$(mktemp -p "$test_output_dir" || exit 4)
+expected_err=$(mktemp -p "$test_output_dir" || exit 4)

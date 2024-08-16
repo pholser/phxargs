@@ -29,9 +29,13 @@ void tokenizer_start_quoted_token(tokenizer* const t, int quote_char) {
   t->token_start = buffer_pos(t->buf);
 }
 
-void tokenizer_start_escape(tokenizer* const t) {
-  t->state = IN_TOKEN_ESCAPE;
+void tokenizer_start_no_token_escape(tokenizer* const t) {
+  t->state = NO_TOKEN_ESCAPE;
   t->token_start = buffer_pos(t->buf);
+}
+
+void tokenizer_start_in_token_escape(tokenizer* const t) {
+  t->state = IN_TOKEN_ESCAPE;
 }
 
 void tokenizer_end_escape(tokenizer* const t, int ch) {
@@ -79,12 +83,16 @@ char* next_token(tokenizer* const t, command* const cmd) {
           tokenizer_start_quoted_token(t, ch);
           line_has_token = 1;
         } else if (ch == '\\') {
-          tokenizer_start_escape(t);
+          tokenizer_start_no_token_escape(t);
           line_has_token = 1;
         } else {
           tokenizer_start_token(t, ch);
           line_has_token = 1;
         }
+        break;
+
+      case NO_TOKEN_ESCAPE:
+        tokenizer_end_escape(t, ch);
         break;
 
       case IN_TOKEN:
@@ -97,7 +105,7 @@ char* next_token(tokenizer* const t, command* const cmd) {
           }
           return tokenizer_end_token(t);
         } else if (ch == '\\') {
-          tokenizer_start_escape(t);
+          tokenizer_start_in_token_escape(t);
         } else {
           last_char = ch;
           tokenizer_append_to_token(t, ch);

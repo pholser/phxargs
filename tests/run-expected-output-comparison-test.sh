@@ -2,8 +2,10 @@
 
 test_name=$1
 test_input=$2
-xargs_options=$3
-xargs_cmd_line=$4
+expected_output=$3
+expected_err=$4
+xargs_options=$5
+xargs_cmd_line=$6
 
 test_dir=$(dirname "$(readlink -f "$0")")
 cd "$test_dir" || exit 3
@@ -22,9 +24,9 @@ xargs $xargs_options $xargs_cmd_line \
   2> "$test_output_dir/phxargs-$test_name.err"
 
 cd "$test_output_dir" || exit 3
-diff "xargs-$test_name.out" "phxargs-$test_name.out"
+diff "$expected_output" "xargs-$test_name.out"
 out_comparison_failed=$?
-diff "xargs-$test_name.err" "phxargs-$test_name.err"
+diff "$expected_err" "xargs-$test_name.err"
 err_comparison_failed=$?
 
 if [ $out_comparison_failed -ne 0 ] ; then

@@ -6,6 +6,7 @@
 
 typedef enum {
   NO_TOKEN,
+  NO_TOKEN_ESCAPE,
   IN_TOKEN,
   IN_QUOTED_TOKEN,
   IN_TOKEN_ESCAPE

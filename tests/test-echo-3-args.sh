@@ -3,13 +3,17 @@
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
 cat > "$test_input" <<EOF
-a
-b
-c
+a b c
 EOF
 
-./run-xargs-output-comparison-test.sh \
+cat > "$expected_output" <<EOF
+a b c
+EOF
+
+./run-expected-output-comparison-test.sh \
   $test_name \
   "$test_input" \
-  '-L 2' \
+  "$expected_output" \
+  "$expected_err" \
+  '' \
   ''
