@@ -109,8 +109,17 @@ void execute_command(
     // Parent process
     int status;
     waitpid(pid, &status, 0);
-    if (status != 0) {
-      perror("command failed");
+    if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+      fprintf(
+        stderr,
+	"command failed with exit code: %d\n",
+	WEXITSTATUS(status));
+      exit(1);
+    } else if (WIFSIGNALED(status)) {
+      fprintf(
+        stderr,
+	"command killed by signal: %d\n",
+	WTERMSIG(status));
       exit(1);
     }
 
