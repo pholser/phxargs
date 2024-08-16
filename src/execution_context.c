@@ -36,6 +36,10 @@ int run_xargs(execution_context* ctx) {
     }
   }
 
+  if (ctx->cmd.input_args->count > 0) {
+    execution_status |= execute_command(&(ctx->cmd));
+  }
+
   return execution_status;
 }
 
