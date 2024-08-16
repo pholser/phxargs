@@ -7,6 +7,7 @@ typedef struct {
   size_t count;
   size_t capacity;
   char** args;
+  size_t length;
 } command_args;
 
 command_args* allocate_args();

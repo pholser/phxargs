@@ -13,6 +13,6 @@ void establish_context(execution_context* ctx, int argc, char** argv);
 
 int run_xargs(execution_context* ctx);
 
-void release_context(execution_context* ctx);
+void release_context(const execution_context* ctx);
 
 #endif  // PHXARGS_EXECUTION_CONTEXT_H

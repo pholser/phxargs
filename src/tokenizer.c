@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "buffer.h"
+#include "command.h"
 #include "options.h"
 #include "tokenizer.h"
 
@@ -45,7 +46,7 @@ void tokenizer_start_token(tokenizer* t, int ch) {
   buffer_put(t->buf, (char) ch);
 }
 
-void tokenizer_append_to_token(tokenizer* t, int ch) {
+void tokenizer_append_to_token(const tokenizer* t, int ch) {
   buffer_put(t->buf, (char) ch);
 }
 
@@ -57,24 +58,41 @@ char* tokenizer_end_token(tokenizer* t) {
   return token;
 }
 
-char* next_token(tokenizer* t) {
+char* next_token(tokenizer* t, command* cmd) {
+  bool line_has_token = false;
+
   int ch;
   while ((ch = getc(stdin)) != EOF) {
     switch (t->state) {
       case NO_TOKEN:
-        if (ch == ' ' || ch == '\t' || ch == '\n') {
+        if (ch == ' ' || ch == '\t') {
           // nothing to do, ignore the character
+          // call out to cmd .... when line advances? should_execute/execute
+        } else if (ch == '\n') {
+          if (line_has_token) {
+            ++cmd->line_count;
+            line_has_token = false;
+          }
         } else if (ch == '\'' || ch == '"') {
           tokenizer_start_quoted_token(t, ch);
+          line_has_token = true;
         } else if (ch == '\\') {
           tokenizer_start_escape(t);
+          line_has_token = true;
         } else {
           tokenizer_start_token(t, ch);
+          line_has_token = true;
         }
         break;
 
       case IN_TOKEN:
-        if (ch == ' ' || ch == '\t' || ch == '\n') {
+        if (ch == ' ' || ch == '\t') {
+          return tokenizer_end_token(t);
+        } else if (ch == '\n') {
+          if (line_has_token) {
+            ++cmd->line_count;
+            line_has_token = false;
+          }
           return tokenizer_end_token(t);
         } else if (ch == '\\') {
           tokenizer_start_escape(t);
@@ -94,7 +112,7 @@ char* next_token(tokenizer* t) {
         }
 
       case IN_TOKEN_ESCAPE:
-        tokenizer_append_to_token(t, ch);
+        tokenizer_end_escape(t, ch);
         break;
     }
   }
@@ -107,6 +125,6 @@ char* next_token(tokenizer* t) {
   }
 }
 
-void free_tokenizer(tokenizer* t) {
+void free_tokenizer(const tokenizer* t) {
   free_buffer(t->buf);
 }

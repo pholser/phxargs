@@ -55,12 +55,10 @@ void init_command(command* cmd, const options* opts) {
   cmd->trace = opts->trace;
 
   cmd->line_count = 0;
-  cmd->length = 0;
 }
 
 void recycle_command(command* cmd) {
   cmd->line_count = 0;
-  cmd->length = 0;
   free_args(cmd->input_args);
   cmd->input_args = allocate_args();
 }
@@ -79,10 +77,16 @@ char** build_exec_args(command* cmd) {
   return exec_args;
 }
 
+bool arg_would_exceed_limits(const command* cmd, const char* new_arg) {
+  return cmd->input_args->count + 1 == cmd->max_args
+    || command_length(cmd) + strlen(new_arg) + 1 > cmd->max_length
+    ;
+}
+
 bool should_execute_command(const command* cmd) {
   return cmd->input_args->count == cmd->max_args
     || cmd->line_count == cmd->max_lines
-    || cmd->length >= cmd->max_length
+    || command_length(cmd) >= cmd->max_length
     ;
 }
 
@@ -146,17 +150,19 @@ int execute_command(command* cmd) {
   return EXIT_SUCCESS;
 }
 
-void add_fixed_argument(command* cmd, const char* new_arg) {
+void add_fixed_argument(const command* cmd, const char* new_arg) {
   add_arg(cmd->fixed_args, new_arg);
-  cmd->length += strlen(new_arg) + 1;
 }
 
-void add_input_argument(command* cmd, const char* new_arg) {
+void add_input_argument(const command* cmd, const char* new_arg) {
   add_arg(cmd->input_args, new_arg);
-  cmd->length += strlen(new_arg) + 1;
 }
 
-void free_command(command* cmd) {
+size_t command_length(const command* cmd) {
+  return cmd->fixed_args->length + cmd->input_args->length;
+}
+
+void free_command(const command* cmd) {
   free(cmd->fixed_args);
   free(cmd->input_args);
 }

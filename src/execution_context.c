@@ -28,7 +28,10 @@ int run_xargs(execution_context* ctx) {
   int execution_status = EXIT_SUCCESS;
 
   char* token;
-  while ((token = next_token(&(ctx->tokenizer))) != NULL) {
+  while ((token = next_token(&(ctx->tokenizer), &(ctx->cmd))) != NULL) {
+    if (arg_would_exceed_limits(&(ctx->cmd), token)) {
+      execution_status |= execute_command(&(ctx->cmd));
+    }
     add_input_argument(&(ctx->cmd), token);
 
     if (should_execute_command(&(ctx->cmd))) {
@@ -43,7 +46,7 @@ int run_xargs(execution_context* ctx) {
   return execution_status;
 }
 
-void release_context(execution_context* ctx) {
+void release_context(const execution_context* ctx) {
   free_command(&(ctx->cmd));
   free_tokenizer(&(ctx->tokenizer));
 }

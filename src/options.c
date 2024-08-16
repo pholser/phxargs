@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -118,6 +119,9 @@ int parse_options(options* opts, int argc, char** argv) {
         exit(EXIT_FAILURE);
       case '?':
         fprintf(stderr, "phxargs: unknown option -%c\n", optopt);
+        exit(EXIT_FAILURE);
+      default:
+        assert(!"reachable");
         exit(EXIT_FAILURE);
     }
   }

@@ -10,6 +10,7 @@ command_args* allocate_args() {
   args->count = 0;
   args->capacity = 10;
   args->args = safe_malloc(args->capacity * sizeof(char*));
+  args->length = 0;
 
   return args;
 }
@@ -26,7 +27,8 @@ void add_arg(command_args* args, const char* new_arg) {
   reallocate_args_if_needed(args);
 
   args->args[args->count] = strdup(new_arg);
-  args->count++;
+  ++args->count;
+  args->length += strlen(new_arg) + 1;
 }
 
 void free_args(const command_args* args) {

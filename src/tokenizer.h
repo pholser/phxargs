@@ -22,8 +22,8 @@ typedef struct {
 
 void init_tokenizer(tokenizer* t, const options* opts);
 
-char* next_token(tokenizer* t);
+char* next_token(tokenizer* t, command* cmd);
 
-void free_tokenizer(tokenizer* t);
+void free_tokenizer(const tokenizer* t);
 
 #endif  // PHXARGS_TOKENIZER_H

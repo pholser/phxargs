@@ -12,21 +12,24 @@ typedef struct {
   bool trace;
 
   size_t line_count;
-  size_t length;
   command_args* fixed_args;
   command_args* input_args;
 } command;
 
 void init_command(command* cmd, const options* opts);
 
+bool arg_would_exceed_limits(const command* cmd, const char* new_arg);
+
 bool should_execute_command(const command* cmd);
 
 int execute_command(command* cmd);
 
-void add_fixed_argument(command* cmd, const char* new_arg);
+void add_fixed_argument(const command* cmd, const char* new_arg);
 
-void add_input_argument(command* cmd, const char* new_arg);
+void add_input_argument(const command* cmd, const char* new_arg);
 
-void free_command(command* cmd);
+size_t command_length(const command* cmd);
+
+void free_command(const command* cmd);
 
 #endif  // PHXARGS_COMMAND_H
