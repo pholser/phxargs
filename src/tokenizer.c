@@ -37,12 +37,6 @@ void tokenizer_end_escape(tokenizer* t, int ch) {
 void tokenizer_start_token(tokenizer* t, int ch) {
   t->state = IN_TOKEN;
   t->token_start = buffer_pos(t->buf);
-
-  // If buffer becomes full, we're gonna need to reset it
-  // to be able to continue reading token in process, and
-  // make room for more input. Buffer full is a nice proxy
-  // for "should execute command as was before reading this
-  // token.
   buffer_put(t->buf, (char) ch);
 }
 
