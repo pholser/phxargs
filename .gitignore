@@ -5,5 +5,4 @@
 .*.swp
 
 build/
-tests/*.err
-tests/*.out
+tests/output/
