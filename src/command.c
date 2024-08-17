@@ -8,6 +8,16 @@
 #include "command.h"
 #include "util.h"
 
+extern char** environ;
+
+size_t env_length() {
+  size_t sz = 0;
+  for (char** e = environ; *e != NULL; ++e) {
+    sz += strlen(*e) + 1;
+  }
+  return sz;
+}
+
 pid_t safe_fork() {
   pid_t pid = fork();
   if (pid < 0) {
@@ -52,9 +62,10 @@ void init_command(command* cmd, const options* const opts) {
   cmd->max_length = opts->max_command_length;
   cmd->prompt = opts->prompt;
   cmd->trace = opts->trace;
-
+  cmd->terminate_on_too_large_command = opts->terminate_on_too_large_command;
   cmd->line_count = 0;
   cmd->line_mode = options_line_mode(opts);
+  cmd->env_length = env_length();
 }
 
 void recycle_command(command* const cmd) {
@@ -81,9 +92,19 @@ uint8_t arg_would_exceed_limits(
   const command* const cmd,
   const char* const new_arg) {
 
-  return cmd->input_args->count + 1 > cmd->max_args
-    || command_length(cmd) + strlen(new_arg) + 1 > cmd->max_length
-    ;
+  size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
+  if (cmd->input_args->count + 1 > cmd->max_args
+    || new_length > cmd->max_length) {
+
+    if (cmd->terminate_on_too_large_command) {
+      fprintf(
+        stderr,
+        "phxargs: command would exceed size limits with -x specified\n");
+      exit(EXIT_FAILURE);
+    }
+    return 1;
+  }
+  return 0;
 }
 
 uint8_t should_execute_command(const command* const cmd) {
@@ -162,7 +183,7 @@ void add_input_argument(const command* const cmd, const char* const new_arg) {
 }
 
 size_t command_length(const command* const cmd) {
-  return cmd->fixed_args->length + cmd->input_args->length;
+  return cmd->env_length + cmd->fixed_args->length + cmd->input_args->length;
 }
 
 void free_command(const command* const cmd) {
