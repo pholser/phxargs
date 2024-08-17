@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "buffer.h"
 #include "command.h"
@@ -20,6 +21,8 @@ void init_tokenizer(tokenizer* const t, const options* opts) {
 
   t->terminate_on_too_large_token = opts->terminate_on_too_large_command;
   t->line_mode = options_line_mode(opts);
+  t->logical_end_of_input_marker = opts->logical_end_of_input_marker;
+
   tokenizer_no_token(t);
 }
 
@@ -61,6 +64,12 @@ char* tokenizer_end_token(tokenizer* const t) {
   buffer_put(t->buf, '\0');
   char* token = t->buf->buf + t->token_start;
   tokenizer_no_token(t);
+
+  if (t->logical_end_of_input_marker != NULL) {
+    if (strcmp(t->logical_end_of_input_marker, token) == 0) {
+      return NULL;
+    }
+  }
 
   return token;
 }

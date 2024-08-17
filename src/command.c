@@ -81,7 +81,7 @@ uint8_t arg_would_exceed_limits(
   const command* const cmd,
   const char* const new_arg) {
 
-  return cmd->input_args->count + 1 == cmd->max_args
+  return cmd->input_args->count + 1 > cmd->max_args
     || command_length(cmd) + strlen(new_arg) + 1 > cmd->max_length
     ;
 }

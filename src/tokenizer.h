@@ -21,6 +21,7 @@ typedef struct {
 
   uint8_t terminate_on_too_large_token;
   uint8_t line_mode;
+  char* logical_end_of_input_marker;
 } tokenizer;
 
 void init_tokenizer(tokenizer* const t, const options* opts);

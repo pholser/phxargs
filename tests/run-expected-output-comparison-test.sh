@@ -14,19 +14,15 @@ build_dir="$test_dir/../build"
 test_output_dir="$build_dir/output"
 mkdir -p "$test_output_dir"
 
-xargs $xargs_options $xargs_cmd_line \
-  < "$test_input" \
-  > "$test_output_dir/xargs-$test_name.out" \
-  2> "$test_output_dir/xargs-$test_name.err"
 "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
   < "$test_input" \
   > "$test_output_dir/phxargs-$test_name.out" \
   2> "$test_output_dir/phxargs-$test_name.err"
 
 cd "$test_output_dir" || exit 3
-diff "$expected_output" "xargs-$test_name.out"
+diff "$expected_output" "phxargs-$test_name.out"
 out_comparison_failed=$?
-diff "$expected_err" "xargs-$test_name.err"
+diff "$expected_err" "phxargs-$test_name.err"
 err_comparison_failed=$?
 
 if [ $out_comparison_failed -ne 0 ] ; then
