@@ -2,6 +2,7 @@
 #define PHXARGS_TOKENIZER_H
 
 #include "buffer.h"
+#include "command.h"
 #include "options.h"
 
 typedef enum {
@@ -24,7 +25,7 @@ typedef struct {
   char* logical_end_of_input_marker;
 } tokenizer;
 
-void init_tokenizer(tokenizer* const t, const options* opts);
+void init_tokenizer(tokenizer* const t, const options* const opts);
 
 char* next_token(tokenizer* const t, command* const cmd);
 
