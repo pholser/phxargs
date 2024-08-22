@@ -26,12 +26,17 @@ size_t parse_number_arg(int opt, const char* arg, char** endptr) {
   return (size_t) parsed;
 }
 
-void options_set_nul_char_as_arg_delimiter(options* const opts) {
-  opts->use_nul_char_as_arg_delimiter = 1;
-}
-
 void options_reset_nul_char_as_arg_delimiter(options* const opts) {
   opts->use_nul_char_as_arg_delimiter = 0;
+}
+
+void options_reset_arg_delimiter(options* const opts) {
+  opts->arg_delimiter = '\0';
+}
+
+void options_set_nul_char_as_arg_delimiter(options* const opts) {
+  opts->use_nul_char_as_arg_delimiter = 1;
+  options_reset_arg_delimiter(opts);
 }
 
 void options_set_arg_delimiter(options* const opts, char ch) {
@@ -39,9 +44,6 @@ void options_set_arg_delimiter(options* const opts, char ch) {
   options_reset_nul_char_as_arg_delimiter(opts);
 }
 
-void options_reset_arg_delimiter(options* const opts) {
-  opts->use_nul_char_as_arg_delimiter = 0;
-}
 
 void options_set_logical_end_of_input_marker(
   options* const opts,

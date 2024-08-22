@@ -6,6 +6,7 @@
 
 typedef struct {
   buffer* buf;
+  size_t token_start;
 
   uint8_t terminate_on_too_large_token;
   char delim;

@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdlib.h>
 
 #include "command.h"
@@ -42,9 +41,6 @@ char* next_token(execution_context* const ctx) {
       return next_delim_token((delim_tokenizer*) ctx->tokenizer);
     case SPACE:
       return next_space_token((space_tokenizer*) ctx->tokenizer, &(ctx->cmd));
-    default:
-      assert(!"reachable");
-      exit(EXIT_FAILURE);
   }
 }
 
@@ -80,8 +76,5 @@ void release_context(const execution_context* const ctx) {
     case SPACE:
       free_space_tokenizer((space_tokenizer*) ctx->tokenizer);
       break;
-    default:
-      assert(!"reachable");
-      exit(EXIT_FAILURE);
   }
 }
