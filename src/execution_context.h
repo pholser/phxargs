@@ -2,11 +2,16 @@
 #define PHXARGS_EXECUTION_CONTEXT_H
 
 #include "command.h"
-#include "tokenizer.h"
+
+typedef enum {
+  SPACE,
+  DELIMITED
+} tokenizer_kind;
 
 typedef struct {
   command cmd;
-  tokenizer tokenizer;
+  tokenizer_kind t_kind;
+  void* tokenizer;
 } execution_context;
 
 void establish_context(execution_context* const ctx, int argc, char** argv);

@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/errno.h>
 #include <unistd.h>
 
@@ -25,8 +26,21 @@ size_t parse_number_arg(int opt, const char* arg, char** endptr) {
   return (size_t) parsed;
 }
 
-void options_set_nul_char_as_argument_separator(options* const opts) {
-  opts->use_nul_char_as_arg_separator = 1;
+void options_set_nul_char_as_arg_delimiter(options* const opts) {
+  opts->use_nul_char_as_arg_delimiter = 1;
+}
+
+void options_reset_nul_char_as_arg_delimiter(options* const opts) {
+  opts->use_nul_char_as_arg_delimiter = 0;
+}
+
+void options_set_arg_delimiter(options* const opts, char ch) {
+  opts->arg_delimiter = ch;
+  options_reset_nul_char_as_arg_delimiter(opts);
+}
+
+void options_reset_arg_delimiter(options* const opts) {
+  opts->use_nul_char_as_arg_delimiter = 0;
 }
 
 void options_set_logical_end_of_input_marker(
@@ -34,6 +48,10 @@ void options_set_logical_end_of_input_marker(
   char* marker) {
 
   opts->logical_end_of_input_marker = marker;
+}
+
+void options_reset_logical_end_of_input_marker(options* const opts) {
+  opts->logical_end_of_input_marker = NULL;
 }
 
 void options_reset_max_lines_per_command(options* const opts) {
@@ -89,7 +107,8 @@ void options_enable_terminate_on_too_large_command(options* const opts) {
 }
 
 void init_options(options* const opts) {
-  opts->use_nul_char_as_arg_separator = 0;
+  opts->use_nul_char_as_arg_delimiter = 0;
+  opts->arg_delimiter = '\0';
   opts->logical_end_of_input_marker = NULL;
   options_reset_max_lines_per_command(opts);
   options_reset_max_args_per_command(opts);
@@ -102,10 +121,19 @@ void init_options(options* const opts) {
 
 int parse_options(options* const opts, int argc, char** argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0E:L:n:ps:tx")) != -1) {
+  while ((opt = getopt(argc, argv, ":0d:E:L:n:ps:tx")) != -1) {
     switch (opt) {
       case '0':
-        options_set_nul_char_as_argument_separator(opts);
+        options_set_nul_char_as_arg_delimiter(opts);
+        options_reset_arg_delimiter(opts);
+        break;
+      case 'd':
+        if (strlen(optarg) > 1) {
+          fprintf(stderr, "phxargs: invalid delimiter for -%c\n", optopt);
+          exit(EXIT_FAILURE);
+        }
+        options_set_arg_delimiter(opts, *optarg);
+        options_reset_nul_char_as_arg_delimiter(opts);
         break;
       case 'E':
         options_set_logical_end_of_input_marker(opts, optarg);

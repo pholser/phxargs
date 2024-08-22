@@ -6,7 +6,7 @@ SRCDIR := src
 BUILDDIR := build
 TESTDIR := tests
 
-CFLAGS := -g -Wall -Wextra -O2
+CFLAGS := -g -Wall -Wextra -O0
 LIB :=
 INC :=
 

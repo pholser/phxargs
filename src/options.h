@@ -6,7 +6,10 @@
 
 typedef struct {
   /* -0 option */
-  uint8_t use_nul_char_as_arg_separator;
+  uint8_t use_nul_char_as_arg_delimiter;
+
+  /* -d option */
+  char arg_delimiter;
 
   /* -E option */
   char* logical_end_of_input_marker;
