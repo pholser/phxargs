@@ -8,6 +8,9 @@ typedef struct {
   /* -0 option */
   uint8_t use_nul_char_as_arg_delimiter;
 
+  /* -a option */
+  char* arg_file_path;
+
   /* -d option */
   char arg_delimiter;
 

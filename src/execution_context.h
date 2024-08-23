@@ -1,6 +1,8 @@
 #ifndef PHXARGS_EXECUTION_CONTEXT_H
 #define PHXARGS_EXECUTION_CONTEXT_H
 
+#include <stdio.h>
+
 #include "command.h"
 
 typedef enum {
@@ -12,6 +14,7 @@ typedef struct {
   command cmd;
   tokenizer_kind t_kind;
   void* tokenizer;
+  FILE* arg_source;
 } execution_context;
 
 void establish_context(execution_context* const ctx, int argc, char** argv);

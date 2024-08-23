@@ -13,8 +13,8 @@ size_t parse_number_arg(int opt, const char* arg, char** endptr) {
   long parsed = strtol(arg, endptr, 10);
 
   if (arg == *endptr
-      || errno != 0
-      || (errno == 0 && **endptr != '\0')) {
+    || errno != 0
+    || (errno == 0 && **endptr != '\0')) {
 
     fprintf(stderr, "phxargs: -%c %s: Invalid\n", opt, arg);
     exit(EXIT_FAILURE);
@@ -44,6 +44,9 @@ void options_set_arg_delimiter(options* const opts, char ch) {
   options_reset_nul_char_as_arg_delimiter(opts);
 }
 
+void options_set_arg_file_path(options* const opts, char* path) {
+  opts->arg_file_path = path;
+}
 
 void options_set_logical_end_of_input_marker(
   options* const opts,
@@ -110,6 +113,7 @@ void options_enable_terminate_on_too_large_command(options* const opts) {
 
 void init_options(options* const opts) {
   opts->use_nul_char_as_arg_delimiter = 0;
+  opts->arg_file_path = NULL;
   opts->arg_delimiter = '\0';
   opts->logical_end_of_input_marker = NULL;
   options_reset_max_lines_per_command(opts);
@@ -123,11 +127,14 @@ void init_options(options* const opts) {
 
 int parse_options(options* const opts, int argc, char** argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0d:E:L:n:ps:tx")) != -1) {
+  while ((opt = getopt(argc, argv, ":0a:d:E:L:n:ps:tx")) != -1) {
     switch (opt) {
       case '0':
         options_set_nul_char_as_arg_delimiter(opts);
         options_reset_arg_delimiter(opts);
+        break;
+      case 'a':
+        options_set_arg_file_path(opts, optarg);
         break;
       case 'd':
         if (strlen(optarg) > 1) {

@@ -21,7 +21,7 @@ size_t env_length() {
 pid_t safe_fork() {
   pid_t pid = fork();
   if (pid < 0) {
-    perror("fork");
+    perror("phxargs: fork");
     exit(EXIT_FAILURE);
   }
 
@@ -30,7 +30,7 @@ pid_t safe_fork() {
 
 void safe_exec(char** exec_args) {
   execvp(exec_args[0], exec_args);
-  perror("execvp");
+  perror("phxargs: execvp");
   exit(EXIT_FAILURE);
 }
 
@@ -40,7 +40,7 @@ int command_status(pid_t child_pid) {
   pid_t wait_result = waitpid(child_pid, &status, 0);
 
   if (wait_result == -1) {
-    perror("waitpid failed");
+    perror("phxargs: waitpid");
     exit(EXIT_FAILURE);
   }
   if (WIFEXITED(status)) {
@@ -117,13 +117,13 @@ uint8_t should_execute_command(const command* const cmd) {
 uint8_t confirm_execution() {
   FILE* tty = fopen("/dev/tty", "r");
   if (tty == NULL) {
-    perror("fopen");
+    perror("phxargs: cannot open /dev/tty");
     exit(EXIT_FAILURE);
   }
 
   char buf[4];
   if (fgets(buf, sizeof(buf), tty) == NULL) {
-    perror("fgets");
+    perror("phxargs: cannot read from /dev/tty");
     fclose(tty);
     exit(EXIT_FAILURE);
   }
