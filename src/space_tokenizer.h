@@ -1,6 +1,8 @@
 #ifndef PHXARGS_SPACE_TOKENIZER_H
 #define PHXARGS_SPACE_TOKENIZER_H
 
+#include <stdio.h>
+
 #include "buffer.h"
 #include "command.h"
 #include "options.h"
@@ -28,7 +30,10 @@ void init_space_tokenizer(
   space_tokenizer* const t,
   const options* const opts);
 
-char* next_space_token(space_tokenizer* const t, command* const cmd);
+char* next_space_token(
+  space_tokenizer* const t,
+  FILE* token_source,
+  command* const cmd);
 
 void free_space_tokenizer(const space_tokenizer* const t);
 

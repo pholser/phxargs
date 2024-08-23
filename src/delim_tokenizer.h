@@ -1,6 +1,8 @@
 #ifndef PHXARGS_DELIM_TOKENIZER_H
 #define PHXARGS_DELIM_TOKENIZER_H
 
+#include <stdio.h>
+
 #include "buffer.h"
 #include "options.h"
 
@@ -15,7 +17,7 @@ void init_delim_tokenizer(
   delim_tokenizer* const t,
   const options* const opts);
 
-char* next_delim_token(delim_tokenizer* const t);
+char* next_delim_token(delim_tokenizer* const t, FILE* token_src);
 
 void free_delim_tokenizer(const delim_tokenizer* const t);
 

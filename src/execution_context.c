@@ -73,9 +73,14 @@ void establish_context(execution_context* const ctx, int argc, char** argv) {
 char* next_token(execution_context* const ctx) {
   switch (ctx->t_kind) {
     case DELIMITED:
-      return next_delim_token((delim_tokenizer*) ctx->tokenizer);
+      return next_delim_token(
+        (delim_tokenizer*) ctx->tokenizer,
+        ctx->arg_source);
     case SPACE:
-      return next_space_token((space_tokenizer*) ctx->tokenizer, &(ctx->cmd));
+      return next_space_token(
+        (space_tokenizer*) ctx->tokenizer,
+        ctx->arg_source,
+        &(ctx->cmd));
   }
 }
 

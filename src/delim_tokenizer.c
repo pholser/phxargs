@@ -33,11 +33,11 @@ char* delim_tokenizer_end_token(delim_tokenizer* const t) {
   return token;
 }
 
-char* next_delim_token(delim_tokenizer* const t) {
+char* next_delim_token(delim_tokenizer* const t, FILE* token_source) {
   delim_tokenizer_start_token(t);
 
   int ch;
-  while ((ch = getc(stdin)) != EOF) {
+  while ((ch = getc(token_source)) != EOF) {
     if (ch != t->delim) {
       delim_tokenizer_append_to_token(t, ch);
     } else {
@@ -45,7 +45,7 @@ char* next_delim_token(delim_tokenizer* const t) {
     }
   }
 
-  if (ferror(stdin)) {
+  if (ferror(token_source)) {
     fprintf(stderr, "phxargs: I/O error\n");
     exit(EXIT_FAILURE);
   } else if (t->token_start == buffer_pos(t->buf)) {

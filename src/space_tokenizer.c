@@ -77,13 +77,14 @@ char* space_tokenizer_end_token(space_tokenizer* const t) {
 
 char* next_space_token(
   space_tokenizer* const t,
+  FILE* token_source,
   command* const cmd) {
 
   uint8_t line_has_token = 0;
 
   int last_char = 0;
   int ch;
-  while ((ch = getc(stdin)) != EOF) {
+  while ((ch = getc(token_source)) != EOF) {
     switch (t->state) {
       case NO_TOKEN:
         if (ch == ' ' || ch == '\t') {
@@ -142,7 +143,7 @@ char* next_space_token(
     }
   }
 
-  if (ferror(stdin)) {
+  if (ferror(token_source)) {
     fprintf(stderr, "phxargs: I/O error\n");
     exit(EXIT_FAILURE);
   } else {
