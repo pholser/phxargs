@@ -20,7 +20,6 @@ typedef struct {
   int quote_char;
   size_t token_start;
 
-  uint8_t terminate_on_too_large_token;
   uint8_t line_mode;
   char* logical_end_of_input_marker;
 } space_tokenizer;

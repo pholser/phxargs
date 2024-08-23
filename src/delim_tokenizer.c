@@ -13,7 +13,6 @@ void init_delim_tokenizer(
   t->buf = safe_malloc(sizeof(buffer));
   init_buffer(t->buf, opts->max_command_length);
 
-  t->terminate_on_too_large_token = opts->terminate_on_too_large_command;
   t->delim = opts->arg_delimiter;
 
   t->token_start = 0;
@@ -24,10 +23,6 @@ void delim_tokenizer_start_token(delim_tokenizer* const t) {
 }
 
 void delim_tokenizer_append_to_token(const delim_tokenizer* const t, int ch) {
-  if (t->terminate_on_too_large_token && buffer_full(t->buf)) {
-    fprintf(stderr, "phxargs: insufficient space for argument\n");
-    exit(EXIT_FAILURE);
-  }
   buffer_put(t->buf, (char) ch);
 }
 

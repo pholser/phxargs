@@ -107,10 +107,6 @@ void options_enable_prompt(options* const opts) {
   options_enable_trace(opts);
 }
 
-void options_enable_terminate_on_too_large_command(options* const opts) {
-  opts->terminate_on_too_large_command = 1;
-}
-
 void init_options(options* const opts) {
   opts->use_nul_char_as_arg_delimiter = 0;
   opts->arg_file_path = NULL;
@@ -122,12 +118,11 @@ void init_options(options* const opts) {
   opts->max_command_length = (size_t) (sysconf(_SC_ARG_MAX) - 4096);
   opts->max_command_length_endptr = NULL;
   opts->trace = 0;
-  opts->terminate_on_too_large_command = 0;
 }
 
 int parse_options(options* const opts, int argc, char** argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0a:d:E:L:n:ps:tx")) != -1) {
+  while ((opt = getopt(argc, argv, ":0a:d:E:L:n:ps:t")) != -1) {
     switch (opt) {
       case '0':
         options_set_nul_char_as_arg_delimiter(opts);
@@ -161,9 +156,6 @@ int parse_options(options* const opts, int argc, char** argv) {
         break;
       case 't':
         options_enable_trace(opts);
-        break;
-      case 'x':
-        options_enable_terminate_on_too_large_command(opts);
         break;
       case ':':
         fprintf(stderr, "phxargs: -%c needs an argument\n", optopt);

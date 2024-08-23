@@ -34,9 +34,6 @@ typedef struct {
 
   /* -t option */
   uint8_t trace;
-
-  /* -x option */
-  uint8_t terminate_on_too_large_command;
 } options;
 
 void init_options(options* const opts);

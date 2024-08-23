@@ -62,7 +62,6 @@ void init_command(command* cmd, const options* const opts) {
   cmd->max_length = opts->max_command_length;
   cmd->prompt = opts->prompt;
   cmd->trace = opts->trace;
-  cmd->terminate_on_too_large_command = opts->terminate_on_too_large_command;
   cmd->line_count = 0;
   cmd->line_mode = options_line_mode(opts);
   cmd->env_length = env_length();
@@ -96,12 +95,6 @@ uint8_t arg_would_exceed_limits(
   if (cmd->input_args->count + 1 > cmd->max_args
     || new_length > cmd->max_length) {
 
-    if (cmd->terminate_on_too_large_command) {
-      fprintf(
-        stderr,
-        "phxargs: command would exceed size limits with -x specified\n");
-      exit(EXIT_FAILURE);
-    }
     return 1;
   }
   return 0;

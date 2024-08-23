@@ -22,7 +22,6 @@ void init_space_tokenizer(
   t->buf = safe_malloc(sizeof(buffer));
   init_buffer(t->buf, opts->max_command_length);
 
-  t->terminate_on_too_large_token = opts->terminate_on_too_large_command;
   t->line_mode = options_line_mode(opts);
   t->logical_end_of_input_marker = opts->logical_end_of_input_marker;
 
@@ -59,10 +58,6 @@ void space_tokenizer_start_token(space_tokenizer* const t, int ch) {
 }
 
 void space_tokenizer_append_to_token(const space_tokenizer* const t, int ch) {
-  if (t->terminate_on_too_large_token && buffer_full(t->buf)) {
-    fprintf(stderr, "phxargs: insufficient space for argument\n");
-    exit(EXIT_FAILURE);
-  }
   buffer_put(t->buf, (char) ch);
 }
 
