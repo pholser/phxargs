@@ -119,9 +119,6 @@ void release_context(const execution_context* const ctx) {
   }
 
   if (ctx->arg_source != stdin) {
-    if (fclose(ctx->arg_source) == EOF) {
-      perror("phxargs: error closing arg file");
-      exit(EXIT_FAILURE);
-    }    
+    fclose(ctx->arg_source);
   }
 }
