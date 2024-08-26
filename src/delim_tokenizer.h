@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "buffer.h"
-#include "options.h"
 
 typedef struct {
   buffer* buf;
@@ -15,7 +14,8 @@ typedef struct {
 
 void init_delim_tokenizer(
   delim_tokenizer* const t,
-  const options* const opts);
+  size_t buffer_size,
+  char arg_delimiter);
 
 char* next_delim_token(delim_tokenizer* const t, FILE* token_src);
 

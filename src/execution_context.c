@@ -8,8 +8,6 @@
 #include "space_tokenizer.h"
 #include "util.h"
 
-#define DEFAULT_CMD "/bin/echo"
-
 void establish_arg_source(
   execution_context* const ctx,
   const options* const opts) {
@@ -33,11 +31,18 @@ void establish_tokenizer(
   if (opts->use_nul_char_as_arg_delimiter || opts->arg_delimiter != '\0') {
     ctx->t_kind = DELIMITED;
     ctx->tokenizer = safe_malloc(sizeof(delim_tokenizer));
-    init_delim_tokenizer(ctx->tokenizer, opts);
+    init_delim_tokenizer(
+      ctx->tokenizer,
+      ctx->cmd.max_length,
+      opts->arg_delimiter);
   } else {
     ctx->t_kind = SPACE;
     ctx->tokenizer = safe_malloc(sizeof(space_tokenizer));
-    init_space_tokenizer(ctx->tokenizer, opts);
+    init_space_tokenizer(
+      ctx->tokenizer,
+      ctx->cmd.max_length,
+      options_line_mode(opts),
+      opts->logical_end_of_input_marker);
   }
 }
 
@@ -48,15 +53,8 @@ void establish_command(
   int argc,
   char** argv) {
 
-  init_command(&(ctx->cmd), opts);
-
-  if (arg_index == argc) {
-    add_fixed_argument(&(ctx->cmd), DEFAULT_CMD);
-  } else {
-    for (int i = arg_index; i < argc; ++i) {
-      add_fixed_argument(&(ctx->cmd), argv[i]);
-    }
-  }
+  init_command(&(ctx->cmd), arg_index, argc, argv);
+  config_command(&(ctx->cmd), opts);
 }
 
 void establish_context(execution_context* const ctx, int argc, char** argv) {
@@ -66,8 +64,8 @@ void establish_context(execution_context* const ctx, int argc, char** argv) {
   int arg_index = parse_options(&opts, argc, argv);
 
   establish_arg_source(ctx, &opts);
-  establish_tokenizer(ctx, &opts);
   establish_command(ctx, &opts, arg_index, argc, argv);
+  establish_tokenizer(ctx, &opts);
 }
 
 char* next_token(execution_context* const ctx) {

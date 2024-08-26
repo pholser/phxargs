@@ -3,18 +3,17 @@
 
 #include "buffer.h"
 #include "delim_tokenizer.h"
-#include "options.h"
 #include "util.h"
 
 void init_delim_tokenizer(
   delim_tokenizer* const t,
-  const options* const opts) {
+  size_t buffer_size,
+  char arg_delimiter) {
 
   t->buf = safe_malloc(sizeof(buffer));
-  init_buffer(t->buf, opts->max_command_length);
+  init_buffer(t->buf, buffer_size);
 
-  t->delim = opts->arg_delimiter;
-
+  t->delim = arg_delimiter;
   t->token_start = 0;
 }
 

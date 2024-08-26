@@ -5,7 +5,6 @@
 
 #include "buffer.h"
 #include "command.h"
-#include "options.h"
 #include "space_tokenizer.h"
 #include "util.h"
 
@@ -17,13 +16,15 @@ void space_tokenizer_no_token(space_tokenizer* const t) {
 
 void init_space_tokenizer(
   space_tokenizer* const t,
-  const options* const opts) {
+  size_t buffer_size,
+  uint8_t line_mode,
+  char* logical_end_of_input_marker) {
 
   t->buf = safe_malloc(sizeof(buffer));
-  init_buffer(t->buf, opts->max_command_length);
+  init_buffer(t->buf, buffer_size);
 
-  t->line_mode = options_line_mode(opts);
-  t->logical_end_of_input_marker = opts->logical_end_of_input_marker;
+  t->line_mode = line_mode;
+  t->logical_end_of_input_marker = logical_end_of_input_marker;
 
   space_tokenizer_no_token(t);
 }

@@ -5,7 +5,6 @@
 
 #include "buffer.h"
 #include "command.h"
-#include "options.h"
 
 typedef enum {
   NO_TOKEN,
@@ -28,7 +27,9 @@ typedef struct {
 
 void init_space_tokenizer(
   space_tokenizer* const t,
-  const options* const opts);
+  size_t buffer_size,
+  uint8_t line_mode,
+  char* logical_end_of_input_marker);
 
 char* next_space_token(
   space_tokenizer* const t,

@@ -34,6 +34,9 @@ typedef struct {
 
   /* -t option */
   uint8_t trace;
+
+  /* -x option */
+  uint8_t terminate_on_too_large_command;
 } options;
 
 void init_options(options* const opts);
@@ -41,5 +44,7 @@ void init_options(options* const opts);
 int parse_options(options* const opts, int argc, char** argv);
 
 uint8_t options_line_mode(const options* const opts);
+
+uint8_t options_max_command_length_specified(const options* const opts);
 
 #endif  // PHXARGS_OPTIONS_H

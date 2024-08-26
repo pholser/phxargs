@@ -8,6 +8,8 @@
 #include "command.h"
 #include "util.h"
 
+#define DEFAULT_CMD "/bin/echo"
+
 extern char** environ;
 
 size_t env_length() {
@@ -53,18 +55,74 @@ int command_status(pid_t child_pid) {
   return EXIT_FAILURE;
 }
 
-void init_command(command* cmd, const options* const opts) {
+void add_fixed_argument(const command* const cmd, const char* const new_arg) {
+  add_arg(cmd->fixed_args, new_arg);
+}
+
+void add_input_argument(const command* const cmd, const char* const new_arg) {
+  add_arg(cmd->input_args, new_arg);
+}
+
+size_t command_length(const command* const cmd) {
+  return cmd->env_length + cmd->fixed_args->length + cmd->input_args->length;
+}
+
+void init_command(
+  command* cmd,
+  int arg_index,
+  int argc,
+  char** argv) {
+
   cmd->fixed_args = allocate_args();
   cmd->input_args = allocate_args();
 
+  if (arg_index == argc) {
+    add_fixed_argument(cmd, DEFAULT_CMD);
+  } else {
+    for (int i = arg_index; i < argc; ++i) {
+      add_fixed_argument(cmd, argv[i]);
+    }
+  }
+
+  cmd->line_count = 0;
+  cmd->env_length = env_length();
+}
+
+size_t decide_max_length(command* const cmd, const options* const opts) {
+  size_t max_length =
+    ((size_t) sysconf(_SC_ARG_MAX)) - (2 * cmd->env_length) - 2048;
+  if (options_max_command_length_specified(opts)) {
+    size_t min_length = command_length(cmd);
+    if (opts->max_command_length < min_length) {
+      fprintf(
+        stderr,
+        "phxargs: -s %zu: too small (minimum %zu bytes)",
+        opts->max_command_length,
+        min_length);
+      exit(EXIT_FAILURE);
+    } else if (opts->max_command_length > max_length) {
+      fprintf(
+        stderr,
+        "phxargs: -s %zu: too large (maximum %zu bytes)",
+        opts->max_command_length,
+        max_length);
+      exit(EXIT_FAILURE);
+    } else {
+      return opts->max_command_length;
+    }
+  } else {
+    return min(128 * 1024, max_length);
+  }
+}
+
+void config_command(command* const cmd, const options* const opts) {
   cmd->max_lines = opts->max_lines_per_command;
   cmd->max_args = opts->max_args_per_command;
-  cmd->max_length = opts->max_command_length;
+  cmd->max_length = decide_max_length(cmd, opts);
   cmd->prompt = opts->prompt;
   cmd->trace = opts->trace;
-  cmd->line_count = 0;
+  cmd->terminate_on_too_large_command = opts->terminate_on_too_large_command;
   cmd->line_mode = options_line_mode(opts);
-  cmd->env_length = env_length();
 }
 
 void recycle_command(command* const cmd) {
@@ -92,11 +150,17 @@ uint8_t arg_would_exceed_limits(
   const char* const new_arg) {
 
   size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
-  if (cmd->input_args->count + 1 > cmd->max_args
+  if ((cmd->max_args > 0 && cmd->input_args->count + 1 > cmd->max_args)
     || new_length > cmd->max_length) {
+
+    if (cmd->terminate_on_too_large_command) {
+      fprintf(stderr, "phxargs: command too long\n");
+      exit(EXIT_FAILURE);
+    }
 
     return 1;
   }
+
   return 0;
 }
 
@@ -165,18 +229,6 @@ int execute_command(command* const cmd) {
 
   recycle_command(cmd);
   return EXIT_SUCCESS;
-}
-
-void add_fixed_argument(const command* const cmd, const char* const new_arg) {
-  add_arg(cmd->fixed_args, new_arg);
-}
-
-void add_input_argument(const command* const cmd, const char* const new_arg) {
-  add_arg(cmd->input_args, new_arg);
-}
-
-size_t command_length(const command* const cmd) {
-  return cmd->env_length + cmd->fixed_args->length + cmd->input_args->length;
 }
 
 void free_command(const command* const cmd) {
