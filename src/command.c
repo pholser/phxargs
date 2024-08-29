@@ -153,7 +153,8 @@ uint8_t arg_would_exceed_limits(
   if ((cmd->max_args > 0 && cmd->input_args->count + 1 > cmd->max_args)
     || new_length > cmd->max_length) {
 
-    if (cmd->terminate_on_too_large_command) {
+    if (cmd->terminate_on_too_large_command
+      || cmd->input_args->count == 0) {
       fprintf(stderr, "phxargs: command too long\n");
       exit(EXIT_FAILURE);
     }

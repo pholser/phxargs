@@ -2,12 +2,13 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
+# Input with special characters
 cat > "$test_input" <<EOF
-hello world
+!@# \\$%^ &*()
 EOF
 
 cat > "$expected_output" <<EOF
-hello world
+!@# $%^ &*()
 EOF
 
 ./run-expected-output-comparison-test.sh \
