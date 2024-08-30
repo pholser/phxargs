@@ -14,7 +14,7 @@ build_dir="$test_dir/../build"
 test_output_dir="$build_dir/output"
 mkdir -p "$test_output_dir"
 
-env -i "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
+/usr/bin/env -i "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
   < "$test_input" \
   > "$test_output_dir/phxargs-$test_name.out" \
   2> "$test_output_dir/phxargs-$test_name.err"
