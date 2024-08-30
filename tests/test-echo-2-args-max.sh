@@ -12,10 +12,12 @@ arg3 arg4
 arg5
 EOF
 
+touch "$expected_error"
+
 ./run-expected-output-comparison-test.sh \
   $test_name \
   "$test_input" \
   "$expected_output" \
-  "$expected_err" \
+  "$expected_error" \
   '-n 2' \
   ''

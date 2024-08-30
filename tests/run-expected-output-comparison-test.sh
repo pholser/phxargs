@@ -3,7 +3,7 @@
 test_name=$1
 test_input=$2
 expected_output=$3
-expected_err=$4
+expected_error=$4
 xargs_options=$5
 xargs_cmd_line=$6
 
@@ -22,7 +22,7 @@ env -i "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
 cd "$test_output_dir" || exit 3
 diff "$expected_output" "phxargs-$test_name.out"
 out_comparison_failed=$?
-diff "$expected_err" "phxargs-$test_name.err"
+diff "$expected_error" "phxargs-$test_name.err"
 err_comparison_failed=$?
 
 if [ $out_comparison_failed -ne 0 ] ; then

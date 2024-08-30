@@ -11,4 +11,4 @@ mkdir -p "$test_output_dir"
 
 test_input=$(mktemp -p "$test_output_dir" || exit 4)
 expected_output=$(mktemp -p "$test_output_dir" || exit 4)
-expected_err=$(mktemp -p "$test_output_dir" || exit 4)
+expected_error=$(mktemp -p "$test_output_dir" || exit 4)
