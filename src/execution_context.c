@@ -85,14 +85,13 @@ char* next_token(execution_context* const ctx) {
 int run_xargs(execution_context* const ctx) {
   int execution_status = EXIT_SUCCESS;
 
-  char* token;
-  while ((token = next_token(ctx)) != NULL) {
+  for (char* token = next_token(ctx); token != NULL; token = next_token(ctx)) {
     if (arg_would_exceed_limits(&(ctx->cmd), token)) {
       execution_status |= execute_command(&(ctx->cmd));
     }
-    add_input_argument(&(ctx->cmd), token);
 
-    if (should_execute_command(&(ctx->cmd))) {
+    add_input_argument(&(ctx->cmd), token);
+    if (should_execute_command_after_arg_added(&(ctx->cmd))) {
       execution_status |= execute_command(&(ctx->cmd));
     }
   }

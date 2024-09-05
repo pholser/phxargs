@@ -32,7 +32,7 @@ void config_command(command* const cmd, const options* const opts);
 
 uint8_t arg_would_exceed_limits(const command* const cmd, const char* new_arg);
 
-uint8_t should_execute_command(const command* const cmd);
+uint8_t should_execute_command_after_arg_added(const command* const cmd);
 
 int execute_command(command* const cmd);
 

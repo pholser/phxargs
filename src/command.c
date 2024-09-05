@@ -67,6 +67,10 @@ size_t command_length(const command* const cmd) {
   return cmd->env_length + cmd->fixed_args->length + cmd->input_args->length;
 }
 
+uint8_t command_max_args_specified(const command* const cmd) {
+  return cmd->max_args > 0;
+}
+
 void init_command(
   command* cmd,
   int arg_index,
@@ -145,31 +149,56 @@ char** build_exec_args(command* cmd) {
   return exec_args;
 }
 
+  /*
+   * As long as there are more arguments to read ...
+   * (1) read the next arg, `x`
+   * (2) after having read `x`:
+   *   (a) adding `x` to an empty cmd may make command impossible
+   *       due to overrunning. Fail it.
+   *   (b) in max-args mode, we may be at max args before adding
+   *       `x`. Execute cmd.
+   *   (c) in line mode, we may have in the act of reading `x`
+   *       incremented line count to the max. Execute cmd.
+   *   (d) we may be at a point where adding `x` would cause us
+   *       to exceed implied or explicit size bound. Execute cmd.
+   * 
+   * (3) Add `x` to cmd.
+   */
+
 uint8_t arg_would_exceed_limits(
   const command* const cmd,
   const char* const new_arg) {
 
   size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
-  if ((cmd->max_args > 0 && cmd->input_args->count + 1 > cmd->max_args)
-    || new_length > cmd->max_length) {
 
-    if (cmd->terminate_on_too_large_command
-      || cmd->input_args->count == 0) {
+  // Different, depending on 0 input args so far, or > 0.
+  if (cmd->input_args->count == 0) {
+    if (new_length > cmd->max_length) {
       fprintf(stderr, "phxargs: command too long\n");
       exit(EXIT_FAILURE);
     }
+  }
 
-    return 1;
+  if (command_max_args_specified(cmd)) {
+    return cmd->input_args->count == cmd->max_args;
+  }
+
+  return cmd->line_mode ? 0 : new_length > cmd->max_length;
+}
+
+uint8_t should_execute_command_after_arg_added(const command* const cmd) {
+  if (cmd->terminate_on_too_large_command
+    && command_length(cmd) > cmd->max_length) {
+
+    fprintf(stderr, "phxargs: command too long\n");
+    exit(EXIT_FAILURE);
+  }
+
+  if (cmd->line_mode) {
+    return cmd->line_count == cmd->max_lines;
   }
 
   return 0;
-}
-
-uint8_t should_execute_command(const command* const cmd) {
-  return cmd->input_args->count == cmd->max_args
-    || (cmd->line_mode && (cmd->line_count == cmd->max_lines))
-    || command_length(cmd) >= cmd->max_length
-    ;
 }
 
 uint8_t confirm_execution() {

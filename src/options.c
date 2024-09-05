@@ -111,6 +111,15 @@ void options_enable_terminate_on_too_large_command(options* const opts) {
   opts->terminate_on_too_large_command = 1;
 }
 
+
+uint8_t options_line_mode(const options* const opts) {
+  return opts->max_lines_endptr != NULL;
+}
+
+uint8_t options_max_command_length_specified(const options* const opts) {
+  return opts->max_command_length_endptr != NULL;
+}
+
 void init_options(options* const opts) {
   opts->use_nul_char_as_arg_delimiter = 0;
   opts->arg_file_path = NULL;
@@ -177,13 +186,10 @@ int parse_options(options* const opts, int argc, char** argv) {
     }
   }
 
+  /* -L implies -x */
+  if (options_line_mode(opts)) {
+    options_enable_terminate_on_too_large_command(opts);
+  }
+
   return optind;
-}
-
-uint8_t options_line_mode(const options* const opts) {
-  return opts->max_lines_endptr != NULL;
-}
-
-uint8_t options_max_command_length_specified(const options* const opts) {
-  return opts->max_command_length_endptr != NULL;
 }
