@@ -249,6 +249,11 @@ int execute_command(command* const cmd) {
 
     if (execute) {
       safe_exec(exec_args);
+    } else {
+      for (size_t i = 0; i < exec_args_count; ++i) {
+        free(exec_args[i]);
+      }
+      free(exec_args);
     }
   } else {
     // Parent process
