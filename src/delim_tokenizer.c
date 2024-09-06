@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "buffer.h"
+#include "command.h"
 #include "delim_tokenizer.h"
 #include "util.h"
 
@@ -32,7 +33,11 @@ char* delim_tokenizer_end_token(delim_tokenizer* const t) {
   return token;
 }
 
-char* next_delim_token(delim_tokenizer* const t, FILE* token_source) {
+char* next_delim_token(
+  delim_tokenizer* const t,
+  FILE* token_source,
+  command* const cmd) {
+
   delim_tokenizer_start_token(t);
 
   int ch;
@@ -40,6 +45,7 @@ char* next_delim_token(delim_tokenizer* const t, FILE* token_source) {
     if (ch != t->delim) {
       delim_tokenizer_append_to_token(t, ch);
     } else {
+      ++cmd->line_count;
       return delim_tokenizer_end_token(t);
     }
   }

@@ -73,7 +73,8 @@ char* next_token(execution_context* const ctx) {
     case DELIMITED:
       return next_delim_token(
         (delim_tokenizer*) ctx->tokenizer,
-        ctx->arg_source);
+        ctx->arg_source,
+        &(ctx->cmd));
     case SPACE:
       return next_space_token(
         (space_tokenizer*) ctx->tokenizer,

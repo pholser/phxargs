@@ -17,7 +17,10 @@ void init_delim_tokenizer(
   size_t buffer_size,
   char arg_delimiter);
 
-char* next_delim_token(delim_tokenizer* const t, FILE* token_src);
+char* next_delim_token(
+  delim_tokenizer* const t,
+  FILE* token_src,
+  command* const cmd);
 
 void free_delim_tokenizer(const delim_tokenizer* const t);
 
