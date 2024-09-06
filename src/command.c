@@ -132,6 +132,7 @@ void config_command(command* const cmd, const options* const opts) {
 void recycle_command(command* const cmd) {
   cmd->line_count = 0;
   free_args(cmd->input_args);
+  free(cmd->input_args);
   cmd->input_args = allocate_args();
 }
 
@@ -139,10 +140,10 @@ char** build_exec_args(command* cmd) {
   size_t exec_args_count = cmd->fixed_args->count + cmd->input_args->count;
   char** exec_args = safe_malloc((exec_args_count + 1) * sizeof(char*));
   for (size_t i = 0; i < cmd->fixed_args->count; ++i) {
-    exec_args[i] = cmd->fixed_args->args[i];
+    exec_args[i] = strdup(cmd->fixed_args->args[i]);
   }
   for (size_t i = 0; i < cmd->input_args->count; ++i) {
-    exec_args[cmd->fixed_args->count + i] = cmd->input_args->args[i];
+    exec_args[cmd->fixed_args->count + i] = strdup(cmd->input_args->args[i]);
   }
   exec_args[exec_args_count] = NULL;
 
@@ -262,6 +263,8 @@ int execute_command(command* const cmd) {
 }
 
 void free_command(const command* const cmd) {
-  free(cmd->fixed_args);
+  free_args(cmd->input_args);
   free(cmd->input_args);
+  free_args(cmd->fixed_args);
+  free(cmd->fixed_args);
 }

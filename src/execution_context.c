@@ -116,6 +116,8 @@ void release_context(const execution_context* const ctx) {
       break;
   }
 
+  free(ctx->tokenizer);
+
   if (ctx->arg_source != stdin) {
     fclose(ctx->arg_source);
   }

@@ -62,4 +62,5 @@ char* next_delim_token(
 
 void free_delim_tokenizer(const delim_tokenizer* const t) {
   free_buffer(t->buf);
+  free(t->buf);
 }

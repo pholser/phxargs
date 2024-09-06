@@ -158,4 +158,5 @@ char* next_space_token(
 
 void free_space_tokenizer(const space_tokenizer* const t) {
   free_buffer(t->buf);
+  free(t->buf);
 }
