@@ -18,17 +18,16 @@ typedef struct {
 
   size_t line_count;
   size_t env_length;
-  command_args* fixed_args;
-  command_args* input_args;
+  command_args fixed_args;
+  command_args input_args;
 } command;
 
 void init_command(
   command* const cmd,
+  const options* const opts,
   int arg_index,
   int argc,
   char** argv);
-
-void config_command(command* const cmd, const options* const opts);
 
 uint8_t arg_would_exceed_limits(const command* const cmd, const char* new_arg);
 
@@ -36,7 +35,7 @@ uint8_t should_execute_command_after_arg_added(const command* const cmd);
 
 int execute_command(command* const cmd);
 
-void add_input_argument(const command* const cmd, const char* const new_arg);
+void add_input_argument(command* const cmd, const char* const new_arg);
 
 size_t command_length(const command* const cmd);
 

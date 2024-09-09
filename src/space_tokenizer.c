@@ -20,8 +20,7 @@ void init_space_tokenizer(
   uint8_t line_mode,
   char* logical_end_of_input_marker) {
 
-  t->buf = safe_malloc(sizeof(buffer));
-  init_buffer(t->buf, buffer_size);
+  init_buffer(&(t->buf), buffer_size);
 
   t->line_mode = line_mode;
   t->logical_end_of_input_marker = logical_end_of_input_marker;
@@ -35,12 +34,12 @@ void space_tokenizer_start_quoted_token(
 
   t->state = IN_QUOTED_TOKEN;
   t->quote_char = quote_char;
-  t->token_start = buffer_pos(t->buf);
+  t->token_start = buffer_pos(&(t->buf));
 }
 
 void space_tokenizer_start_no_token_escape(space_tokenizer* const t) {
   t->state = NO_TOKEN_ESCAPE;
-  t->token_start = buffer_pos(t->buf);
+  t->token_start = buffer_pos(&(t->buf));
 }
 
 void space_tokenizer_start_in_token_escape(space_tokenizer* const t) {
@@ -49,22 +48,22 @@ void space_tokenizer_start_in_token_escape(space_tokenizer* const t) {
 
 void space_tokenizer_end_escape(space_tokenizer* const t, int ch) {
   t->state = IN_TOKEN;
-  buffer_put(t->buf, (char) ch);
+  buffer_put(&(t->buf), (char) ch);
 }
 
 void space_tokenizer_start_token(space_tokenizer* const t, int ch) {
   t->state = IN_TOKEN;
-  t->token_start = buffer_pos(t->buf);
-  buffer_put(t->buf, (char) ch);
+  t->token_start = buffer_pos(&(t->buf));
+  buffer_put(&(t->buf), (char) ch);
 }
 
-void space_tokenizer_append_to_token(const space_tokenizer* const t, int ch) {
-  buffer_put(t->buf, (char) ch);
+void space_tokenizer_append_to_token(space_tokenizer* const t, int ch) {
+  buffer_put(&(t->buf), (char) ch);
 }
 
 char* space_tokenizer_end_token(space_tokenizer* const t) {
-  buffer_put(t->buf, '\0');
-  char* token = t->buf->buf + t->token_start;
+  buffer_put(&(t->buf), '\0');
+  char* token = t->buf.buf + t->token_start;
   space_tokenizer_no_token(t);
 
   if (t->logical_end_of_input_marker != NULL) {
@@ -157,6 +156,5 @@ char* next_space_token(
 }
 
 void free_space_tokenizer(const space_tokenizer* const t) {
-  free_buffer(t->buf);
-  free(t->buf);
+  free_buffer(&(t->buf));
 }

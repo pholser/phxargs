@@ -7,8 +7,8 @@
 #include "util.h"
 
 void init_buffer(buffer* const buf, size_t sz) {
-  buf->buf = safe_malloc(sz);
-  memset(buf->buf, 0, sz);
+  buf->buf = safe_malloc(sz + 1);
+  memset(buf->buf, 0, sz + 1);
   buf->sz = 0;
   buf->pos = 0;
 }

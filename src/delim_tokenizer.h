@@ -6,7 +6,7 @@
 #include "buffer.h"
 
 typedef struct {
-  buffer* buf;
+  buffer buf;
   size_t token_start;
 
   char delim;

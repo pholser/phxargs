@@ -4,19 +4,19 @@
 #include "command_args.h"
 #include "util.h"
 
-command_args* allocate_args() {
-  command_args* args = safe_malloc(sizeof(command_args));
-
+void init_args_with_capacity(command_args* const args, size_t capacity) {
   args->count = 0;
-  args->capacity = 10;
+  args->capacity = capacity;
   args->args = safe_malloc(args->capacity * sizeof(char*));
   args->length = 0;
+}
 
-  return args;
+void init_args(command_args* const args) {
+  init_args_with_capacity(args, 10);
 }
 
 void reallocate_args_if_needed(command_args* const args) {
-  if (args->count >= args->capacity) {
+  if (args->count + 1 > args->capacity) {
     args->capacity *= 2;
     args->args =
       safe_realloc(args->args, args->capacity * sizeof(char*));

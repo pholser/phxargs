@@ -15,7 +15,7 @@ typedef enum {
 } space_tokenizer_state;
 
 typedef struct {
-  buffer* buf;
+  buffer buf;
 
   space_tokenizer_state state;
   int quote_char;

@@ -46,17 +46,6 @@ void establish_tokenizer(
   }
 }
 
-void establish_command(
-  execution_context* const ctx,
-  const options* const opts,
-  int arg_index,
-  int argc,
-  char** argv) {
-
-  init_command(&(ctx->cmd), arg_index, argc, argv);
-  config_command(&(ctx->cmd), opts);
-}
-
 void establish_context(execution_context* const ctx, int argc, char** argv) {
   options opts;
   init_options(&opts);
@@ -64,7 +53,7 @@ void establish_context(execution_context* const ctx, int argc, char** argv) {
   int arg_index = parse_options(&opts, argc, argv);
 
   establish_arg_source(ctx, &opts);
-  establish_command(ctx, &opts, arg_index, argc, argv);
+  init_command(&(ctx->cmd), &opts, arg_index, argc, argv);
   establish_tokenizer(ctx, &opts);
 }
 
@@ -97,7 +86,7 @@ int run_xargs(execution_context* const ctx) {
     }
   }
 
-  if (ctx->cmd.input_args->count > 0) {
+  if (ctx->cmd.input_args.count > 0) {
     execution_status |= execute_command(&(ctx->cmd));
   }
 

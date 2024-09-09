@@ -10,7 +10,9 @@ typedef struct {
   size_t length;
 } command_args;
 
-command_args* allocate_args();
+void init_args(command_args* const args);
+
+void init_args_with_capacity(command_args* const args, size_t capacity);
 
 void add_arg(command_args* const args, const char* const new_arg);
 
