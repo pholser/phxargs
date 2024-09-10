@@ -17,6 +17,9 @@ typedef struct {
   /* -E option */
   char* logical_end_of_input_marker;
 
+  /* -I option */
+  char* arg_placeholder;
+
   /* -L option */
   size_t max_lines_per_command;
   char* max_lines_endptr;

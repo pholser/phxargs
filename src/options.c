@@ -59,6 +59,10 @@ void options_reset_logical_end_of_input_marker(options* const opts) {
   opts->logical_end_of_input_marker = NULL;
 }
 
+void options_reset_arg_placeholder(options* const opts) {
+  opts->arg_placeholder = NULL;
+}
+
 void options_reset_max_lines_per_command(options* const opts) {
   opts->max_lines_per_command = 0;
   opts->max_lines_endptr = NULL;
@@ -69,6 +73,13 @@ void options_reset_max_args_per_command(options* const opts) {
   opts->max_args_endptr = NULL;
 }
 
+void options_set_arg_placeholder(options* const opts, char* placeholder) {
+  opts->arg_placeholder = placeholder;
+
+  options_reset_max_lines_per_command(opts);
+  options_reset_max_args_per_command(opts);
+}
+
 void options_set_max_lines_per_command(
   options* opts,
   int opt,
@@ -76,6 +87,8 @@ void options_set_max_lines_per_command(
 
   opts->max_lines_per_command =
     parse_number_arg(opt, new_val, &(opts->max_lines_endptr));
+
+  options_reset_arg_placeholder(opts);
   options_reset_max_args_per_command(opts);
 }
 
@@ -86,6 +99,8 @@ void options_set_max_args_per_command(
 
   opts->max_args_per_command =
     parse_number_arg(opt, new_val, &(opts->max_args_endptr));
+
+  options_reset_arg_placeholder(opts);
   options_reset_max_lines_per_command(opts);
 }
 
@@ -111,7 +126,6 @@ void options_enable_terminate_on_too_large_command(options* const opts) {
   opts->terminate_on_too_large_command = 1;
 }
 
-
 uint8_t options_line_mode(const options* const opts) {
   return opts->max_lines_endptr != NULL;
 }
@@ -125,6 +139,7 @@ void init_options(options* const opts) {
   opts->arg_file_path = NULL;
   opts->arg_delimiter = '\0';
   opts->logical_end_of_input_marker = NULL;
+  options_reset_arg_placeholder(opts);
   options_reset_max_lines_per_command(opts);
   options_reset_max_args_per_command(opts);
   opts->prompt = 0;
@@ -136,7 +151,7 @@ void init_options(options* const opts) {
 
 int parse_options(options* const opts, int argc, char** argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0a:d:E:L:n:ps:tx")) != -1) {
+  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:ps:tx")) != -1) {
     switch (opt) {
       case '0':
         options_enable_nul_char_as_arg_delimiter(opts);
@@ -155,6 +170,9 @@ int parse_options(options* const opts, int argc, char** argv) {
         break;
       case 'E':
         options_set_logical_end_of_input_marker(opts, optarg);
+        break;
+      case 'I':
+        options_set_arg_placeholder(opts, optarg);
         break;
       case 'L':
         options_set_max_lines_per_command(opts, opt, optarg);
