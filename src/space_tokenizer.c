@@ -23,7 +23,7 @@ void init_space_tokenizer(
   init_buffer(&(t->buf), buffer_size);
 
   t->line_mode = line_mode;
-  t->logical_end_of_input_marker = logical_end_of_input_marker;
+  t->logical_end_of_input_marker = safe_strdup(logical_end_of_input_marker);
 
   space_tokenizer_no_token(t);
 }
@@ -156,5 +156,6 @@ char* next_space_token(
 }
 
 void free_space_tokenizer(const space_tokenizer* const t) {
+  free(t->logical_end_of_input_marker);
   free_buffer(&(t->buf));
 }

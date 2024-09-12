@@ -109,6 +109,7 @@ void init_command(
 
   cmd->max_lines = opts->max_lines_per_command;
   cmd->max_args = opts->max_args_per_command;
+  cmd->arg_placeholder = safe_strdup(opts->arg_placeholder);
   cmd->prompt = opts->prompt;
   cmd->trace = opts->trace;
   cmd->terminate_on_too_large_command = opts->terminate_on_too_large_command;
@@ -149,12 +150,13 @@ void recycle_command(command* const cmd) {
 char** build_exec_args(command* cmd) {
   size_t exec_args_count = cmd->fixed_args.count + cmd->input_args.count;
 
-  char** exec_args = safe_malloc((exec_args_count + 1) * sizeof(char*));
+  char** exec_args = safe_calloc(exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < cmd->fixed_args.count; ++i) {
-    exec_args[i] = strdup(cmd->fixed_args.args[i]);
+    exec_args[i] = safe_strdup(cmd->fixed_args.args[i]);
   }
   for (size_t i = 0; i < cmd->input_args.count; ++i) {
-    exec_args[cmd->fixed_args.count + i] = strdup(cmd->input_args.args[i]);
+    exec_args[cmd->fixed_args.count + i] =
+      safe_strdup(cmd->input_args.args[i]);
   }
   exec_args[exec_args_count] = NULL;
 
@@ -265,6 +267,8 @@ int execute_command(command* const cmd) {
       }
       free(exec_args);
     }
+
+    return EXIT_SUCCESS;
   } else {
     // Parent process
     int status = command_status(pid);
@@ -272,12 +276,10 @@ int execute_command(command* const cmd) {
     recycle_command(cmd);
     return status;
   }
-
-  recycle_command(cmd);
-  return EXIT_SUCCESS;
 }
 
 void free_command(const command* const cmd) {
   free_args(&(cmd->input_args));
   free_args(&(cmd->fixed_args));
+  free(cmd->arg_placeholder);
 }

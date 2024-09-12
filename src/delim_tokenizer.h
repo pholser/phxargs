@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "buffer.h"
+#include "command.h"
 
 typedef struct {
   buffer buf;

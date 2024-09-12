@@ -1,15 +1,13 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "buffer.h"
 #include "util.h"
 
 void init_buffer(buffer* const buf, size_t sz) {
-  buf->buf = safe_malloc(sz + 1);
-  memset(buf->buf, 0, sz + 1);
-  buf->sz = 0;
+  buf->buf = safe_calloc(sz + 1, sizeof(char));
+  buf->sz = sz;
   buf->pos = 0;
 }
 

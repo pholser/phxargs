@@ -11,6 +11,7 @@ typedef struct {
   size_t max_lines;
   size_t max_args;
   size_t max_length;
+  char* arg_placeholder;
   uint8_t prompt;
   uint8_t trace;
   uint8_t terminate_on_too_large_command;

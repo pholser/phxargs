@@ -1,11 +1,11 @@
-#include "execution_context.h"
+#include "xargs.h"
 
 int main(int argc, char** argv) {
-  execution_context ctx;
+  xargs x;
 
-  establish_context(&ctx, argc, argv);
-  int execution_status = run_xargs(&ctx);
-  release_context(&ctx);
+  init_xargs(&x, argc, argv);
+  int execution_status = run_xargs(&x);
+  free_xargs(&x);
 
   return execution_status;
 }

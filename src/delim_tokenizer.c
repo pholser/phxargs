@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "buffer.h"
 #include "command.h"
 #include "delim_tokenizer.h"
-#include "util.h"
 
 void init_delim_tokenizer(
   delim_tokenizer* const t,
