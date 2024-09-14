@@ -205,7 +205,8 @@ int parse_options(options* const opts, int argc, char** argv) {
   }
 
   /* -L implies -x */
-  if (options_line_mode(opts)) {
+  /* -I implies -x */
+  if (options_line_mode(opts) || opts->arg_placeholder != NULL) {
     options_enable_terminate_on_too_large_command(opts);
   }
 
