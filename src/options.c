@@ -212,8 +212,14 @@ int parse_options(options* const opts, int argc, char** argv) {
   }
 
   /* -L implies -x */
+  if (options_line_mode(opts)) {
+    options_enable_terminate_on_too_large_command(opts);
+  }
+
   /* -I implies -x */
-  if (options_line_mode(opts) || opts->arg_placeholder != NULL) {
+  /* -I basically nullifies -E */
+  if (opts->arg_placeholder != NULL) {
+    options_reset_logical_end_of_input_marker(opts);
     options_enable_terminate_on_too_large_command(opts);
   }
 
