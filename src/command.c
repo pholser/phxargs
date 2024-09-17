@@ -158,7 +158,10 @@ void recycle_command(command* const cmd) {
 }
 
 void command_replace_args(command* const cmd, const char* const token) {
-  for (size_t i = 0; i < cmd->fixed_args.count; ++i) {
+  // Do not perform replacement on command word
+  add_arg(&(cmd->replaced_fixed_args), cmd->fixed_args.args[0]);
+
+  for (size_t i = 1; i < cmd->fixed_args.count; ++i) {
     char* replaced =
       str_replace(cmd->fixed_args.args[i], cmd->arg_placeholder, token);
     add_arg(&(cmd->replaced_fixed_args), replaced);

@@ -111,6 +111,9 @@ void options_set_arg_placeholder(options* const opts, char* placeholder) {
   options_set_max_lines_per_command(opts, 'I', "1");
   options_reset_max_args_per_command(opts);
   opts->arg_placeholder = placeholder;
+  if (opts->arg_delimiter == '\0' && !opts->use_nul_char_as_arg_delimiter) {
+    options_set_arg_delimiter(opts, '\n');
+  }
 }
 
 void options_enable_trace(options* const opts) {
@@ -150,6 +153,10 @@ void init_options(options* const opts) {
 }
 
 int parse_options(options* const opts, int argc, char** argv) {
+  // (1) If you encounter -0 or -d before -I, it's preserved.
+  // (2) If you encounter -0 or -d after -I, it nullifies previous -I delim but preserves -I.
+  // (3) If -I is present without -0 or -d, it's as though you said -d $'\n'.
+
   int opt;
   while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:ps:tx")) != -1) {
     switch (opt) {
