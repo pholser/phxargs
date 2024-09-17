@@ -21,6 +21,7 @@ typedef struct {
   size_t env_length;
   command_args fixed_args;
   command_args input_args;
+  command_args replaced_fixed_args;
 } command;
 
 void init_command(
@@ -33,6 +34,8 @@ void init_command(
 uint8_t arg_would_exceed_limits(const command* const cmd, const char* new_arg);
 
 uint8_t should_execute_command_after_arg_added(const command* const cmd);
+
+void command_replace_args(command* const cmd, const char* const token);
 
 int execute_command(command* const cmd);
 

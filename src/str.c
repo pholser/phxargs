@@ -49,21 +49,3 @@ char* str_replace(
 
   return result;
 }
-
-char** strs_replace(
-  const char** ss,
-  const char* placeholder,
-  const char* replacement) {
-
-  size_t s_count = 0;
-  for (const char** s = ss; *s != NULL; ++s_count, ++s)
-    ;
-
-  char** result = safe_calloc(s_count + 1, sizeof(char*));
-  for (size_t i = 0; i < s_count; ++i) {
-    result[i] = str_replace(ss[i], placeholder, replacement);
-  }
-  result[s_count] = NULL;
-
-  return result;
-}

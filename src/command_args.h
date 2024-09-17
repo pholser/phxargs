@@ -16,6 +16,8 @@ void init_args_with_capacity(command_args* const args, size_t capacity);
 
 void add_arg(command_args* const args, const char* const new_arg);
 
+command_args* clone_args(const command_args* const args);
+
 void free_args(const command_args* const args);
 
 #endif  // PHXARGS_COMMAND_ARGS_H

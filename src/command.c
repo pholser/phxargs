@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "command.h"
+#include "str.h"
 #include "util.h"
 
 #define DEFAULT_CMD "/bin/echo"
@@ -134,11 +135,20 @@ void init_command(
   }
 
   cmd->max_length = decide_max_length(cmd, opts);
+
+  init_args_with_capacity(&(cmd->replaced_fixed_args), cmd->fixed_args.count);
 }
 
 void recycle_command(command* const cmd) {
   cmd->line_count = 0;
+
   free_args(&(cmd->input_args));
+
+  if (cmd->arg_placeholder != NULL) {
+    init_args_with_capacity(
+      &(cmd->replaced_fixed_args),
+      cmd->fixed_args.count);
+  }
 
   if (command_max_args_specified(cmd)) {
     init_args_with_capacity(&(cmd->input_args), cmd->max_args);
@@ -147,18 +157,32 @@ void recycle_command(command* const cmd) {
   }
 }
 
-char** build_exec_args(command* cmd) {
-  size_t exec_args_count = cmd->fixed_args.count + cmd->input_args.count;
-
-  char** exec_args = safe_calloc(exec_args_count + 1, sizeof(char*));
+void command_replace_args(command* const cmd, const char* const token) {
   for (size_t i = 0; i < cmd->fixed_args.count; ++i) {
-    exec_args[i] = safe_strdup(cmd->fixed_args.args[i]);
+    char* replaced =
+      str_replace(cmd->fixed_args.args[i], cmd->arg_placeholder, token);
+    add_arg(&(cmd->replaced_fixed_args), replaced);
+    free(replaced);
+  }
+}
+
+char** build_exec_args(command* cmd, size_t* exec_args_count) {
+  command_args* fixed_args_in_play =
+    cmd->arg_placeholder != NULL
+      ? &(cmd->replaced_fixed_args)
+      : &(cmd->fixed_args);
+
+  *exec_args_count = fixed_args_in_play->count + cmd->input_args.count;
+
+  char** exec_args = safe_calloc(*exec_args_count + 1, sizeof(char*));
+  for (size_t i = 0; i < fixed_args_in_play->count; ++i) {
+    exec_args[i] = safe_strdup(fixed_args_in_play->args[i]);
   }
   for (size_t i = 0; i < cmd->input_args.count; ++i) {
-    exec_args[cmd->fixed_args.count + i] =
+    exec_args[fixed_args_in_play->count + i] =
       safe_strdup(cmd->input_args.args[i]);
   }
-  exec_args[exec_args_count] = NULL;
+  exec_args[*exec_args_count] = NULL;
 
   return exec_args;
 }
@@ -237,8 +261,8 @@ int execute_command(command* const cmd) {
 
   if (pid == 0) {
     // Child process
-    size_t exec_args_count = cmd->fixed_args.count + cmd->input_args.count;
-    char** exec_args = build_exec_args(cmd);
+    size_t exec_args_count = 0;
+    char** exec_args = build_exec_args(cmd, &exec_args_count);
 
     if (cmd->trace) {
       for (size_t i = 0; i < exec_args_count; ++i) {

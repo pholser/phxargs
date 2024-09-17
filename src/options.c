@@ -73,13 +73,6 @@ void options_reset_max_args_per_command(options* const opts) {
   opts->max_args_endptr = NULL;
 }
 
-void options_set_arg_placeholder(options* const opts, char* placeholder) {
-  opts->arg_placeholder = placeholder;
-
-  options_reset_max_lines_per_command(opts);
-  options_reset_max_args_per_command(opts);
-}
-
 void options_set_max_lines_per_command(
   options* opts,
   int opt,
@@ -111,6 +104,13 @@ void options_set_max_command_length(
 
   opts->max_command_length =
     parse_number_arg(opt, new_val, &(opts->max_command_length_endptr));
+}
+
+void options_set_arg_placeholder(options* const opts, char* placeholder) {
+  options_reset_max_lines_per_command(opts);
+  options_set_max_lines_per_command(opts, 'I', "1");
+  options_reset_max_args_per_command(opts);
+  opts->arg_placeholder = placeholder;
 }
 
 void options_enable_trace(options* const opts) {

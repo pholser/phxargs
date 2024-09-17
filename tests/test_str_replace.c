@@ -44,27 +44,6 @@ START_TEST(test_single_str_replace_replacement_null) {
 }
 END_TEST
 
-START_TEST(test_multiple_str_replace) {
-  const char* target[] = {
-    "% % % %",
-    "oh% my%goodness",
-    "asdf%%% % qwer",
-    NULL
-  };
-
-  char** result = strs_replace(target, "%", "__");
-
-  ck_assert_str_eq(result[0], "__ __ __ __");
-  ck_assert_str_eq(result[1], "oh__ my__goodness");
-  ck_assert_str_eq(result[2], "asdf______ __ qwer");
-
-  for (size_t i = 0; i < 2; ++i) {
-    free(result[i]);
-  }
-  free(result);
-}
-END_TEST
-
 Suite* str_replace_suite() {
   Suite* suite = suite_create("string replacing");
 
@@ -74,10 +53,6 @@ Suite* str_replace_suite() {
   tcase_add_test(tc_str_replace, test_single_str_replace_placeholder_null);
   tcase_add_test(tc_str_replace, test_single_str_replace_replacement_null);
   suite_add_tcase(suite, tc_str_replace);
-
-  TCase* tc_strs_replace = tcase_create("multiple strings");
-  tcase_add_test(tc_strs_replace, test_multiple_str_replace);
-  suite_add_tcase(suite, tc_strs_replace);
 
   return suite;
 }

@@ -30,6 +30,15 @@ void add_arg(command_args* const args, const char* const new_arg) {
   args->length += strlen(new_arg) + 1;
 }
 
+command_args* clone_args(const command_args* const args) {
+  command_args* copy = safe_malloc(sizeof(command_args));
+  init_args_with_capacity(copy, args->capacity);
+  for (size_t i = 0; i < args->length; ++i) {
+    add_arg(copy, args->args[i]);
+  }
+  return copy;
+}
+
 void free_args(const command_args* const args) {
   for (size_t i = 0; i < args->count; ++i) {
     free(args->args[i]);
