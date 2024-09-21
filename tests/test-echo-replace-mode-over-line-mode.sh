@@ -5,12 +5,15 @@ source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 cat > "$test_input" <<EOF
 arg1 arg2 arg3
 arg4 arg5 arg6
+arg7 arg8 arg9
+arg10 arg11
 EOF
 
 cat > "$expected_output" <<EOF
-{} arg1 arg2
-{} arg3 arg4
-{} arg5 arg6
+arg1 arg2 arg3
+arg4 arg5 arg6
+arg7 arg8 arg9
+arg10 arg11
 EOF
 
 touch "$expected_error"
@@ -20,5 +23,5 @@ touch "$expected_error"
   "$test_input" \
   "$expected_output" \
   "$expected_error" \
-  '-I {} -n 2 echo {}' \
+  '-L 3 -I % echo %' \
   ''

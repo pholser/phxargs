@@ -18,6 +18,7 @@ typedef struct {
   char* logical_end_of_input_marker;
 
   /* -I option */
+  uint8_t arg_placeholder_enabled;
   char* arg_placeholder;
 
   /* -L option */

@@ -8,9 +8,8 @@ arg4 arg5 arg6
 EOF
 
 cat > "$expected_output" <<EOF
-{} arg1 arg2
-{} arg3 arg4
-{} arg5 arg6
+{} arg1 arg2 arg3
+{} arg4 arg5 arg6
 EOF
 
 touch "$expected_error"
@@ -20,5 +19,5 @@ touch "$expected_error"
   "$test_input" \
   "$expected_output" \
   "$expected_error" \
-  '-I {} -n 2 echo {}' \
+  '-I {} -L 1 echo {}' \
   ''

@@ -60,6 +60,7 @@ void options_reset_logical_end_of_input_marker(options* const opts) {
 }
 
 void options_reset_arg_placeholder(options* const opts) {
+  opts->arg_placeholder_enabled = 0;
   opts->arg_placeholder = NULL;
 }
 
@@ -107,13 +108,11 @@ void options_set_max_command_length(
 }
 
 void options_set_arg_placeholder(options* const opts, char* placeholder) {
-  options_reset_max_lines_per_command(opts);
-  options_set_max_lines_per_command(opts, 'I', "1");
-  options_reset_max_args_per_command(opts);
+  opts->arg_placeholder_enabled = 1;
   opts->arg_placeholder = placeholder;
-  if (opts->arg_delimiter == '\0' && !opts->use_nul_char_as_arg_delimiter) {
-    options_set_arg_delimiter(opts, '\n');
-  }
+
+  options_reset_max_lines_per_command(opts);
+  options_reset_max_args_per_command(opts);
 }
 
 void options_enable_trace(options* const opts) {
@@ -153,16 +152,11 @@ void init_options(options* const opts) {
 }
 
 int parse_options(options* const opts, int argc, char** argv) {
-  // (1) If you encounter -0 or -d before -I, it's preserved.
-  // (2) If you encounter -0 or -d after -I, it nullifies previous -I delim but preserves -I.
-  // (3) If -I is present without -0 or -d, it's as though you said -d $'\n'.
-
   int opt;
   while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:ps:tx")) != -1) {
     switch (opt) {
       case '0':
         options_enable_nul_char_as_arg_delimiter(opts);
-        options_reset_arg_delimiter(opts);
         break;
       case 'a':
         options_set_arg_file_path(opts, optarg);
@@ -173,7 +167,6 @@ int parse_options(options* const opts, int argc, char** argv) {
           exit(EXIT_FAILURE);
         }
         options_set_arg_delimiter(opts, *optarg);
-        options_disable_nul_char_as_arg_delimiter(opts);
         break;
       case 'E':
         options_set_logical_end_of_input_marker(opts, optarg);
@@ -218,9 +211,16 @@ int parse_options(options* const opts, int argc, char** argv) {
 
   /* -I implies -x */
   /* -I basically nullifies -E */
-  if (opts->arg_placeholder != NULL) {
-    options_reset_logical_end_of_input_marker(opts);
+  /* -I implies -L 1, and uses '\n' as delimiter if no other in force */
+  if (opts->arg_placeholder_enabled) {
     options_enable_terminate_on_too_large_command(opts);
+    options_reset_logical_end_of_input_marker(opts);
+
+    opts->max_lines_per_command = 1;
+
+    if (opts->arg_delimiter == '\0' || !opts->use_nul_char_as_arg_delimiter) {
+      options_set_arg_delimiter(opts, '\n');
+    }
   }
 
   return optind;
