@@ -101,6 +101,28 @@ size_t decide_max_length(command* const cmd, const options* const opts) {
   }
 }
 
+void command_ensure_length_not_exceeded(
+  const command* const cmd,
+  const char* const new_arg) {
+
+  if (cmd->arg_placeholder == NULL) {
+    size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
+
+    if (cmd->input_args.count == 0) {
+      if (new_length > cmd->max_length) {
+        fprintf(stderr, "phxargs: command too long\n");
+        exit(EXIT_FAILURE);
+      }
+    }
+  } else {
+    size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
+    if (new_length > cmd->max_length) {
+      fprintf(stderr, "phxargs: command too long\n");
+      exit(EXIT_FAILURE);
+    }
+  }
+}
+
 void init_command(
   command* const cmd,
   const options* const opts,
@@ -210,19 +232,13 @@ uint8_t arg_would_exceed_limits(
   const command* const cmd,
   const char* const new_arg) {
 
-  size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
-
-  if (cmd->input_args.count == 0) {
-    if (new_length > cmd->max_length) {
-      fprintf(stderr, "phxargs: command too long\n");
-      exit(EXIT_FAILURE);
-    }
-  }
+  command_ensure_length_not_exceeded(cmd, new_arg);
 
   if (command_max_args_specified(cmd)) {
     return cmd->input_args.count == cmd->max_args;
   }
 
+  size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
   return cmd->line_mode ? 0 : new_length > cmd->max_length;
 }
 

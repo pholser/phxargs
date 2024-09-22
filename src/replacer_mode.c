@@ -30,7 +30,9 @@ int run_replacer_mode(replacer_mode* const mode) {
     token != NULL;
     token = next_token(&(mode->toker), mode->arg_source, &(mode->cmd))) {
 
+    command_ensure_length_not_exceeded(&(mode->cmd), token);
     command_replace_args(&(mode->cmd), token);
+
     execution_status |= execute_command(&(mode->cmd));
  }
 
