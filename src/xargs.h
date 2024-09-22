@@ -7,10 +7,10 @@ typedef struct {
   xargs_mode mode;
 } xargs;
 
-void init_xargs(xargs* const x, int argc, char** argv);
+void xargs_init(xargs* const x, int argc, char** argv);
 
-int run_xargs(xargs* const x);
+int xargs_run(xargs* const x);
 
-void free_xargs(const xargs* const x);
+void xargs_free(const xargs* const x);
 
 #endif  // PHXARGS_XARGS_H

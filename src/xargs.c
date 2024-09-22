@@ -8,7 +8,7 @@
 #include "xargs.h"
 #include "xargs_mode.h"
 
-void init_xargs(xargs* const x, int argc, char** argv) {
+void xargs_init(xargs* const x, int argc, char** argv) {
   options opts;
   init_options(&opts);
 
@@ -17,10 +17,10 @@ void init_xargs(xargs* const x, int argc, char** argv) {
   init_xargs_mode(&(x->mode), &opts, arg_index, argc, argv);
 }
 
-int run_xargs(xargs* const x) {
+int xargs_run(xargs* const x) {
   return run_xargs_in_mode(&(x->mode));
 }
 
-void free_xargs(const xargs* const x) {
+void xargs_free(const xargs* const x) {
   free_xargs_mode(&(x->mode));
 }
