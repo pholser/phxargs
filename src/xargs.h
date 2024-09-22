@@ -3,14 +3,12 @@
 
 #include "xargs_mode.h"
 
-typedef struct {
-  xargs_mode mode;
-} xargs;
+typedef struct xargs xargs;
 
-void xargs_init(xargs* const x, int argc, char** argv);
+xargs* xargs_init(int argc, char** argv);
 
 int xargs_run(xargs* const x);
 
-void xargs_free(const xargs* const x);
+void xargs_free(xargs* const x);
 
 #endif  // PHXARGS_XARGS_H
