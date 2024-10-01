@@ -38,6 +38,7 @@ char* safe_strdup(const char* s) {
   }
 
   char* copy = strdup(s);
+
   if (copy == NULL) {
     perror("phxargs: strdup");
     exit(EXIT_FAILURE);

@@ -26,50 +26,50 @@ size_t parse_number_arg(int opt, const char* arg, char** endptr) {
   return (size_t) parsed;
 }
 
-void options_disable_nul_char_as_arg_delimiter(options* const opts) {
+void options_disable_nul_char_as_arg_delimiter(options* opts) {
   opts->use_nul_char_as_arg_delimiter = 0;
 }
 
-void options_reset_arg_delimiter(options* const opts) {
+void options_reset_arg_delimiter(options* opts) {
   opts->arg_delimiter = '\0';
 }
 
-void options_enable_nul_char_as_arg_delimiter(options* const opts) {
+void options_enable_nul_char_as_arg_delimiter(options* opts) {
   opts->use_nul_char_as_arg_delimiter = 1;
   options_reset_arg_delimiter(opts);
 }
 
-void options_set_arg_delimiter(options* const opts, char ch) {
+void options_set_arg_delimiter(options* opts, char ch) {
   opts->arg_delimiter = ch;
   options_disable_nul_char_as_arg_delimiter(opts);
 }
 
-void options_set_arg_file_path(options* const opts, char* path) {
+void options_set_arg_file_path(options* opts, char* path) {
   opts->arg_file_path = path;
 }
 
 void options_set_logical_end_of_input_marker(
-  options* const opts,
+  options* opts,
   char* marker) {
 
   opts->logical_end_of_input_marker = marker;
 }
 
-void options_reset_logical_end_of_input_marker(options* const opts) {
+void options_reset_logical_end_of_input_marker(options* opts) {
   opts->logical_end_of_input_marker = NULL;
 }
 
-void options_reset_arg_placeholder(options* const opts) {
+void options_reset_arg_placeholder(options* opts) {
   opts->arg_placeholder_enabled = 0;
   opts->arg_placeholder = NULL;
 }
 
-void options_reset_max_lines_per_command(options* const opts) {
+void options_reset_max_lines_per_command(options* opts) {
   opts->max_lines_per_command = 0;
   opts->max_lines_endptr = NULL;
 }
 
-void options_reset_max_args_per_command(options* const opts) {
+void options_reset_max_args_per_command(options* opts) {
   opts->max_args_per_command = 0;
   opts->max_args_endptr = NULL;
 }
@@ -107,7 +107,7 @@ void options_set_max_command_length(
     parse_number_arg(opt, new_val, &(opts->max_command_length_endptr));
 }
 
-void options_set_arg_placeholder(options* const opts, char* placeholder) {
+void options_set_arg_placeholder(options* opts, char* placeholder) {
   opts->arg_placeholder_enabled = 1;
   opts->arg_placeholder = placeholder;
 
@@ -115,28 +115,28 @@ void options_set_arg_placeholder(options* const opts, char* placeholder) {
   options_reset_max_args_per_command(opts);
 }
 
-void options_enable_trace(options* const opts) {
+void options_enable_trace(options* opts) {
   opts->trace = 1;
 }
 
-void options_enable_prompt(options* const opts) {
+void options_enable_prompt(options* opts) {
   opts->prompt = 1;
   options_enable_trace(opts);
 }
 
-void options_enable_terminate_on_too_large_command(options* const opts) {
+void options_enable_terminate_on_too_large_command(options* opts) {
   opts->terminate_on_too_large_command = 1;
 }
 
-uint8_t options_line_mode(const options* const opts) {
+uint8_t options_line_mode(options* opts) {
   return opts->max_lines_endptr != NULL;
 }
 
-uint8_t options_max_command_length_specified(const options* const opts) {
+uint8_t options_max_command_length_specified(options* opts) {
   return opts->max_command_length_endptr != NULL;
 }
 
-void init_options(options* const opts) {
+void init_options(options* opts) {
   opts->use_nul_char_as_arg_delimiter = 0;
   opts->arg_file_path = NULL;
   opts->arg_delimiter = '\0';
@@ -151,7 +151,7 @@ void init_options(options* const opts) {
   opts->terminate_on_too_large_command = 0;
 }
 
-int parse_options(options* const opts, int argc, char** argv) {
+int parse_options(options* opts, int argc, char** argv) {
   int opt;
   while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:ps:tx")) != -1) {
     switch (opt) {

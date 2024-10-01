@@ -1,50 +1,60 @@
 #include <stdlib.h>
 
 #include "appender_mode.h"
-#include "arg_source.h"
-#include "command.h"
-#include "options.h"
-#include "tokenizer.h"
+#include "util.h"
+#include "xargs_mode.h"
 
-void init_appender_mode(
-  appender_mode* const mode,
-  const options* const opts,
-  int arg_index,
-  int argc,
-  char** argv) {
+struct _appender_mode {
+  xargs_mode base;
+};
 
-  mode->arg_source = init_arg_source(opts);
-  init_command(&(mode->cmd), opts, arg_index, argc, argv);
-  init_tokenizer(&(mode->toker), opts, mode->cmd.max_length);
-}
-
-int run_appender_mode(appender_mode* const mode) {
+int appender_mode_run(xargs_mode* mode) {
   int execution_status = EXIT_SUCCESS;
 
   char* token;
-  for (token = next_token(&(mode->toker), mode->arg_source, &(mode->cmd));
+  for (token = xargs_mode_next_token(mode);
     token != NULL;
-    token = next_token(&(mode->toker), mode->arg_source, &(mode->cmd))) {
+    token = xargs_mode_next_token(mode)) {
 
-    if (arg_would_exceed_limits(&(mode->cmd), token)) {
-      execution_status |= execute_command(&(mode->cmd));
+    if (xargs_mode_arg_would_exceed_limits(mode, token)) {
+      execution_status |= xargs_mode_execute_command(mode);
     }
 
-    add_input_argument(&(mode->cmd), token);
-    if (should_execute_command_after_arg_added(&(mode->cmd))) {
-      execution_status |= execute_command(&(mode->cmd));
+    xargs_mode_add_input_argument(mode, token);
+    if (xargs_mode_should_execute_command_after_arg_added(mode)) {
+      execution_status |= xargs_mode_execute_command(mode);
     }
   }
 
-  if (mode->cmd.input_args.count > 0) {
-    execution_status |= execute_command(&(mode->cmd));
+  if (xargs_mode_input_args_remain(mode)) {
+    execution_status |= xargs_mode_execute_command(mode);
   }
 
   return execution_status;
 }
 
-void free_appender_mode(const appender_mode* const mode) {
-  free_arg_source(mode->arg_source);
-  free_command(&(mode->cmd));
-  free_tokenizer(&(mode->toker));
+xargs_mode_ops appender_mode_ops = {
+  .run = appender_mode_run
+};
+
+appender_mode* appender_mode_create(
+  options* opts,
+  int arg_index,
+  int argc,
+  char** argv) {
+
+  appender_mode* mode = safe_malloc(sizeof(appender_mode));
+  xargs_mode_init(
+    &(mode->base),
+    &appender_mode_ops,
+    opts,
+    arg_index,
+    argc,
+    argv);
+  return mode;
+}
+
+void appender_mode_destroy(appender_mode* const mode) {
+  xargs_mode_destroy(&(mode->base));
+  free(mode);
 }

@@ -1,29 +1,41 @@
 #ifndef PHXARGS_TOKENIZER_H
 #define PHXARGS_TOKENIZER_H
 
-#include <stddef.h>
 #include <stdio.h>
 
+#include "buffer.h"
 #include "command.h"
-#include "options.h"
 
-typedef enum {
-  SPACE,
-  DELIMITED
-} tokenizer_kind;
+typedef struct _tokenizer_ops tokenizer_ops;
 
-typedef struct {
-  tokenizer_kind t_kind;
-  void* tokenizer;
+typedef struct _tokenizer {
+  tokenizer_ops* ops;
+  buffer buf;
 } tokenizer;
 
-void init_tokenizer(
+struct _tokenizer_ops {
+  char* (*next_token)(
+    tokenizer* self,
+    FILE* arg_source,
+    command* cmd);
+};
+
+void tokenizer_init(
   tokenizer* t,
-  const options* const opts,
+  tokenizer_ops* ops,
   size_t buffer_size);
 
-char* next_token(tokenizer* const t, FILE* arg_source, command* cmd);
+char* tokenizer_next_token(
+  tokenizer* t,
+  FILE* arg_source,
+  command* cmd);
 
-void free_tokenizer(const tokenizer* const t);
+size_t tokenizer_pos(tokenizer* t);
+
+void tokenizer_add(tokenizer* t, char ch);
+
+char* tokenizer_token(tokenizer* t, size_t pos);
+
+void tokenizer_destroy(tokenizer* t);
 
 #endif  // PHXARGS_TOKENIZER_H

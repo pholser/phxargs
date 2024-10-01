@@ -24,29 +24,35 @@ typedef struct {
   command_args replaced_fixed_args;
 } command;
 
-void init_command(
-  command* const cmd,
-  const options* const opts,
+void command_init(
+  command* cmd,
+  options* opts,
   int arg_index,
   int argc,
   char** argv);
 
-uint8_t arg_would_exceed_limits(const command* const cmd, const char* new_arg);
+uint8_t command_arg_would_exceed_limits(command* cmd, char* new_arg);
 
-uint8_t should_execute_command_after_arg_added(const command* const cmd);
+uint8_t command_should_execute_after_arg_added(command* cmd);
 
-void command_replace_args(command* const cmd, const char* const token);
+void command_replace_args(command* cmd, char* token);
 
 void command_ensure_length_not_exceeded(
-  const command* const cmd,
-  const char* const new_arg);
+  command* cmd,
+  char* new_arg);
 
-int execute_command(command* const cmd);
+int command_execute(command* cmd);
 
-void add_input_argument(command* const cmd, const char* const new_arg);
+uint8_t command_line_mode(command* cmd);
 
-size_t command_length(const command* const cmd);
+size_t command_max_length(command* cmd);
 
-void free_command(const command* const cmd);
+void command_add_input_argument(command* cmd, char* new_arg);
+
+uint8_t command_input_args_remain(command* cmd);
+
+size_t command_length(command* cmd);
+
+void command_free(command* cmd);
 
 #endif  // PHXARGS_COMMAND_H

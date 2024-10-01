@@ -56,25 +56,33 @@ int command_status(pid_t child_pid) {
   return EXIT_FAILURE;
 }
 
-void add_fixed_argument(command* const cmd, const char* const new_arg) {
+void add_fixed_argument(command* cmd, char* new_arg) {
   add_arg(&(cmd->fixed_args), new_arg);
 }
 
-void add_input_argument(command* const cmd, const char* const new_arg) {
+void command_add_input_argument(command* cmd, char* new_arg) {
   add_arg(&(cmd->input_args), new_arg);
 }
 
-size_t command_length(const command* const cmd) {
+uint8_t command_line_mode(command* cmd) {
+  return cmd->line_mode;
+}
+
+size_t command_max_length(command* cmd) {
+  return cmd->max_length;
+}
+
+size_t command_length(command* cmd) {
   return cmd->env_length
     + cmd->fixed_args.length
     + cmd->input_args.length;
 }
 
-uint8_t command_max_args_specified(const command* const cmd) {
+uint8_t command_max_args_specified(command* cmd) {
   return cmd->max_args > 0;
 }
 
-size_t decide_max_length(command* const cmd, const options* const opts) {
+size_t decide_max_length(command* cmd, options* opts) {
   size_t max_length =
     ((size_t) sysconf(_SC_ARG_MAX)) - (2 * cmd->env_length) - 2048;
   if (options_max_command_length_specified(opts)) {
@@ -102,8 +110,8 @@ size_t decide_max_length(command* const cmd, const options* const opts) {
 }
 
 void command_ensure_length_not_exceeded(
-  const command* const cmd,
-  const char* const new_arg) {
+  command* cmd,
+  char* new_arg) {
 
   if (cmd->arg_placeholder == NULL) {
     size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
@@ -123,9 +131,9 @@ void command_ensure_length_not_exceeded(
   }
 }
 
-void init_command(
-  command* const cmd,
-  const options* const opts,
+void command_init(
+  command* cmd,
+  options* opts,
   int arg_index,
   int argc,
   char** argv) {
@@ -161,7 +169,7 @@ void init_command(
   init_args_with_capacity(&(cmd->replaced_fixed_args), cmd->fixed_args.count);
 }
 
-void recycle_command(command* const cmd) {
+void recycle_command(command* cmd) {
   cmd->line_count = 0;
 
   free_args(&(cmd->input_args));
@@ -179,13 +187,13 @@ void recycle_command(command* const cmd) {
   }
 }
 
-void command_replace_args(command* const cmd, const char* const token) {
+void command_replace_args(command* cmd, char* new_arg) {
   // Do not perform replacement on command word
   add_arg(&(cmd->replaced_fixed_args), cmd->fixed_args.args[0]);
 
   for (size_t i = 1; i < cmd->fixed_args.count; ++i) {
     char* replaced =
-      str_replace(cmd->fixed_args.args[i], cmd->arg_placeholder, token);
+      str_replace(cmd->fixed_args.args[i], cmd->arg_placeholder, new_arg);
     add_arg(&(cmd->replaced_fixed_args), replaced);
     free(replaced);
   }
@@ -228,9 +236,9 @@ char** build_exec_args(command* cmd, size_t* exec_args_count) {
    * (3) Add `x` to cmd.
    */
 
-uint8_t arg_would_exceed_limits(
-  const command* const cmd,
-  const char* const new_arg) {
+uint8_t command_arg_would_exceed_limits(
+  command* cmd,
+  char* new_arg) {
 
   command_ensure_length_not_exceeded(cmd, new_arg);
 
@@ -242,7 +250,7 @@ uint8_t arg_would_exceed_limits(
   return cmd->line_mode ? 0 : new_length > cmd->max_length;
 }
 
-uint8_t should_execute_command_after_arg_added(const command* const cmd) {
+uint8_t command_should_execute_after_arg_added(command* cmd) {
   if (cmd->terminate_on_too_large_command
     && command_length(cmd) > cmd->max_length) {
 
@@ -255,6 +263,10 @@ uint8_t should_execute_command_after_arg_added(const command* const cmd) {
   }
 
   return 0;
+}
+
+uint8_t command_input_args_remain(command* cmd) {
+  return cmd->input_args.count > 0;
 }
 
 uint8_t confirm_execution() {
@@ -275,7 +287,7 @@ uint8_t confirm_execution() {
   return (buf[0] == 'y' || buf[0] == 'Y');
 }
 
-int execute_command(command* const cmd) {
+int command_execute(command* cmd) {
   pid_t pid = safe_fork();
 
   if (pid == 0) {
@@ -321,7 +333,7 @@ int execute_command(command* const cmd) {
   }
 }
 
-void free_command(const command* const cmd) {
+void command_free(command* cmd) {
   free_args(&(cmd->input_args));
   free_args(&(cmd->fixed_args));
   free(cmd->arg_placeholder);

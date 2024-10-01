@@ -3,9 +3,7 @@
 
 #include <stdio.h>
 
-#include "options.h"
-
-FILE* init_arg_source(const options* const opts);
+FILE* arg_source_init(const char* path);
 
 void free_arg_source(FILE* arg_source);
 

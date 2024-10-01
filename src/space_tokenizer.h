@@ -1,41 +1,13 @@
 #ifndef PHXARGS_SPACE_TOKENIZER_H
 #define PHXARGS_SPACE_TOKENIZER_H
 
-#include <stdio.h>
+typedef struct _space_tokenizer space_tokenizer;
 
-#include "buffer.h"
-#include "command.h"
-
-typedef enum {
-  NO_TOKEN,
-  NO_TOKEN_ESCAPE,
-  IN_TOKEN,
-  IN_QUOTED_TOKEN,
-  IN_TOKEN_ESCAPE
-} space_tokenizer_state;
-
-typedef struct {
-  buffer buf;
-
-  space_tokenizer_state state;
-  int quote_char;
-  size_t token_start;
-
-  uint8_t line_mode;
-  char* logical_end_of_input_marker;
-} space_tokenizer;
-
-void init_space_tokenizer(
-  space_tokenizer* const t,
+space_tokenizer* space_tokenizer_create(
   size_t buffer_size,
   uint8_t line_mode,
   char* logical_end_of_input_marker);
 
-char* next_space_token(
-  space_tokenizer* const t,
-  FILE* token_source,
-  command* const cmd);
-
-void free_space_tokenizer(const space_tokenizer* const t);
+void space_tokenizer_destroy(space_tokenizer* t);
 
 #endif  // PHXARGS_SPACE_TOKENIZER_H
