@@ -2,11 +2,13 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
-# Test conflicting options -0 and -d
 printf "arg1,arg2,arg3\0" > "$test_input"
 
 cat > "$expected_output" <<EOF
 arg1,arg2,arg3
+EOF
+
+cat > "$expected_error" <<EOF
 EOF
 
 ./run-expected-output-comparison-test.sh \

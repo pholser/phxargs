@@ -14,7 +14,6 @@ EOF
 
 touch "$expected_error"
 
-
 ./run-expected-output-comparison-test.sh \
   $test_name \
   "$test_input" \

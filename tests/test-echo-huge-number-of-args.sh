@@ -8,7 +8,8 @@ cat > "$expected_output" <<EOF
 $(for i in $(seq 1 9999); do echo -n "arg$i "; done ; echo -n 'arg10000')
 EOF
 
-touch "$expected_error"
+cat > "$expected_error" <<EOF
+EOF
 
 ./run-expected-output-comparison-test.sh \
   $test_name \

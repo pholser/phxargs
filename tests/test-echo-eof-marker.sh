@@ -11,7 +11,8 @@ cat > "$expected_output" <<EOF
 arg1 arg2 arg3
 EOF
 
-touch "$expected_error"
+cat > "$expected_error" <<EOF
+EOF
 
 ./run-expected-output-comparison-test.sh \
   $test_name \

@@ -5,7 +5,8 @@ source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 long_arg=$(printf 'a%.0s' {1..2047})
 echo "$long_arg" > "$test_input"
 
-touch "$expected_output"
+cat > "$expected_output" <<EOF
+EOF
 
 cat > "$expected_error" <<EOF
 phxargs: command too long

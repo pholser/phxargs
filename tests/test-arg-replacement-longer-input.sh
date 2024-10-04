@@ -11,6 +11,9 @@ cat > "$expected_output" <<EOF
 $(printf "Processed item%.0s\n" {1..100})
 EOF
 
+cat > "$expected_error" <<EOF
+EOF
+
 ./run-expected-output-comparison-test.sh \
   $test_name \
   "$test_input" \

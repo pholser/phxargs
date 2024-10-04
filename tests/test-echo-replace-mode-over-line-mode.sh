@@ -16,7 +16,8 @@ arg7 arg8 arg9
 arg10 arg11
 EOF
 
-touch "$expected_error"
+cat > "$expected_error" <<EOF
+EOF
 
 ./run-expected-output-comparison-test.sh \
   $test_name \

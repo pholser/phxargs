@@ -12,7 +12,8 @@ This is replace1, replacing a placeholder
 This is replace2, replacing a placeholder
 EOF
 
-touch "$expected_error"
+cat > "$expected_error" <<EOF
+EOF
 
 ./run-expected-output-comparison-test.sh \
   $test_name \

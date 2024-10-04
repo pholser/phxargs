@@ -12,7 +12,8 @@ VAR: \$VAR
 VAR: \`command\`
 EOF
 
-touch "$expected_error"
+cat > "$expected_error" <<EOF
+EOF
 
 ./run-expected-output-comparison-test.sh \
   $test_name \
