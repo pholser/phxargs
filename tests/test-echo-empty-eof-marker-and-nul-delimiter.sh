@@ -2,11 +2,10 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
-cat > "$test_input" <<EOF
-EOF
+printf "arg1\0arg2\0arg3\0___\0arg4\0arg5\0arg6" > "$test_input"
 
 cat > "$expected_output" <<EOF
-boo
+arg1 arg2 arg3 ___ arg4 arg5 arg6
 EOF
 
 cat > "$expected_error" <<EOF
@@ -17,5 +16,5 @@ EOF
   "$test_input" \
   "$expected_output" \
   "$expected_error" \
-  '' \
-  'echo boo'
+  "-0 -E ''" \
+  ''

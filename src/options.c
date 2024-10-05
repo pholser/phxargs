@@ -124,6 +124,10 @@ void options_enable_prompt(options* opts) {
   options_enable_trace(opts);
 }
 
+void options_suppress_execution_on_empty_input(options* opts) {
+  opts->suppress_execution_on_empty_input = 1;
+}
+
 void options_enable_terminate_on_too_large_command(options* opts) {
   opts->terminate_on_too_large_command = 1;
 }
@@ -153,7 +157,7 @@ void init_options(options* opts) {
 
 int parse_options(options* opts, int argc, char** argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:ps:tx")) != -1) {
+  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:prs:tx")) != -1) {
     switch (opt) {
       case '0':
         options_enable_nul_char_as_arg_delimiter(opts);
@@ -182,6 +186,9 @@ int parse_options(options* opts, int argc, char** argv) {
         break;
       case 'p':
         options_enable_prompt(opts);
+        break;
+      case 'r':
+        options_suppress_execution_on_empty_input(opts);
         break;
       case 's':
         options_set_max_command_length(opts, opt, optarg);

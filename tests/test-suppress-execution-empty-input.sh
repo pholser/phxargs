@@ -6,7 +6,6 @@ cat > "$test_input" <<EOF
 EOF
 
 cat > "$expected_output" <<EOF
-boo
 EOF
 
 cat > "$expected_error" <<EOF
@@ -17,5 +16,5 @@ EOF
   "$test_input" \
   "$expected_output" \
   "$expected_error" \
-  '' \
-  'echo boo'
+  '-r echo "This should not be printed"' \
+  ''

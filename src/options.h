@@ -32,6 +32,9 @@ typedef struct {
   /* -p option */
   uint8_t prompt;
 
+  /* -r option */
+  uint8_t suppress_execution_on_empty_input;
+
   /* -s option */
   size_t max_command_length;
   char* max_command_length_endptr;

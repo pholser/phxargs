@@ -9,6 +9,7 @@ cat > "$test_input" <<EOF
 EOF
 
 cat > "$expected_output" <<EOF
+
 EOF
 
 cat > "$expected_error" <<EOF
