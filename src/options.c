@@ -115,6 +115,10 @@ void options_set_arg_placeholder(options* opts, char* placeholder) {
   options_reset_max_args_per_command(opts);
 }
 
+void options_set_open_tty(options* opts) {
+  opts->open_tty = 1;
+}
+
 void options_enable_trace(options* opts) {
   opts->trace = 1;
 }
@@ -148,16 +152,18 @@ void init_options(options* opts) {
   options_reset_arg_placeholder(opts);
   options_reset_max_lines_per_command(opts);
   options_reset_max_args_per_command(opts);
+  opts->open_tty = 0;
   opts->prompt = 0;
   opts->max_command_length = 0;
   opts->max_command_length_endptr = NULL;
+  opts->suppress_execution_on_empty_input = 0;
   opts->trace = 0;
   opts->terminate_on_too_large_command = 0;
 }
 
 int parse_options(options* opts, int argc, char** argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:prs:tx")) != -1) {
+  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:oprs:tx")) != -1) {
     switch (opt) {
       case '0':
         options_enable_nul_char_as_arg_delimiter(opts);
@@ -183,6 +189,9 @@ int parse_options(options* opts, int argc, char** argv) {
         break;
       case 'n':
         options_set_max_args_per_command(opts, opt, optarg);
+        break;
+      case 'o':
+        options_set_open_tty(opts);
         break;
       case 'p':
         options_enable_prompt(opts);

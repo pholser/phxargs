@@ -31,7 +31,14 @@ pid_t safe_fork() {
   return pid;
 }
 
-void safe_exec(char** exec_args) {
+void safe_exec(char** exec_args, uint8_t open_tty) {
+  if (open_tty) {
+    if (freopen("/dev/tty", "r", stdin) == NULL) {
+        perror("phxargs: cannot reopen stdin as /dev/tty");
+        exit(EXIT_FAILURE);
+    }
+  }
+
   execvp(exec_args[0], exec_args);
   perror("phxargs: execvp");
   exit(EXIT_FAILURE);
@@ -141,6 +148,7 @@ void command_init(
   cmd->max_lines = opts->max_lines_per_command;
   cmd->max_args = opts->max_args_per_command;
   cmd->arg_placeholder = safe_strdup(opts->arg_placeholder);
+  cmd->open_tty = opts->open_tty;
   cmd->prompt = opts->prompt;
   cmd->trace = opts->trace;
   cmd->terminate_on_too_large_command = opts->terminate_on_too_large_command;
@@ -315,7 +323,7 @@ int command_execute(command* cmd) {
     }
 
     if (execute) {
-      safe_exec(exec_args);
+      safe_exec(exec_args, cmd->open_tty);
     } else {
       for (size_t i = 0; i < exec_args_count; ++i) {
         free(exec_args[i]);

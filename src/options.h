@@ -29,6 +29,9 @@ typedef struct {
   size_t max_args_per_command;
   char* max_args_endptr;
 
+  /* -o option */
+  uint8_t open_tty;
+
   /* -p option */
   uint8_t prompt;
 
