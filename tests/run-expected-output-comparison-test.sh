@@ -14,10 +14,16 @@ build_dir="$test_dir/../build"
 test_output_dir="$build_dir/output"
 mkdir -p "$test_output_dir"
 
-/usr/bin/env -i "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
-  < "$test_input" \
-  > "$test_output_dir/phxargs-$test_name.out" \
-  2> "$test_output_dir/phxargs-$test_name.err"
+if [[ "$xargs_options" =~ "-a"[[:space:]] ]] ; then
+  /usr/bin/env -i "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
+    > "$test_output_dir/phxargs-$test_name.out" \
+    2> "$test_output_dir/phxargs-$test_name.err"
+else
+  /usr/bin/env -i "$build_dir/phxargs" $xargs_options $xargs_cmd_line \
+    < "$test_input" \
+    > "$test_output_dir/phxargs-$test_name.out" \
+    2> "$test_output_dir/phxargs-$test_name.err"
+fi
 
 cd "$test_output_dir" || exit 3
 diff "$expected_output" "phxargs-$test_name.out"
