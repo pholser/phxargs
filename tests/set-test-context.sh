@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-test_dir=$(dirname "$(readlink -f "$0")")
-test_name=$(basename "$(readlink -f "$0")" | sed 's/^test_//')
+phx_test_dir=$(dirname "$(readlink -f "$0")")
+phx_test_name=$(basename "$(readlink -f "$0")" | sed 's/^test_//')
 
-cd "$test_dir" || exit 3
+cd "$phx_test_dir" || exit 3
 
-build_dir="$test_dir/../build"
-test_output_dir="$build_dir/output"
-mkdir -p "$test_output_dir"
+phx_build_dir="$phx_test_dir/../build"
+phx_test_output_dir="$phx_build_dir/output"
+mkdir -p "$phx_test_output_dir"
 
-test_input=$(mktemp -p "$test_output_dir" || exit 4)
-expected_output=$(mktemp -p "$test_output_dir" || exit 4)
-expected_error=$(mktemp -p "$test_output_dir" || exit 4)
+phx_test_input=$(mktemp -p "$phx_test_output_dir" || exit 4)
+phx_expected_output=$(mktemp -p "$phx_test_output_dir" || exit 4)
+phx_expected_error=$(mktemp -p "$phx_test_output_dir" || exit 4)
