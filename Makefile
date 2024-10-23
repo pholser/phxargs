@@ -33,10 +33,10 @@ $(BUILDDIR)/$(LIBTARGET): $(OBJECTS)
 	ar rcs $@ $^
 
 $(BUILDDIR)/%.o: $(TESTDIR)/%.c
-	$(CC) $(CFLAGS) $(INC) -I$(SRCDIR) -I/opt/homebrew/include -c $< -o $@
+	$(CC) $(CFLAGS) $(INC) -I$(SRCDIR) -c $< -o $@
 
 $(BUILDDIR)/%: $(BUILDDIR)/%.o $(BUILDDIR)/$(LIBTARGET)
-	$(CC) $^ -o $@ $(LIB) -L/opt/homebrew/lib -lcheck
+	$(CC) $^ -o $@ $(LIB) -lcheck
 
 test: $(TEST_EXECUTABLES)
 	@for script in $(TESTDIR)/test-*.sh ; do bash $$script ; done
