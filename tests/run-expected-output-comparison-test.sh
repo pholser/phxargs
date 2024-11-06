@@ -14,6 +14,12 @@ phx_build_dir="$phx_test_dir/../build"
 phx_test_output_dir="$phx_build_dir/output"
 mkdir -p "$phx_test_output_dir"
 
+if [[ "$phx_xargs_options" =~ "-a"[[:space:]] ]]; then
+  input_flag=''
+else
+  input_flag="< $phx_test_input"
+fi
+
 if [[ "$phx_xargs_options" =~ "-a"[[:space:]] ]] ; then
   /usr/bin/env -i "$phx_build_dir/phxargs" \
     $phx_xargs_options \

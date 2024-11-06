@@ -19,7 +19,7 @@ make_temp() {
 }
 
 phx_test_dir=$(dirname "$(readlink -f "$0")")
-phx_test_name=$(basename "$(readlink -f "$0")" | sed 's/^test_//')
+phx_test_name=$(basename "$(readlink -f "$0")" | sed 's/^test-//')
 
 cd "$phx_test_dir" || exit 3
 
