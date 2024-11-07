@@ -1,0 +1,38 @@
+#!/usr/bin/env expect
+
+set phx_test_name [lindex $argv 0]
+set phx_test_input [lindex $argv 1]
+set phx_expected_output [lindex $argv 2]
+set phx_expected_error [lindex $argv 3]
+set phx_xargs_args [lrange $argv 4 end]
+
+set phx_test_dir [file dirname [info script]]
+cd $phx_test_dir
+
+set phx_build_dir "$phx_test_dir/../build"
+
+spawn "$phx_build_dir/phxargs" {*}$phx_xargs_args < $input_file
+
+set expected_output [open $phx_expected_output r]
+set expected_error [open $phx_expected_error r]
+
+expect {
+  "...?" {
+    send "y\r"
+    exp_continue
+  }
+  eof {
+    set actual_output [read $spawn_out(buffer)]
+    if {[string equal $actual_output [read $expected_output]]} {
+      puts "$phx_test_name passed"
+    } else {
+      puts "$phx_test_name failed: unexpected output"
+    }
+  }
+  default {
+    puts "$phx_test_name failed: unexpected prompt or output"
+  }
+}
+
+close $expected_error
+close $expected_output
