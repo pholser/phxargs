@@ -30,3 +30,4 @@ mkdir -p "$phx_test_output_dir"
 phx_test_input=$(make_temp "$phx_test_output_dir" in || exit 4)
 phx_expected_output=$(make_temp "$phx_test_output_dir" out || exit 4)
 phx_expected_error=$(make_temp "$phx_test_output_dir" err || exit 4)
+phx_interaction_script=$(make_temp "$phx_test_output_dir" in || exit 4)

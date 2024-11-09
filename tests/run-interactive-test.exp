@@ -1,0 +1,26 @@
+#!/usr/bin/env expect
+
+exp_internal 1
+
+set phx_test_name [lindex $argv 0]
+set phx_test_input [lindex $argv 1]
+set phx_expected_output [lindex $argv 2]
+set phx_expected_error [lindex $argv 3]
+set phx_xargs_args [lrange $argv 4 end]
+
+set phx_test_dir [file dirname [info script]]
+cd $phx_test_dir
+
+set phx_build_dir "$phx_test_dir/../build"
+
+set test_input [open $phx_test_input r]
+set expected_output [open $phx_expected_output r]
+set expected_error [open $phx_expected_error r]
+
+spawn "$phx_build_dir/phxargs" {*}$phx_xargs_args
+
+foreach line [split [read $test_input] "\n"] {
+  send "$line\r"
+}
+close $test_input
+send "\004"
