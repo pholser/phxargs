@@ -58,12 +58,14 @@ file(GLOB SHELL_TESTS "${CMAKE_SOURCE_DIR}/tests/test-*.sh")
 
 foreach(script ${SHELL_TESTS})
   add_custom_command(TARGET run_tests
+    POST_BUILD
     COMMAND "${script}"
     COMMENT "Running shell test: ${script}"
   )
 endforeach()
 
 add_custom_command(TARGET run_tests
+  POST_BUILD
   COMMAND echo "Running C-based tests..."
   COMMAND ${CMAKE_CTEST_COMMAND}
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
