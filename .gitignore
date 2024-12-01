@@ -12,6 +12,7 @@ cmake-build-debug/
 CMakeCache.txt
 CMakeFiles/
 CMakeScripts/
+CTestTestfile.cmake
 Makefile
 cmake_install.cmake
-
+Testing/
