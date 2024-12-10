@@ -1,7 +1,7 @@
 #ifndef PHXARGS_XARGS_MODE_H
 #define PHXARGS_XARGS_MODE_H
 
-#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "command.h"

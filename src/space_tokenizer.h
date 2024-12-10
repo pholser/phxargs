@@ -1,6 +1,9 @@
 #ifndef PHXARGS_SPACE_TOKENIZER_H
 #define PHXARGS_SPACE_TOKENIZER_H
 
+#include <stddef.h>
+#include <stdint.h>
+
 typedef struct _space_tokenizer space_tokenizer;
 
 space_tokenizer* space_tokenizer_create(

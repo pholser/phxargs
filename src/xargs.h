@@ -1,8 +1,6 @@
 #ifndef PHXARGS_XARGS_H
 #define PHXARGS_XARGS_H
 
-#include "xargs_mode.h"
-
 typedef struct _xargs xargs;
 
 xargs* xargs_create(int argc, char** argv);

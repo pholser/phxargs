@@ -1,11 +1,8 @@
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "buffer.h"
-#include "options.h"
 #include "tokenizer.h"
-#include "util.h"
 
 void tokenizer_init(
   tokenizer* t,

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "arg_source.h"
@@ -7,7 +6,6 @@
 #include "options.h"
 #include "space_tokenizer.h"
 #include "tokenizer.h"
-#include "util.h"
 #include "xargs_mode.h"
 
 int xargs_mode_run(xargs_mode* mode) {

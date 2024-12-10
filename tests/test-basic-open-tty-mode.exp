@@ -1,0 +1,31 @@
+#!/usr/bin/expect -f
+
+spawn /Users/paulholser/c/phxargs/build/phxargs -o /Users/paulholser/c/phxargs/tests/open-tty-script.sh 
+
+# Add a small delay before sending input
+sleep 1
+
+send "arg1 arg2\r"
+send \x04
+
+set timeout 60
+expect {
+  "From stdin: arg1 arg2" {
+    expect "Enter input:"
+    send "abc\r"
+    expect "Received: abc"
+    expect eof
+  }
+  timeout {
+    puts "Timeout occurred"
+    exit 1
+  }
+  eof {
+    puts "EOF occurred unexpectedly"
+    exit 1
+  }
+}
+
+catch wait result
+set exit_status [lindex $result 3]
+exit $exit_status   

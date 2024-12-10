@@ -1,6 +1,8 @@
 #ifndef PHXARGS_DELIM_TOKENIZER_H
 #define PHXARGS_DELIM_TOKENIZER_H
 
+#include <stddef.h>
+
 typedef struct _delim_tokenizer delim_tokenizer;
 
 delim_tokenizer* delim_tokenizer_create(
