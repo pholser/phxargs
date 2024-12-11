@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/errno.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -35,14 +36,16 @@ pid_t safe_fork() {
 void safe_exec(char** exec_args, uint8_t open_tty) {
   if (open_tty) {
     if (freopen("/dev/tty", "r", stdin) == NULL) {
-        perror("phxargs: cannot reopen stdin as /dev/tty");
-        exit(EXIT_FAILURE);
+      perror("phxargs: cannot reopen stdin as /dev/tty");
+      exit(EXIT_FAILURE);
     }
   }
 
   execvp(exec_args[0], exec_args);
-  perror("phxargs: execvp");
-  exit(EXIT_FAILURE);
+
+  int failed_result = errno;
+  fprintf(stderr, "phxargs: %s: %s\n", exec_args[0], strerror(failed_result));
+  exit(failed_result == ENOENT ? 127 : 126);
 }
 
 int command_status(pid_t child_pid) {

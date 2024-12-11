@@ -1,6 +1,6 @@
-# Map private system headers to public ones
-map private include "_stddef.h" to "stddef.h"
-map private include "_stdlib.h" to "stdlib.h"
-map private include "_stdio.h" to "stdio.h"
-map private include "_string.h" to "string.h"
-
+[
+  { "include": ["<_stddef.h>", "private", "<stddef.h>", "public"] },
+  { "include": ["<_stdlib.h>", "private", "<stdlib.h>", "public"] },
+  { "include": ["<_stdio.h>", "private", "<stdio.h>", "public"] },
+  { "include": ["<_string.h>", "private", "<string.h>", "public"] },
+]

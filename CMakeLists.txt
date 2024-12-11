@@ -74,7 +74,7 @@ if(IWYU_PATH)
       TARGET iwyu
       COMMAND ${IWYU_PATH} --std=c99 ${CMAKE_C_FLAGS_DEBUG} ${CMAKE_C_FLAGS}
               ${SYSTEM_INCLUDE_PATHS} -I${SRC_DIR}
-              --mapping_file=${CMAKE_SOURCE_DIR}/phxargs.iwyu.imp
+              -Xiwyu --mapping_file=${CMAKE_SOURCE_DIR}/phxargs.iwyu.imp
               ${source_file}
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
       COMMENT "Running IWYU on ${source_file}"

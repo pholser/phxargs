@@ -6,6 +6,7 @@ phx_expected_output=$3
 phx_expected_error=$4
 phx_xargs_options=$5
 phx_xargs_cmd_line=$6
+phx_expected_exit_status=$7
 
 phx_test_dir=$(dirname "$(readlink -f "$0")")
 cd "$phx_test_dir" || exit 3
@@ -28,6 +29,12 @@ else
      > "$phx_test_output_dir/phxargs-$phx_test_name.out" \
      2> "$phx_test_output_dir/phxargs-$phx_test_name.err" \
      < "$phx_test_input"
+fi
+phx_actual_exit_status=$?
+if [[ -n "$phx_expected_exit_status" \
+      && "$phx_expected_exit_status" != "$phx_actual_exit_status" ]] ; then
+  difference=$((phx_expected_exit_status - phx_actual_exit_status))
+  exit $(( difference < 0 ? -1 * difference : difference ))
 fi
 
 cd "$phx_test_output_dir" || exit 3
