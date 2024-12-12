@@ -12,6 +12,8 @@ typedef struct {
 
 void buffer_print(buffer* buf);
 
+char* buffer_start(buffer* buf);
+
 void buffer_init(buffer* buf, size_t sz);
 
 size_t buffer_pos(buffer* buf);

@@ -30,7 +30,7 @@ void tokenizer_add(tokenizer* t, char ch) {
 }
 
 char* tokenizer_token(tokenizer* t, size_t pos) {
-  return t->buf.buf + pos;
+  return buffer_start(&(t->buf)) + pos;
 }
 
 void tokenizer_destroy(tokenizer* t) {

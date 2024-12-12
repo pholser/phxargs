@@ -11,6 +11,10 @@ void buffer_init(buffer* buf, size_t sz) {
   buf->pos = 0;
 }
 
+char* buffer_start(buffer* buf) {
+  return buf->buf;
+}
+
 size_t buffer_pos(buffer* buf) {
   return buf->pos;
 }
