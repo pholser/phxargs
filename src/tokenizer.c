@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "buffer.h"
+#include "command.h"
 #include "tokenizer.h"
 
 void tokenizer_init(
