@@ -7,3 +7,4 @@ char* str_replace(
   const char* replacement);
 
 #endif  // PHXARGS_STR_H
+

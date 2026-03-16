@@ -57,3 +57,4 @@ size_t command_length(command* cmd);
 void command_free(command* cmd);
 
 #endif  // PHXARGS_COMMAND_H
+

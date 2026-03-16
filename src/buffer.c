@@ -30,3 +30,4 @@ uint8_t buffer_full(buffer* buf) {
 void buffer_destroy(buffer* buf) {
   free(buf->buf);
 }
+

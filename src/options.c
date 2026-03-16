@@ -241,3 +241,4 @@ int parse_options(options* opts, int argc, char** argv) {
 
   return optind;
 }
+

@@ -57,3 +57,4 @@ void xargs_replace_args(xargs_mode* mode, char* new_arg);
 void xargs_mode_destroy(xargs_mode* mode);
 
 #endif  // PHXARGS_XARGS_MODE_H
+

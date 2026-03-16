@@ -88,3 +88,4 @@ void xargs_mode_destroy(xargs_mode* mode) {
   tokenizer_destroy(mode->toker);
   free(mode);
 }
+

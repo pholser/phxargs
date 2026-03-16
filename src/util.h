@@ -16,3 +16,4 @@ static inline size_t min(size_t a, size_t b) {
 }
 
 #endif  // PHXARGS_UTIL_H
+

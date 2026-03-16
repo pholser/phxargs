@@ -25,3 +25,4 @@ uint8_t buffer_full(buffer* buf);
 void buffer_destroy(buffer* buf);
 
 #endif  // PHXARGS_BUFFER_H
+

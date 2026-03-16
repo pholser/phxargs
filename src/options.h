@@ -58,3 +58,4 @@ uint8_t options_line_mode(options* opts);
 uint8_t options_max_command_length_specified(options* opts);
 
 #endif  // PHXARGS_OPTIONS_H
+

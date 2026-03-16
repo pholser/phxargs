@@ -14,3 +14,4 @@ replacer_mode* replacer_mode_create(
 void replacer_mode_destroy(replacer_mode* mode);
 
 #endif  // PHXARGS_REPLACER_MODE_H
+

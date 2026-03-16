@@ -39,3 +39,4 @@ char* tokenizer_token(tokenizer* t, size_t pos);
 void tokenizer_destroy(tokenizer* t);
 
 #endif  // PHXARGS_TOKENIZER_H
+

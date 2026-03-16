@@ -73,3 +73,4 @@ void appender_mode_destroy(appender_mode* const mode) {
   xargs_mode_destroy(&(mode->base));
   free(mode);
 }
+

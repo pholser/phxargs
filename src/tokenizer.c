@@ -37,3 +37,4 @@ void tokenizer_destroy(tokenizer* t) {
   buffer_destroy(&(t->buf));
   free(t);
 }
+

@@ -21,3 +21,4 @@ command_args* clone_args(command_args* args);
 void free_args(command_args* args);
 
 #endif  // PHXARGS_COMMAND_ARGS_H
+

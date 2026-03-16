@@ -57,3 +57,4 @@ void replacer_mode_destroy(replacer_mode* mode) {
   xargs_mode_destroy(&(mode->base));
   free(mode);
 }
+

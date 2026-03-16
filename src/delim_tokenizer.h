@@ -12,3 +12,4 @@ delim_tokenizer* delim_tokenizer_create(
 void delim_tokenizer_destroy(delim_tokenizer* t);
 
 #endif  // PHXARGS_DELIM_TOKENIZER_H
+

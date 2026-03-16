@@ -45,3 +45,4 @@ void free_args(command_args* args) {
   }
   free(args->args);
 }
+

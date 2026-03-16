@@ -31,3 +31,4 @@ void xargs_destroy(xargs* x) {
   xargs_mode_destroy(x->mode);
   free(x);
 }
+

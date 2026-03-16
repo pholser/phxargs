@@ -14,3 +14,4 @@ appender_mode* appender_mode_create(
 void appender_mode_destroy(appender_mode* mode);
 
 #endif  // PHXARGS_APPENDER_MODE_H
+

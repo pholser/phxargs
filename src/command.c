@@ -350,3 +350,4 @@ void command_free(command* cmd) {
   free_args(&(cmd->fixed_args));
   free(cmd->arg_placeholder);
 }
+
