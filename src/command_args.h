@@ -3,22 +3,22 @@
 
 #include <stddef.h>
 
-typedef struct {
-  size_t count;
-  size_t capacity;
-  char** args;
-  size_t length;
-} command_args;
+typedef struct _command_args command_args;
 
-void init_args(command_args* args);
+command_args* command_args_create(void);
 
-void init_args_with_capacity(command_args* args, size_t capacity);
+command_args* command_args_create_with_capacity(size_t capacity);
 
-void add_arg(command_args* args, char* new_arg);
+void command_args_add(command_args* args, char* new_arg);
 
-command_args* clone_args(command_args* args);
+size_t command_args_count(command_args* args);
 
-void free_args(command_args* args);
+size_t command_args_length(command_args* args);
+
+char* command_args_get(command_args* args, size_t i);
+
+command_args* command_args_clone(command_args* args);
+
+void command_args_destroy(command_args* args);
 
 #endif  // PHXARGS_COMMAND_ARGS_H
-

@@ -44,7 +44,7 @@ void xargs_mode_add_input_argument(
 }
 
 uint8_t xargs_mode_input_args_remain(xargs_mode* mode) {
-  return mode->cmd.input_args.count > 0;
+  return command_input_args_remain(&(mode->cmd));
 }
 
 void xargs_mode_ensure_command_length_not_exceeded(
@@ -85,6 +85,7 @@ void xargs_mode_init(
 }
 
 void xargs_mode_destroy(xargs_mode* mode) {
+  command_free(&(mode->cmd));
   tokenizer_destroy(mode->toker);
   free(mode);
 }

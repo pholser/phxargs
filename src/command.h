@@ -20,9 +20,9 @@ typedef struct {
 
   size_t line_count;
   size_t env_length;
-  command_args fixed_args;
-  command_args input_args;
-  command_args replaced_fixed_args;
+  command_args* fixed_args;
+  command_args* input_args;
+  command_args* replaced_fixed_args;
 } command;
 
 void command_init(

@@ -4,45 +4,63 @@
 #include "command_args.h"
 #include "util.h"
 
-void init_args_with_capacity(command_args* args, size_t capacity) {
+struct _command_args {
+  size_t count;
+  size_t capacity;
+  char** args;
+  size_t length;
+};
+
+static void reallocate_if_needed(command_args* args) {
+  if (args->count + 1 > args->capacity) {
+    args->capacity *= 2;
+    args->args = safe_realloc(args->args, args->capacity * sizeof(char*));
+  }
+}
+
+command_args* command_args_create_with_capacity(size_t capacity) {
+  command_args* args = safe_malloc(sizeof(command_args));
   args->count = 0;
   args->capacity = capacity;
   args->args = safe_calloc(args->capacity, sizeof(char*));
   args->length = 0;
+  return args;
 }
 
-void init_args(command_args* args) {
-  init_args_with_capacity(args, 10);
+command_args* command_args_create(void) {
+  return command_args_create_with_capacity(10);
 }
 
-void reallocate_args_if_needed(command_args* args) {
-  if (args->count + 1 > args->capacity) {
-    args->capacity *= 2;
-    args->args =
-      safe_realloc(args->args, args->capacity * sizeof(char*));
-  }
-}
-
-void add_arg(command_args* args, char* new_arg) {
-  reallocate_args_if_needed(args);
-
+void command_args_add(command_args* args, char* new_arg) {
+  reallocate_if_needed(args);
   args->args[args->count++] = safe_strdup(new_arg);
   args->length += strlen(new_arg) + 1;
 }
 
-command_args* clone_args(command_args* args) {
-  command_args* copy = safe_malloc(sizeof(command_args));
-  init_args_with_capacity(copy, args->capacity);
-  for (size_t i = 0; i < args->length; ++i) {
-    add_arg(copy, args->args[i]);
+size_t command_args_count(command_args* args) {
+  return args->count;
+}
+
+size_t command_args_length(command_args* args) {
+  return args->length;
+}
+
+char* command_args_get(command_args* args, size_t i) {
+  return args->args[i];
+}
+
+command_args* command_args_clone(command_args* args) {
+  command_args* copy = command_args_create_with_capacity(args->capacity);
+  for (size_t i = 0; i < args->count; ++i) {
+    command_args_add(copy, args->args[i]);
   }
   return copy;
 }
 
-void free_args(command_args* args) {
+void command_args_destroy(command_args* args) {
   for (size_t i = 0; i < args->count; ++i) {
     free(args->args[i]);
   }
   free(args->args);
+  free(args);
 }
-
