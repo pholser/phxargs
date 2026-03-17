@@ -48,7 +48,7 @@ replacer_mode* replacer_mode_create(
     arg_index,
     argc,
     argv);
-  mode->placeholder = safe_strdup(opts->arg_placeholder);
+  mode->placeholder = safe_strdup(options_arg_placeholder(opts));
   return mode;
 }
 

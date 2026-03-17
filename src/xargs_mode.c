@@ -67,20 +67,20 @@ void xargs_mode_init(
   char** argv) {
 
   mode->ops = ops;
-  mode->arg_source = arg_source_init(opts->arg_file_path);
+  mode->arg_source = arg_source_init(options_arg_file_path(opts));
   command_init(&(mode->cmd), opts, arg_index, argc, argv);
 
-  if (opts->use_nul_char_as_arg_delimiter || opts->arg_delimiter != '\0') {
+  if (options_use_nul_char_as_arg_delimiter(opts) || options_arg_delimiter(opts) != '\0') {
     mode->toker =
       (tokenizer*) delim_tokenizer_create(
         command_max_length(&(mode->cmd)),
-        opts->arg_delimiter);
+        options_arg_delimiter(opts));
   } else {
     mode->toker =
       (tokenizer*) space_tokenizer_create(
         command_max_length(&(mode->cmd)),
         command_line_mode(&(mode->cmd)),
-        opts->logical_end_of_input_marker);
+        options_logical_end_of_input_marker(opts));
   }
 }
 

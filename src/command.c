@@ -98,22 +98,23 @@ size_t decide_max_length(command* cmd, options* opts) {
     ((size_t) sysconf(_SC_ARG_MAX)) - (2 * cmd->env_length) - 2048;
   if (options_max_command_length_specified(opts)) {
     size_t min_length = command_length(cmd);
-    if (opts->max_command_length < min_length) {
+    size_t specified = options_max_command_length(opts);
+    if (specified < min_length) {
       fprintf(
         stderr,
         "phxargs: -s %zu: too small (minimum %zu bytes)",
-        opts->max_command_length,
+        specified,
         min_length);
       exit(EXIT_FAILURE);
-    } else if (opts->max_command_length > max_length) {
+    } else if (specified > max_length) {
       fprintf(
         stderr,
         "phxargs: -s %zu: too large (maximum %zu bytes)",
-        opts->max_command_length,
+        specified,
         max_length);
       exit(EXIT_FAILURE);
     } else {
-      return opts->max_command_length;
+      return specified;
     }
   } else {
     return min(128 * 1024, max_length);
@@ -149,13 +150,13 @@ void command_init(
   int argc,
   char** argv) {
 
-  cmd->max_lines = opts->max_lines_per_command;
-  cmd->max_args = opts->max_args_per_command;
-  cmd->arg_placeholder = safe_strdup(opts->arg_placeholder);
-  cmd->open_tty = opts->open_tty;
-  cmd->prompt = opts->prompt;
-  cmd->trace = opts->trace;
-  cmd->terminate_on_too_large_command = opts->terminate_on_too_large_command;
+  cmd->max_lines = options_max_lines_per_command(opts);
+  cmd->max_args = options_max_args_per_command(opts);
+  cmd->arg_placeholder = safe_strdup(options_arg_placeholder(opts));
+  cmd->open_tty = options_open_tty(opts);
+  cmd->prompt = options_prompt(opts);
+  cmd->trace = options_trace(opts);
+  cmd->terminate_on_too_large_command = options_terminate_on_too_large_command(opts);
   cmd->line_mode = options_line_mode(opts);
   cmd->line_count = 0;
   cmd->env_length = env_length();

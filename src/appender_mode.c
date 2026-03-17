@@ -58,7 +58,7 @@ appender_mode* appender_mode_create(
 
   appender_mode* mode = safe_malloc(sizeof(appender_mode));
   mode->suppress_execution_on_empty_input =
-    opts->suppress_execution_on_empty_input;
+    options_suppress_execution_on_empty_input(opts);
   xargs_mode_init(
     &(mode->base),
     &appender_mode_ops,

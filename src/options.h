@@ -4,58 +4,42 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct {
-  /* -0 option */
-  uint8_t use_nul_char_as_arg_delimiter;
+typedef struct _options options;
 
-  /* -a option */
-  char* arg_file_path;
+options* options_create(int argc, char** argv);
 
-  /* -d option */
-  char arg_delimiter;
+void options_destroy(options* opts);
 
-  /* -E option */
-  char* logical_end_of_input_marker;
+int options_optind(options* opts);
 
-  /* -I option */
-  uint8_t arg_placeholder_enabled;
-  char* arg_placeholder;
+uint8_t options_use_nul_char_as_arg_delimiter(options* opts);
 
-  /* -L option */
-  size_t max_lines_per_command;
-  char* max_lines_endptr;
+char* options_arg_file_path(options* opts);
 
-  /* -n option */
-  size_t max_args_per_command;
-  char* max_args_endptr;
+char options_arg_delimiter(options* opts);
 
-  /* -o option */
-  uint8_t open_tty;
+char* options_logical_end_of_input_marker(options* opts);
 
-  /* -p option */
-  uint8_t prompt;
+char* options_arg_placeholder(options* opts);
 
-  /* -r option */
-  uint8_t suppress_execution_on_empty_input;
+size_t options_max_lines_per_command(options* opts);
 
-  /* -s option */
-  size_t max_command_length;
-  char* max_command_length_endptr;
+size_t options_max_args_per_command(options* opts);
 
-  /* -t option */
-  uint8_t trace;
+uint8_t options_open_tty(options* opts);
 
-  /* -x option */
-  uint8_t terminate_on_too_large_command;
-} options;
+uint8_t options_prompt(options* opts);
 
-void init_options(options* opts);
+uint8_t options_suppress_execution_on_empty_input(options* opts);
 
-int parse_options(options* opts, int argc, char** argv);
+size_t options_max_command_length(options* opts);
+
+uint8_t options_trace(options* opts);
+
+uint8_t options_terminate_on_too_large_command(options* opts);
 
 uint8_t options_line_mode(options* opts);
 
 uint8_t options_max_command_length_specified(options* opts);
 
 #endif  // PHXARGS_OPTIONS_H
-

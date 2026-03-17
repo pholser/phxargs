@@ -12,14 +12,15 @@ struct _xargs {
 };
 
 xargs* xargs_create(int argc, char** argv) {
-  options opts;
-  init_options(&opts);
-  int arg_index = parse_options(&opts, argc, argv);
+  options* opts = options_create(argc, argv);
+  int arg_index = options_optind(opts);
 
   xargs* x = safe_malloc(sizeof(xargs));
-  x->mode = opts.arg_placeholder == NULL
-    ? (xargs_mode*) appender_mode_create(&opts, arg_index, argc, argv)
-    : (xargs_mode*) replacer_mode_create(&opts, arg_index, argc, argv);
+  x->mode = options_arg_placeholder(opts) == NULL
+    ? (xargs_mode*) appender_mode_create(opts, arg_index, argc, argv)
+    : (xargs_mode*) replacer_mode_create(opts, arg_index, argc, argv);
+
+  options_destroy(opts);
   return x;
 }
 
