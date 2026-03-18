@@ -13,7 +13,7 @@ typedef struct _xargs_mode_ops xargs_mode_ops;
 typedef struct _xargs_mode {
   xargs_mode_ops* ops;
   FILE* arg_source;
-  command cmd;
+  command* cmd;
   tokenizer* toker;
 } xargs_mode;
 

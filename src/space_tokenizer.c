@@ -28,6 +28,7 @@ struct _space_tokenizer {
 };
 
 void space_tokenizer_no_token(space_tokenizer* t) {
+  tokenizer_reset(&(t->base));
   t->state = NO_TOKEN;
   t->quote_char = '\0';
   t->token_start = 0;
@@ -98,7 +99,7 @@ char* next_space_token(
           continue;
         } else if (ch == '\n') {
           if (line_has_token && last_char != ' ') {
-            ++cmd->line_count;
+            command_increment_line_count(cmd);
           }
         } else if (ch == '\'' || ch == '"') {
           space_tokenizer_start_quoted_token(self, ch);
@@ -122,7 +123,7 @@ char* next_space_token(
           return space_tokenizer_end_token(self);
         } else if (ch == '\n') {
           if (line_has_token && last_char != ' ') {
-            ++cmd->line_count;
+            command_increment_line_count(cmd);
           }
           return space_tokenizer_end_token(self);
         } else if (ch == '\\') {
@@ -155,7 +156,7 @@ char* next_space_token(
     exit(EXIT_FAILURE);
   } else {
     if (line_has_token) {
-      ++cmd->line_count;
+      command_increment_line_count(cmd);
       return space_tokenizer_end_token(self);
     }
     return NULL;

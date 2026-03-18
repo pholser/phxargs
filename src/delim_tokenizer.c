@@ -34,6 +34,7 @@ char* next_delim_token(
 
   delim_tokenizer* self = (delim_tokenizer*) t;
 
+  tokenizer_reset(t);
   delim_tokenizer_start_token(self);
 
   int ch;
@@ -41,7 +42,7 @@ char* next_delim_token(
     if (ch != self->delim) {
       delim_tokenizer_append_to_token(self, ch);
     } else {
-      ++cmd->line_count;
+      command_increment_line_count(cmd);
       return delim_tokenizer_end_token(self);
     }
   }

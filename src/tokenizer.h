@@ -10,7 +10,7 @@ typedef struct _tokenizer_ops tokenizer_ops;
 
 typedef struct _tokenizer {
   tokenizer_ops* ops;
-  buffer buf;
+  buffer* buf;
 } tokenizer;
 
 struct _tokenizer_ops {
@@ -35,6 +35,8 @@ size_t tokenizer_pos(tokenizer* t);
 void tokenizer_add(tokenizer* t, char ch);
 
 char* tokenizer_token(tokenizer* t, size_t pos);
+
+void tokenizer_reset(tokenizer* t);
 
 void tokenizer_destroy(tokenizer* t);
 

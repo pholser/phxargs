@@ -10,7 +10,7 @@ void tokenizer_init(
   size_t buffer_size) {
 
   t->ops = ops;
-  buffer_init(&(t->buf), buffer_size);
+  t->buf = buffer_create(buffer_size);
 }
 
 char* tokenizer_next_token(
@@ -22,19 +22,22 @@ char* tokenizer_next_token(
 }
 
 size_t tokenizer_pos(tokenizer* t) {
-  return buffer_pos(&(t->buf));
+  return buffer_pos(t->buf);
 }
 
 void tokenizer_add(tokenizer* t, char ch) {
-  buffer_put(&(t->buf), ch);
+  buffer_put(t->buf, ch);
 }
 
 char* tokenizer_token(tokenizer* t, size_t pos) {
-  return buffer_start(&(t->buf)) + pos;
+  return buffer_start(t->buf) + pos;
+}
+
+void tokenizer_reset(tokenizer* t) {
+  buffer_reset(t->buf);
 }
 
 void tokenizer_destroy(tokenizer* t) {
-  buffer_destroy(&(t->buf));
+  buffer_destroy(t->buf);
   free(t);
 }
-

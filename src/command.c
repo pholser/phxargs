@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "command.h"
+#include "command_args.h"
 #include "str.h"
 #include "util.h"
 
@@ -15,7 +16,25 @@
 
 extern char** environ;
 
-size_t env_length() {
+struct _command {
+  size_t max_lines;
+  size_t max_args;
+  size_t max_length;
+  char* arg_placeholder;
+  uint8_t open_tty;
+  uint8_t prompt;
+  uint8_t trace;
+  uint8_t terminate_on_too_large_command;
+  uint8_t line_mode;
+
+  size_t line_count;
+  size_t env_length;
+  command_args* fixed_args;
+  command_args* input_args;
+  command_args* replaced_fixed_args;
+};
+
+static size_t calc_env_length() {
   size_t sz = 0;
   for (char** e = environ; *e != NULL; ++e) {
     sz += strlen(*e) + 1;
@@ -23,7 +42,7 @@ size_t env_length() {
   return sz;
 }
 
-pid_t safe_fork() {
+static pid_t safe_fork() {
   pid_t pid = fork();
   if (pid < 0) {
     perror("phxargs: fork");
@@ -33,7 +52,7 @@ pid_t safe_fork() {
   return pid;
 }
 
-void safe_exec(char** exec_args, uint8_t open_tty) {
+static void safe_exec(char** exec_args, uint8_t open_tty) {
   if (open_tty) {
     if (freopen("/dev/tty", "r", stdin) == NULL) {
       perror("phxargs: cannot reopen stdin as /dev/tty");
@@ -48,7 +67,7 @@ void safe_exec(char** exec_args, uint8_t open_tty) {
   exit(failed_result == ENOENT ? 127 : 126);
 }
 
-int command_status(pid_t child_pid) {
+static int command_status(pid_t child_pid) {
   int status;
 
   pid_t wait_result = waitpid(child_pid, &status, 0);
@@ -67,7 +86,7 @@ int command_status(pid_t child_pid) {
   return EXIT_FAILURE;
 }
 
-void add_fixed_argument(command* cmd, char* new_arg) {
+static void add_fixed_argument(command* cmd, char* new_arg) {
   command_args_add(cmd->fixed_args, new_arg);
 }
 
@@ -89,11 +108,11 @@ size_t command_length(command* cmd) {
     + command_args_length(cmd->input_args);
 }
 
-uint8_t command_max_args_specified(command* cmd) {
+static uint8_t command_max_args_specified(command* cmd) {
   return cmd->max_args > 0;
 }
 
-size_t decide_max_length(command* cmd, options* opts) {
+static size_t decide_max_length(command* cmd, options* opts) {
   size_t max_length =
     ((size_t) sysconf(_SC_ARG_MAX)) - (2 * cmd->env_length) - 2048;
   if (options_max_command_length_specified(opts)) {
@@ -143,12 +162,13 @@ void command_ensure_length_not_exceeded(
   }
 }
 
-void command_init(
-  command* cmd,
+command* command_create(
   options* opts,
   int arg_index,
   int argc,
   char** argv) {
+
+  command* cmd = safe_malloc(sizeof(command));
 
   cmd->max_lines = options_max_lines_per_command(opts);
   cmd->max_args = options_max_args_per_command(opts);
@@ -159,7 +179,7 @@ void command_init(
   cmd->terminate_on_too_large_command = options_terminate_on_too_large_command(opts);
   cmd->line_mode = options_line_mode(opts);
   cmd->line_count = 0;
-  cmd->env_length = env_length();
+  cmd->env_length = calc_env_length();
 
   if (arg_index == argc) {
     cmd->fixed_args = command_args_create_with_capacity(1);
@@ -181,9 +201,11 @@ void command_init(
 
   cmd->replaced_fixed_args =
     command_args_create_with_capacity(command_args_count(cmd->fixed_args));
+
+  return cmd;
 }
 
-void recycle_command(command* cmd) {
+static void recycle_command(command* cmd) {
   cmd->line_count = 0;
 
   command_args_destroy(cmd->input_args);
@@ -213,7 +235,7 @@ void command_replace_args(command* cmd, char* new_arg) {
   }
 }
 
-char** build_exec_args(command* cmd, size_t* exec_args_count) {
+static char** build_exec_args(command* cmd, size_t* exec_args_count) {
   command_args* fixed_args_in_play =
     cmd->arg_placeholder != NULL
       ? cmd->replaced_fixed_args
@@ -247,7 +269,7 @@ char** build_exec_args(command* cmd, size_t* exec_args_count) {
    *       incremented line count to the max. Execute cmd.
    *   (d) we may be at a point where adding `x` would cause us
    *       to exceed implied or explicit size bound. Execute cmd.
-   * 
+   *
    * (3) Add `x` to cmd.
    */
 
@@ -284,7 +306,11 @@ uint8_t command_input_args_remain(command* cmd) {
   return command_args_count(cmd->input_args) > 0;
 }
 
-uint8_t confirm_execution() {
+void command_increment_line_count(command* cmd) {
+  ++cmd->line_count;
+}
+
+static uint8_t confirm_execution() {
   FILE* tty = fopen("/dev/tty", "r");
   if (tty == NULL) {
     perror("phxargs: cannot open /dev/tty");
@@ -353,5 +379,5 @@ void command_free(command* cmd) {
   command_args_destroy(cmd->fixed_args);
   command_args_destroy(cmd->replaced_fixed_args);
   free(cmd->arg_placeholder);
+  free(cmd);
 }
-

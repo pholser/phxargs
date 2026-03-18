@@ -4,25 +4,20 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct {
-  char* buf;
-  size_t sz;
-  size_t pos;
-} buffer;
+typedef struct _buffer buffer;
 
-void buffer_print(buffer* buf);
+buffer* buffer_create(size_t sz);
 
 char* buffer_start(buffer* buf);
-
-void buffer_init(buffer* buf, size_t sz);
 
 size_t buffer_pos(buffer* buf);
 
 void buffer_put(buffer* buf, char ch);
+
+void buffer_reset(buffer* buf);
 
 uint8_t buffer_full(buffer* buf);
 
 void buffer_destroy(buffer* buf);
 
 #endif  // PHXARGS_BUFFER_H
-
