@@ -2,36 +2,30 @@
 #define PHXARGS_XARGS_MODE_H
 
 #include <stdint.h>
-#include <stdio.h>
 
-#include "command.h"
 #include "options.h"
-#include "tokenizer.h"
 
+typedef struct _xargs_mode xargs_mode;
 typedef struct _xargs_mode_ops xargs_mode_ops;
 
-typedef struct _xargs_mode {
-  xargs_mode_ops* ops;
-  FILE* arg_source;
-  command* cmd;
-  tokenizer* toker;
-} xargs_mode;
-
 struct _xargs_mode_ops {
-  int (*run)(struct _xargs_mode* self);
+  int (*run)(xargs_mode* self);
+  void (*destroy_impl)(void* impl);
 };
 
-void xargs_mode_init(
-  xargs_mode* mode,
+xargs_mode* xargs_mode_create(
   xargs_mode_ops* ops,
   options* opts,
   int arg_index,
   int argc,
-  char** argv);
+  char** argv,
+  void* impl);
+
+void* xargs_mode_impl(xargs_mode* mode);
 
 int xargs_mode_run(xargs_mode* mode);
 
-char* xargs_mode_next_token(xargs_mode* mode);
+char* xargs_mode_next_token(xargs_mode* const mode);
 
 uint8_t xargs_mode_arg_would_exceed_limits(
   xargs_mode* mode,
@@ -57,4 +51,3 @@ void xargs_replace_args(xargs_mode* mode, char* new_arg);
 void xargs_mode_destroy(xargs_mode* mode);
 
 #endif  // PHXARGS_XARGS_MODE_H
-

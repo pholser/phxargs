@@ -6,7 +6,50 @@
 #include "options.h"
 #include "space_tokenizer.h"
 #include "tokenizer.h"
+#include "util.h"
 #include "xargs_mode.h"
+
+struct _xargs_mode {
+  xargs_mode_ops* ops;
+  FILE* arg_source;
+  command* cmd;
+  tokenizer* toker;
+  void* impl;
+};
+
+xargs_mode* xargs_mode_create(
+  xargs_mode_ops* ops,
+  options* opts,
+  int arg_index,
+  int argc,
+  char** argv,
+  void* impl) {
+
+  xargs_mode* mode = safe_malloc(sizeof(xargs_mode));
+  mode->ops = ops;
+  mode->impl = impl;
+  mode->arg_source = arg_source_init(options_arg_file_path(opts));
+  mode->cmd = command_create(opts, arg_index, argc, argv);
+
+  if (options_use_nul_char_as_arg_delimiter(opts) || options_arg_delimiter(opts) != '\0') {
+    mode->toker =
+      delim_tokenizer_base(delim_tokenizer_create(
+        command_max_length(mode->cmd),
+        options_arg_delimiter(opts)));
+  } else {
+    mode->toker =
+      space_tokenizer_base(space_tokenizer_create(
+        command_max_length(mode->cmd),
+        command_line_mode(mode->cmd),
+        options_logical_end_of_input_marker(opts)));
+  }
+
+  return mode;
+}
+
+void* xargs_mode_impl(xargs_mode* mode) {
+  return mode->impl;
+}
 
 int xargs_mode_run(xargs_mode* mode) {
   return mode->ops->run(mode);
@@ -58,33 +101,8 @@ void xargs_replace_args(xargs_mode* mode, char* new_arg) {
   command_replace_args(mode->cmd, new_arg);
 }
 
-void xargs_mode_init(
-  xargs_mode* mode,
-  xargs_mode_ops* ops,
-  options* opts,
-  int arg_index,
-  int argc,
-  char** argv) {
-
-  mode->ops = ops;
-  mode->arg_source = arg_source_init(options_arg_file_path(opts));
-  mode->cmd = command_create(opts, arg_index, argc, argv);
-
-  if (options_use_nul_char_as_arg_delimiter(opts) || options_arg_delimiter(opts) != '\0') {
-    mode->toker =
-      (tokenizer*) delim_tokenizer_create(
-        command_max_length(mode->cmd),
-        options_arg_delimiter(opts));
-  } else {
-    mode->toker =
-      (tokenizer*) space_tokenizer_create(
-        command_max_length(mode->cmd),
-        command_line_mode(mode->cmd),
-        options_logical_end_of_input_marker(opts));
-  }
-}
-
 void xargs_mode_destroy(xargs_mode* mode) {
+  mode->ops->destroy_impl(mode->impl);
   command_free(mode->cmd);
   tokenizer_destroy(mode->toker);
   free(mode);

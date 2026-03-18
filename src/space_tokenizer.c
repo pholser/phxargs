@@ -17,7 +17,7 @@ typedef enum {
 } space_tokenizer_state;
 
 struct _space_tokenizer {
-  tokenizer base;
+  tokenizer* base;
 
   space_tokenizer_state state;
   int quote_char;
@@ -28,7 +28,7 @@ struct _space_tokenizer {
 };
 
 void space_tokenizer_no_token(space_tokenizer* t) {
-  tokenizer_reset(&(t->base));
+  tokenizer_reset(t->base);
   t->state = NO_TOKEN;
   t->quote_char = '\0';
   t->token_start = 0;
@@ -40,12 +40,12 @@ void space_tokenizer_start_quoted_token(
 
   t->state = IN_QUOTED_TOKEN;
   t->quote_char = quote_char;
-  t->token_start = tokenizer_pos(&(t->base));
+  t->token_start = tokenizer_pos(t->base);
 }
 
 void space_tokenizer_start_no_token_escape(space_tokenizer* t) {
   t->state = NO_TOKEN_ESCAPE;
-  t->token_start = tokenizer_pos(&(t->base));
+  t->token_start = tokenizer_pos(t->base);
 }
 
 void space_tokenizer_start_in_token_escape(space_tokenizer* t) {
@@ -54,22 +54,22 @@ void space_tokenizer_start_in_token_escape(space_tokenizer* t) {
 
 void space_tokenizer_end_escape(space_tokenizer* t, int ch) {
   t->state = IN_TOKEN;
-  tokenizer_add(&(t->base), (char) ch);
+  tokenizer_add(t->base, (char) ch);
 }
 
 void space_tokenizer_start_token(space_tokenizer* t, int ch) {
   t->state = IN_TOKEN;
-  t->token_start = tokenizer_pos(&(t->base));
-  tokenizer_add(&(t->base), (char) ch);
+  t->token_start = tokenizer_pos(t->base);
+  tokenizer_add(t->base, (char) ch);
 }
 
 void space_tokenizer_append_to_token(space_tokenizer* t, int ch) {
-  tokenizer_add(&(t->base), (char) ch);
+  tokenizer_add(t->base, (char) ch);
 }
 
 char* space_tokenizer_end_token(space_tokenizer* t) {
-  tokenizer_add(&(t->base), '\0');
-  char* token = tokenizer_token(&(t->base), t->token_start);
+  tokenizer_add(t->base, '\0');
+  char* token = tokenizer_token(t->base, t->token_start);
   space_tokenizer_no_token(t);
 
   if (t->logical_end_of_input_marker != NULL) {
@@ -86,7 +86,7 @@ char* next_space_token(
   FILE* token_source,
   command* cmd) {
 
-  space_tokenizer* self = (space_tokenizer*) t;
+  space_tokenizer* self = (space_tokenizer*) tokenizer_impl(t);
 
   uint8_t line_has_token = 0;
 
@@ -163,8 +163,15 @@ char* next_space_token(
   }
 }
 
+static void space_tokenizer_destroy_impl(void* impl) {
+  space_tokenizer* t = (space_tokenizer*) impl;
+  free(t->logical_end_of_input_marker);
+  free(t);
+}
+
 tokenizer_ops space_tokenizer_ops = {
-  .next_token = next_space_token
+  .next_token = next_space_token,
+  .destroy_impl = space_tokenizer_destroy_impl
 };
 
 space_tokenizer* space_tokenizer_create(
@@ -173,17 +180,18 @@ space_tokenizer* space_tokenizer_create(
   char* logical_end_of_input_marker) {
 
   space_tokenizer* t = safe_malloc(sizeof(space_tokenizer));
-  tokenizer_init(&(t->base), &space_tokenizer_ops, buffer_size);
   t->line_mode = line_mode;
   t->logical_end_of_input_marker = safe_strdup(logical_end_of_input_marker);
+  t->base = tokenizer_create(&space_tokenizer_ops, buffer_size, t);
   space_tokenizer_no_token(t);
 
   return t;
 }
 
-void space_tokenizer_destroy(space_tokenizer* t) {
-  free(t->logical_end_of_input_marker);
-  tokenizer_destroy(&(t->base));
-  free(t);
+tokenizer* space_tokenizer_base(space_tokenizer* t) {
+  return t->base;
 }
 
+void space_tokenizer_destroy(space_tokenizer* t) {
+  tokenizer_destroy(t->base);
+}

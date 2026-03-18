@@ -2,6 +2,7 @@
 #define PHXARGS_APPENDER_MODE_H
 
 #include "options.h"
+#include "xargs_mode.h"
 
 typedef struct _appender_mode appender_mode;
 
@@ -11,7 +12,8 @@ appender_mode* appender_mode_create(
   int argc,
   char** argv);
 
+xargs_mode* appender_mode_base(appender_mode* mode);
+
 void appender_mode_destroy(appender_mode* mode);
 
 #endif  // PHXARGS_APPENDER_MODE_H
-

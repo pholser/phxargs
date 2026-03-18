@@ -1,16 +1,29 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "buffer.h"
 #include "tokenizer.h"
+#include "util.h"
 
-void tokenizer_init(
-  tokenizer* t,
+struct _tokenizer {
+  tokenizer_ops* ops;
+  buffer* buf;
+  void* impl;
+};
+
+tokenizer* tokenizer_create(
   tokenizer_ops* ops,
-  size_t buffer_size) {
+  size_t buffer_size,
+  void* impl) {
 
+  tokenizer* t = safe_malloc(sizeof(tokenizer));
   t->ops = ops;
   t->buf = buffer_create(buffer_size);
+  t->impl = impl;
+  return t;
+}
+
+void* tokenizer_impl(tokenizer* t) {
+  return t->impl;
 }
 
 char* tokenizer_next_token(
@@ -38,6 +51,7 @@ void tokenizer_reset(tokenizer* t) {
 }
 
 void tokenizer_destroy(tokenizer* t) {
+  t->ops->destroy_impl(t->impl);
   buffer_destroy(t->buf);
   free(t);
 }

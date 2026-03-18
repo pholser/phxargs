@@ -1,29 +1,28 @@
 #ifndef PHXARGS_TOKENIZER_H
 #define PHXARGS_TOKENIZER_H
 
+#include <stddef.h>
 #include <stdio.h>
 
-#include "buffer.h"
 #include "command.h"
 
+typedef struct _tokenizer tokenizer;
 typedef struct _tokenizer_ops tokenizer_ops;
-
-typedef struct _tokenizer {
-  tokenizer_ops* ops;
-  buffer* buf;
-} tokenizer;
 
 struct _tokenizer_ops {
   char* (*next_token)(
     tokenizer* self,
     FILE* arg_source,
     command* cmd);
+  void (*destroy_impl)(void* impl);
 };
 
-void tokenizer_init(
-  tokenizer* t,
+tokenizer* tokenizer_create(
   tokenizer_ops* ops,
-  size_t buffer_size);
+  size_t buffer_size,
+  void* impl);
+
+void* tokenizer_impl(tokenizer* t);
 
 char* tokenizer_next_token(
   tokenizer* t,
@@ -41,4 +40,3 @@ void tokenizer_reset(tokenizer* t);
 void tokenizer_destroy(tokenizer* t);
 
 #endif  // PHXARGS_TOKENIZER_H
-

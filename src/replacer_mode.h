@@ -2,6 +2,7 @@
 #define PHXARGS_REPLACER_MODE_H
 
 #include "options.h"
+#include "xargs_mode.h"
 
 typedef struct _replacer_mode replacer_mode;
 
@@ -11,7 +12,8 @@ replacer_mode* replacer_mode_create(
   int argc,
   char** argv);
 
+xargs_mode* replacer_mode_base(replacer_mode* mode);
+
 void replacer_mode_destroy(replacer_mode* mode);
 
 #endif  // PHXARGS_REPLACER_MODE_H
-

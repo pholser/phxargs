@@ -2,16 +2,17 @@
 #include <stdlib.h>
 
 #include "appender_mode.h"
+#include "options.h"
 #include "util.h"
 #include "xargs_mode.h"
 
 struct _appender_mode {
-  xargs_mode base;
+  xargs_mode* base;
   uint8_t suppress_execution_on_empty_input;
 };
 
 int appender_mode_run(xargs_mode* mode) {
-  appender_mode* self = (appender_mode*) mode;
+  appender_mode* self = (appender_mode*) xargs_mode_impl(mode);
 
   int execution_status = EXIT_SUCCESS;
   uint8_t input_present = 0;
@@ -46,8 +47,13 @@ int appender_mode_run(xargs_mode* mode) {
   return execution_status;
 }
 
+static void appender_mode_destroy_impl(void* impl) {
+  free(impl);
+}
+
 xargs_mode_ops appender_mode_ops = {
-  .run = appender_mode_run
+  .run = appender_mode_run,
+  .destroy_impl = appender_mode_destroy_impl
 };
 
 appender_mode* appender_mode_create(
@@ -59,18 +65,20 @@ appender_mode* appender_mode_create(
   appender_mode* mode = safe_malloc(sizeof(appender_mode));
   mode->suppress_execution_on_empty_input =
     options_suppress_execution_on_empty_input(opts);
-  xargs_mode_init(
-    &(mode->base),
+  mode->base = xargs_mode_create(
     &appender_mode_ops,
     opts,
     arg_index,
     argc,
-    argv);
+    argv,
+    mode);
   return mode;
 }
 
-void appender_mode_destroy(appender_mode* const mode) {
-  xargs_mode_destroy(&(mode->base));
-  free(mode);
+xargs_mode* appender_mode_base(appender_mode* mode) {
+  return mode->base;
 }
 
+void appender_mode_destroy(appender_mode* mode) {
+  xargs_mode_destroy(mode->base);
+}
