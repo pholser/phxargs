@@ -4,15 +4,16 @@
 #include "arg_source.h"
 
 FILE* arg_source_init(const char* path) {
-  FILE* arg_source = stdin;
-
-  if (path != NULL) {
-    arg_source = fopen(path, "r");
-    if (arg_source == NULL) {
-      perror("phxargs: cannot open arg file");
-      exit(EXIT_FAILURE);
-    }
+  if (path == NULL) {
+    return stdin;
   }
+
+  FILE* arg_source = fopen(path, "r");
+  if (arg_source == NULL) {
+    perror("phxargs: cannot open arg file");
+    exit(EXIT_FAILURE);
+  }
+
   return arg_source;
 }
 

@@ -1,7 +1,6 @@
 #ifndef PHXARGS_TOKENIZER_H
 #define PHXARGS_TOKENIZER_H
 
-#include <stddef.h>
 #include <stdio.h>
 
 #include "command.h"
