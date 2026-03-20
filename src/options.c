@@ -54,6 +54,10 @@ struct _options {
 
   /* -x option */
   uint8_t terminate_on_too_large_command;
+
+  /* -P option */
+  size_t max_procs;
+  char* max_procs_endptr;
 };
 
 static size_t parse_number_arg(int opt, const char* arg, char** endptr) {
@@ -140,6 +144,11 @@ static void set_max_command_length(options* const opts, int opt, const char* new
     parse_number_arg(opt, new_val, &(opts->max_command_length_endptr));
 }
 
+static void set_max_procs(options* opts, int opt, const char* new_val) {
+  opts->max_procs =
+    parse_number_arg(opt, new_val, &(opts->max_procs_endptr));
+}
+
 static void set_arg_placeholder(options* opts, char* placeholder) {
   opts->arg_placeholder_enabled = 1;
   opts->arg_placeholder = placeholder;
@@ -180,6 +189,8 @@ static void init_options(options* opts) {
   reset_max_args_per_command(opts);
   opts->open_tty = 0;
   opts->prompt = 0;
+  opts->max_procs = 1;
+  opts->max_procs_endptr = NULL;
   opts->max_command_length = 0;
   opts->max_command_length_endptr = NULL;
   opts->suppress_execution_on_empty_input = 0;
@@ -189,7 +200,7 @@ static void init_options(options* opts) {
 
 static void parse_options(options* opts, int argc, char** argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:oprs:tx")) != -1) {
+  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:opP:rs:tx")) != -1) {
     switch (opt) {
       case '0':
         enable_nul_char_as_arg_delimiter(opts);
@@ -221,6 +232,9 @@ static void parse_options(options* opts, int argc, char** argv) {
         break;
       case 'p':
         enable_prompt(opts);
+        break;
+      case 'P':
+        set_max_procs(opts, opt, optarg);
         break;
       case 'r':
         enable_suppress_execution_on_empty_input(opts);
@@ -323,6 +337,10 @@ uint8_t options_prompt(options* opts) {
   return opts->prompt;
 }
 
+size_t options_max_procs(options* opts) {
+  return opts->max_procs;
+}
+
 uint8_t options_suppress_execution_on_empty_input(options* opts) {
   return opts->suppress_execution_on_empty_input;
 }
@@ -346,3 +364,4 @@ uint8_t options_line_mode(options* opts) {
 uint8_t options_max_command_length_specified(options* opts) {
   return opts->max_command_length_endptr != NULL;
 }
+

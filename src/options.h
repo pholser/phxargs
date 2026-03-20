@@ -30,6 +30,8 @@ uint8_t options_open_tty(options* opts);
 
 uint8_t options_prompt(options* opts);
 
+size_t options_max_procs(options* opts);
+
 uint8_t options_suppress_execution_on_empty_input(options* opts);
 
 size_t options_max_command_length(options* opts);
