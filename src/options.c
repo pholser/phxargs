@@ -245,6 +245,10 @@ static void parse_options(options* opts, int argc, char** argv) {
         exit(EXIT_FAILURE);
     }
   }
+}
+
+static void configure_options(options* opts, int argc, char** argv) {
+  parse_options(opts, argc, argv);
 
   /* -L implies -x */
   if (options_line_mode(opts)) {
@@ -271,7 +275,7 @@ static void parse_options(options* opts, int argc, char** argv) {
 options* options_create(int argc, char** argv) {
   options* opts = safe_malloc(sizeof(options));
   init_options(opts);
-  parse_options(opts, argc, argv);
+  configure_options(opts, argc, argv);
   return opts;
 }
 

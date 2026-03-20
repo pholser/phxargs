@@ -1,2 +1,1 @@
-* Interactive tests: -o, -t, -p
-  * Some with `expect`, perhaps
+* Interactive tests: -t
