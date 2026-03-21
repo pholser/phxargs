@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/types.h>
 
 #include "options.h"
 
@@ -21,6 +22,8 @@ uint8_t command_should_execute_after_arg_added(command* cmd);
 void command_replace_args(command* cmd, char* token);
 
 void command_ensure_length_not_exceeded(command* cmd, char* new_arg);
+
+pid_t command_execute_async(command* cmd);
 
 int command_execute(command* cmd);
 

@@ -328,50 +328,52 @@ static uint8_t confirm_execution() {
   return (buf[0] == 'y' || buf[0] == 'Y');
 }
 
-int command_execute(command* cmd) {
+pid_t command_execute_async(command* cmd) {
   pid_t pid = safe_fork();
 
-  if (pid == 0) {
-    // Child process
-    size_t exec_args_count = 0;
-    char** exec_args = build_exec_args(cmd, &exec_args_count);
-
-    if (cmd->trace) {
-      for (size_t i = 0; i < exec_args_count; ++i) {
-        fprintf(
-          stderr,
-          "%s%s",
-          exec_args[i],
-          (i < exec_args_count - 1) ? " " : "");
-      }
-      if (!cmd->prompt) {
-        fprintf(stderr, "\n");
-      }
-    }
-
-    uint8_t execute = 1;
-    if (cmd->prompt) {
-      fprintf(stderr, "?...");
-      execute = confirm_execution();
-    }
-
-    if (execute) {
-      safe_exec(exec_args, cmd->open_tty);
-    } else {
-      for (size_t i = 0; i < exec_args_count; ++i) {
-        free(exec_args[i]);
-      }
-      free(exec_args);
-    }
-
-    return EXIT_SUCCESS;
-  } else {
-    // Parent process
-    int status = command_status(pid);
-
+  // Parent process
+  if (pid > 0) {
     recycle_command(cmd);
-    return status;
+    return pid;
   }
+
+  // Child process
+  size_t exec_args_count = 0;
+  char** exec_args = build_exec_args(cmd, &exec_args_count);
+
+  if (cmd->trace) {
+    for (size_t i = 0; i < exec_args_count; ++i) {
+      fprintf(
+        stderr,
+        "%s%s",
+        exec_args[i],
+        (i < exec_args_count - 1) ? " " : "");
+    }
+    if (!cmd->prompt) {
+      fprintf(stderr, "\n");
+    }
+  }
+
+  uint8_t execute = 1;
+  if (cmd->prompt) {
+    fprintf(stderr, "?...");
+    execute = confirm_execution();
+  }
+
+  if (execute) {
+    safe_exec(exec_args, cmd->open_tty);
+  } else {
+    for (size_t i = 0; i < exec_args_count; ++i) {
+      free(exec_args[i]);
+    }
+    free(exec_args);
+  }
+
+  exit(EXIT_SUCCESS);
+}
+
+int command_execute(command* cmd) {
+  return command_status(command_execute_async(cmd));
 }
 
 void command_free(command* cmd) {
