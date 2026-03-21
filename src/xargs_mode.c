@@ -5,6 +5,7 @@
 #include "command.h"
 #include "delim_tokenizer.h"
 #include "options.h"
+#include "process_pool.h"
 #include "space_tokenizer.h"
 #include "tokenizer.h"
 #include "util.h"
@@ -15,6 +16,7 @@ struct _xargs_mode {
   FILE* arg_source;
   command* cmd;
   tokenizer* toker;
+  process_pool* pool;
   void* impl;
 };
 
@@ -31,6 +33,7 @@ xargs_mode* xargs_mode_create(
   mode->impl = impl;
   mode->arg_source = arg_source_init(options_arg_file_path(opts));
   mode->cmd = command_create(opts, arg_index, argc, argv);
+  mode->pool = process_pool_create(options_max_procs(opts));
 
   if (options_use_nul_char_as_arg_delimiter(opts) || options_arg_delimiter(opts) != '\0') {
     mode->toker =
@@ -77,7 +80,13 @@ uint8_t xargs_mode_should_execute_command_after_arg_added(
 }
 
 int xargs_mode_execute_command(xargs_mode* mode) {
-  return command_execute(mode->cmd);
+  process_pool_wait_if_full(mode->pool);
+  process_pool_submit(mode->pool, command_execute_async(mode->cmd));
+  return 0;
+}
+
+int xargs_mode_drain(xargs_mode* mode) {
+  return process_pool_drain(mode->pool);
 }
 
 void xargs_mode_add_input_argument(
@@ -106,5 +115,6 @@ void xargs_mode_destroy(xargs_mode* mode) {
   mode->ops->destroy_impl(mode->impl);
   command_free(mode->cmd);
   tokenizer_destroy(mode->toker);
+  process_pool_destroy(mode->pool);
   free(mode);
 }

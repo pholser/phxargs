@@ -24,6 +24,7 @@ int replacer_mode_run(xargs_mode* mode) {
     execution_status |= xargs_mode_execute_command(mode);
   }
 
+  execution_status |= xargs_mode_drain(mode);
   return execution_status;
 }
 
