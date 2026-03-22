@@ -145,8 +145,19 @@ static void set_max_command_length(options* const opts, int opt, const char* new
 }
 
 static void set_max_procs(options* opts, int opt, const char* new_val) {
-  opts->max_procs =
-    parse_number_arg(opt, new_val, &(opts->max_procs_endptr));
+  size_t val = parse_number_arg(opt, new_val, &(opts->max_procs_endptr));
+
+  long child_max = sysconf(_SC_CHILD_MAX);
+  if (child_max > 0 && (long) val > child_max) {
+    fprintf(
+      stderr,
+      "phxargs: -P %zu: too large (system limit is %ld)\n",
+      val,
+      child_max);
+    exit(EXIT_FAILURE);
+  }
+
+  opts->max_procs = val;
 }
 
 static void set_arg_placeholder(options* opts, char* placeholder) {
