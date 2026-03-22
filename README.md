@@ -73,6 +73,7 @@ Reads arguments from standard input (or a file with `-a`) and executes `command`
 | `-I replstr` | Replace occurrences of `replstr` in the initial arguments with input lines. Implies `-L 1` and `-x`; nullifies `-E`. |
 | `-L max-lines` | Use at most `max-lines` non-empty input lines per command invocation. Implies `-x`. Mutually exclusive with `-I` and `-n`. |
 | `-n max-args` | Use at most `max-args` arguments per command invocation. Mutually exclusive with `-I` and `-L`. |
+| `-P max-procs` | Run up to `max-procs` command invocations in parallel. Defaults to 1 (serial). If a child exits with status 255, no further invocations are started. |
 | `-o` | Reopen stdin as `/dev/tty` in the child process before executing the command. |
 | `-p` | Prompt the user before executing each command line. Implies `-t`. |
 | `-r` | Do not run the command if standard input is empty. |
