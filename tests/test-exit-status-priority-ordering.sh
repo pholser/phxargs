@@ -2,27 +2,26 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
-# One of the inputs will cause a non-zero exit; the rest should still complete.
+# With two parallel failures of different severities, the higher one should win.
+# "signal" -> killed by SIGTERM (-> 125, severity 4)
+# "fail"   -> exits 1          (-> 123, severity 2)
+# Expected: 125 (signal takes priority over plain failure)
 cat > "$phx_test_input" <<EOF
-one
-two
-three
+signal
+fail
 EOF
 
 cat > "$phx_expected_output" <<EOF
-one
-three
 EOF
 
 cat > "$phx_expected_error" <<EOF
 EOF
 
-# sh -c 'echo "$1"; [ "$1" != two ]' -- ARG: echoes the arg and exits non-zero for "two"
 ./run-unordered-output-comparison-test.sh \
   $phx_test_name \
   "$phx_test_input" \
   "$phx_expected_output" \
   "$phx_expected_error" \
   '-P 2 -n 1' \
-  './echo-unless-two.sh' \
-  123
+  './dispatch-failure.sh' \
+  125

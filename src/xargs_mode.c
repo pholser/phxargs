@@ -81,6 +81,9 @@ uint8_t xargs_mode_should_execute_command_after_arg_added(
 
 int xargs_mode_execute_command(xargs_mode* mode) {
   process_pool_wait_if_full(mode->pool);
+  if (process_pool_halted(mode->pool)) {
+    return 0;
+  }
   process_pool_submit(mode->pool, command_execute_async(mode->cmd));
   return 0;
 }

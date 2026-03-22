@@ -2,27 +2,28 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
-# One of the inputs will cause a non-zero exit; the rest should still complete.
+# With several inputs, the first invocation exits 255.
+# phxargs should stop processing remaining inputs and exit 124.
 cat > "$phx_test_input" <<EOF
-one
-two
-three
+a
+b
+c
+d
+e
 EOF
 
 cat > "$phx_expected_output" <<EOF
-one
-three
 EOF
 
 cat > "$phx_expected_error" <<EOF
+phxargs: child exited with status 255 -- halting
 EOF
 
-# sh -c 'echo "$1"; [ "$1" != two ]' -- ARG: echoes the arg and exits non-zero for "two"
-./run-unordered-output-comparison-test.sh \
+./run-expected-output-comparison-test.sh \
   $phx_test_name \
   "$phx_test_input" \
   "$phx_expected_output" \
   "$phx_expected_error" \
-  '-P 2 -n 1' \
-  './echo-unless-two.sh' \
-  123
+  '-n 1' \
+  './exit-255.sh' \
+  124

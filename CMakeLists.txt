@@ -12,7 +12,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-set(CMAKE_C_FLAGS_DEBUG -g -Wall -Wextra -O0)
+set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra -O0")
 
 function(get_system_include_paths out_var)
   execute_process(
