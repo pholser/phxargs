@@ -67,25 +67,6 @@ static void safe_exec(char** exec_args, uint8_t open_tty) {
   exit(failed_result == ENOENT ? 127 : 126);
 }
 
-static int command_status(pid_t child_pid) {
-  int status;
-
-  pid_t wait_result = waitpid(child_pid, &status, 0);
-
-  if (wait_result == -1) {
-    perror("phxargs: waitpid");
-    exit(EXIT_FAILURE);
-  }
-  if (WIFEXITED(status)) {
-    return WEXITSTATUS(status);
-  }
-  if (WIFSIGNALED(status)) {
-    return WTERMSIG(status);
-  }
-
-  return EXIT_FAILURE;
-}
-
 static void add_fixed_argument(command* cmd, char* new_arg) {
   command_args_add(cmd->fixed_args, new_arg);
 }
@@ -370,10 +351,6 @@ pid_t command_execute_async(command* cmd) {
   }
 
   exit(EXIT_SUCCESS);
-}
-
-int command_execute(command* cmd) {
-  return command_status(command_execute_async(cmd));
 }
 
 void command_free(command* cmd) {
