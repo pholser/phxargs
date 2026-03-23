@@ -19,19 +19,19 @@ struct _process_pool {
   pid_t* pids;
 };
 
-static volatile sig_atomic_t g_sigusr1_count = 0;
-static volatile sig_atomic_t g_sigusr2_count = 0;
-static sig_atomic_t g_applied_sigusr1 = 0;
-static sig_atomic_t g_applied_sigusr2 = 0;
+static volatile sig_atomic_t sigusr1_count = 0;
+static volatile sig_atomic_t sigusr2_count = 0;
+static sig_atomic_t applied_sigusr1 = 0;
+static sig_atomic_t applied_sigusr2 = 0;
 
 static void on_sigusr1(int sig) {
   (void) sig;
-  ++g_sigusr1_count;
+  ++sigusr1_count;
 }
 
 static void on_sigusr2(int sig) {
   (void) sig;
-  ++g_sigusr2_count;
+  ++sigusr2_count;
 }
 
 void process_pool_install_signal_handlers(void) {
@@ -107,12 +107,12 @@ static void reap_one(process_pool* pool) {
 }
 
 static void apply_signal_adjustments(process_pool* pool) {
-  sig_atomic_t u1 = g_sigusr1_count - g_applied_sigusr1;
-  sig_atomic_t u2 = g_sigusr2_count - g_applied_sigusr2;
+  sig_atomic_t u1 = sigusr1_count - applied_sigusr1;
+  sig_atomic_t u2 = sigusr2_count - applied_sigusr2;
   if (u1 == 0 && u2 == 0) return;
 
-  g_applied_sigusr1 = g_sigusr1_count;
-  g_applied_sigusr2 = g_sigusr2_count;
+  applied_sigusr1 = sigusr1_count;
+  applied_sigusr2 = sigusr2_count;
 
   long new_max = (long) pool->max_procs + (long) u1 - (long) u2;
   if (new_max < 1) new_max = 1;
