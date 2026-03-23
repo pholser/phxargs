@@ -180,6 +180,7 @@ space_tokenizer* space_tokenizer_create(
   char* logical_end_of_input_marker) {
 
   space_tokenizer* t = safe_malloc(sizeof(space_tokenizer));
+
   t->line_mode = line_mode;
   t->logical_end_of_input_marker = safe_strdup(logical_end_of_input_marker);
   t->base = tokenizer_create(&space_tokenizer_ops, buffer_size, t);

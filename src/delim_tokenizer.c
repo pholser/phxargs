@@ -71,6 +71,7 @@ delim_tokenizer* delim_tokenizer_create(
   char arg_delimiter) {
 
   delim_tokenizer* t = safe_malloc(sizeof(delim_tokenizer));
+
   t->delim = arg_delimiter;
   t->token_start = 0;
   t->base = tokenizer_create(&delim_tokenizer_ops, buffer_size, t);

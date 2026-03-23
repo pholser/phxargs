@@ -123,7 +123,11 @@ static void reset_max_args_per_command(options* opts) {
   opts->max_args_endptr = NULL;
 }
 
-static void set_max_lines_per_command(options* opts, int opt, const char* new_val) {
+static void set_max_lines_per_command(
+  options* opts,
+  int opt,
+  const char* new_val) {
+
   opts->max_lines_per_command =
     parse_number_arg(opt, new_val, &(opts->max_lines_endptr));
 
@@ -131,7 +135,11 @@ static void set_max_lines_per_command(options* opts, int opt, const char* new_va
   reset_max_args_per_command(opts);
 }
 
-static void set_max_args_per_command(options* opts, int opt, const char* new_val) {
+static void set_max_args_per_command(
+  options* opts,
+  int opt,
+  const char* new_val) {
+
   opts->max_args_per_command =
     parse_number_arg(opt, new_val, &(opts->max_args_endptr));
 
@@ -139,7 +147,11 @@ static void set_max_args_per_command(options* opts, int opt, const char* new_val
   reset_max_lines_per_command(opts);
 }
 
-static void set_max_command_length(options* const opts, int opt, const char* new_val) {
+static void set_max_command_length(
+  options* const opts,
+  int opt,
+  const char* new_val) {
+
   opts->max_command_length =
     parse_number_arg(opt, new_val, &(opts->max_command_length_endptr));
 }
@@ -299,8 +311,10 @@ static void configure_options(options* opts, int argc, char** argv) {
 
 options* options_create(int argc, char** argv) {
   options* opts = safe_malloc(sizeof(options));
+
   init_options(opts);
   configure_options(opts, argc, argv);
+
   return opts;
 }
 
@@ -375,4 +389,3 @@ uint8_t options_line_mode(options* opts) {
 uint8_t options_max_command_length_specified(options* opts) {
   return opts->max_command_length_endptr != NULL;
 }
-

@@ -101,14 +101,14 @@ static size_t decide_max_length(command* cmd, options* opts) {
     if (specified < min_length) {
       fprintf(
         stderr,
-        "phxargs: -s %zu: too small (minimum %zu bytes)",
+        "phxargs: -s %zu: too small (minimum %zu bytes)\n",
         specified,
         min_length);
       exit(EXIT_FAILURE);
     } else if (specified > max_length) {
       fprintf(
         stderr,
-        "phxargs: -s %zu: too large (maximum %zu bytes)",
+        "phxargs: -s %zu: too large (maximum %zu bytes)\n",
         specified,
         max_length);
       exit(EXIT_FAILURE);

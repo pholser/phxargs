@@ -20,10 +20,12 @@ static void reallocate_if_needed(command_args* args) {
 
 command_args* command_args_create_with_capacity(size_t capacity) {
   command_args* args = safe_malloc(sizeof(command_args));
+
   args->count = 0;
   args->capacity = capacity;
   args->args = safe_calloc(args->capacity, sizeof(char*));
   args->length = 0;
+
   return args;
 }
 

@@ -13,9 +13,11 @@ struct _buffer {
 
 buffer* buffer_create(size_t sz) {
   buffer* buf = safe_malloc(sizeof(buffer));
+
   buf->buf = safe_calloc(sz + 1, sizeof(char));
   buf->sz = sz;
   buf->pos = 0;
+
   return buf;
 }
 

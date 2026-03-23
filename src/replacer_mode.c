@@ -46,6 +46,7 @@ replacer_mode* replacer_mode_create(
   char** argv) {
 
   replacer_mode* mode = safe_malloc(sizeof(replacer_mode));
+
   mode->placeholder = safe_strdup(options_arg_placeholder(opts));
   mode->base = xargs_mode_create(
     &replacer_mode_ops,
@@ -54,6 +55,7 @@ replacer_mode* replacer_mode_create(
     argc,
     argv,
     mode);
+
   return mode;
 }
 

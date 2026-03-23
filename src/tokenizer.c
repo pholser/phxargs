@@ -16,9 +16,11 @@ tokenizer* tokenizer_create(
   void* impl) {
 
   tokenizer* t = safe_malloc(sizeof(tokenizer));
+
   t->ops = ops;
   t->buf = buffer_create(buffer_size);
   t->impl = impl;
+
   return t;
 }
 

@@ -36,6 +36,7 @@ static void on_sigusr2(int sig) {
 
 void process_pool_install_signal_handlers(void) {
   struct sigaction sa;
+
   sa.sa_flags = SA_RESTART;
   sigemptyset(&sa.sa_mask);
   sa.sa_handler = on_sigusr1;
@@ -46,6 +47,7 @@ void process_pool_install_signal_handlers(void) {
 
 process_pool* process_pool_create(size_t max_procs) {
   process_pool* pool = safe_malloc(sizeof(process_pool));
+
   pool->max_procs = max_procs;
   pool->capacity = max_procs;
   pool->child_max = sysconf(_SC_CHILD_MAX);
@@ -53,6 +55,7 @@ process_pool* process_pool_create(size_t max_procs) {
   pool->status = 0;
   pool->halt = 0;
   pool->pids = safe_calloc(max_procs, sizeof(pid_t));
+
   return pool;
 }
 
@@ -94,6 +97,7 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
   if (WIFSIGNALED(raw_status)) {
     return 125;
   }
+
   return 1;
 }
 

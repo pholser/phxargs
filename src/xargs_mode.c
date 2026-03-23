@@ -29,23 +29,28 @@ xargs_mode* xargs_mode_create(
   void* impl) {
 
   xargs_mode* mode = safe_malloc(sizeof(xargs_mode));
+
   mode->ops = ops;
   mode->impl = impl;
   mode->arg_source = arg_source_open(options_arg_file_path(opts));
   mode->cmd = command_create(opts, arg_index, argc, argv);
   mode->pool = process_pool_create(options_max_procs(opts));
 
-  if (options_use_nul_char_as_arg_delimiter(opts) || options_arg_delimiter(opts) != '\0') {
+  if (options_use_nul_char_as_arg_delimiter(opts)
+    || options_arg_delimiter(opts) != '\0') {
+
     mode->toker =
-      delim_tokenizer_base(delim_tokenizer_create(
-        command_max_length(mode->cmd),
-        options_arg_delimiter(opts)));
+      delim_tokenizer_base(
+        delim_tokenizer_create(
+          command_max_length(mode->cmd),
+          options_arg_delimiter(opts)));
   } else {
     mode->toker =
-      space_tokenizer_base(space_tokenizer_create(
-        command_max_length(mode->cmd),
-        command_line_mode(mode->cmd),
-        options_logical_end_of_input_marker(opts)));
+      space_tokenizer_base(
+        space_tokenizer_create(
+          command_max_length(mode->cmd),
+          command_line_mode(mode->cmd),
+          options_logical_end_of_input_marker(opts)));
   }
 
   return mode;

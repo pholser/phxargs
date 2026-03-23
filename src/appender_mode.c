@@ -64,16 +64,19 @@ appender_mode* appender_mode_create(
   char** argv) {
 
   appender_mode* mode = safe_malloc(sizeof(appender_mode));
+
   mode->suppress_execution_on_empty_input =
     options_suppress_execution_on_empty_input(opts);
-  mode->base = xargs_mode_create(
-    &appender_mode_ops,
-    opts,
-    arg_index,
-    argc,
-    argv,
-    mode);
-  return mode;
+  mode->base =
+    xargs_mode_create(
+      &appender_mode_ops,
+      opts,
+      arg_index,
+      argc,
+      argv,
+      mode);
+
+    return mode;
 }
 
 xargs_mode* appender_mode_base(appender_mode* mode) {
