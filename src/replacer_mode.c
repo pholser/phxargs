@@ -21,7 +21,7 @@ int replacer_mode_run(xargs_mode* mode) {
     xargs_mode_ensure_command_length_not_exceeded(mode, token);
     xargs_replace_args(mode, token);
 
-    execution_status |= xargs_mode_execute_command(mode);
+    xargs_mode_execute_command(mode);
   }
 
   execution_status |= xargs_mode_drain(mode);

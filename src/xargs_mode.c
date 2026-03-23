@@ -79,13 +79,12 @@ uint8_t xargs_mode_should_execute_command_after_arg_added(
   return command_should_execute_after_arg_added(mode->cmd);
 }
 
-int xargs_mode_execute_command(xargs_mode* mode) {
+void xargs_mode_execute_command(xargs_mode* mode) {
   process_pool_wait_if_full(mode->pool);
   if (process_pool_halted(mode->pool)) {
-    return 0;
+    return;
   }
   process_pool_submit(mode->pool, command_execute_async(mode->cmd));
-  return 0;
 }
 
 int xargs_mode_drain(xargs_mode* mode) {

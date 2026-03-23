@@ -34,7 +34,7 @@ uint8_t xargs_mode_arg_would_exceed_limits(
 uint8_t xargs_mode_should_execute_command_after_arg_added(
   xargs_mode* mode);
 
-int xargs_mode_execute_command(xargs_mode* mode);
+void xargs_mode_execute_command(xargs_mode* mode);
 
 int xargs_mode_drain(xargs_mode* mode);
 

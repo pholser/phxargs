@@ -25,22 +25,22 @@ int appender_mode_run(xargs_mode* mode) {
     input_present = 1;
 
     if (xargs_mode_arg_would_exceed_limits(mode, token)) {
-      execution_status |= xargs_mode_execute_command(mode);
+      xargs_mode_execute_command(mode);
     }
 
     xargs_mode_add_input_argument(mode, token);
     if (xargs_mode_should_execute_command_after_arg_added(mode)) {
-      execution_status |= xargs_mode_execute_command(mode);
+      xargs_mode_execute_command(mode);
     }
   }
 
   if (!input_present) {
     if (!self->suppress_execution_on_empty_input) {
-      execution_status |= xargs_mode_execute_command(mode);
+      xargs_mode_execute_command(mode);
     }
   } else {
     if (xargs_mode_input_args_remain(mode)) {
-      execution_status |= xargs_mode_execute_command(mode);
+      xargs_mode_execute_command(mode);
     }
   }
 
