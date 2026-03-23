@@ -77,14 +77,20 @@ static void accumulate_status(process_pool* pool, int new_status) {
 static int child_exit_status(int raw_status, uint8_t* halt) {
   if (WIFEXITED(raw_status)) {
     int code = WEXITSTATUS(raw_status);
+
     if (code == 255) {
       fprintf(stderr, "phxargs: child exited with status 255 -- halting\n");
       *halt = 1;
       return 124;
     }
-    if (code >= 1 && code <= 125) return 123;
+
+    if (code >= 1 && code <= 125) {
+      return 123;
+    }
+
     return code;
   }
+
   if (WIFSIGNALED(raw_status)) {
     return 125;
   }
@@ -109,14 +115,20 @@ static void reap_one(process_pool* pool) {
 static void apply_signal_adjustments(process_pool* pool) {
   sig_atomic_t u1 = sigusr1_count - applied_sigusr1;
   sig_atomic_t u2 = sigusr2_count - applied_sigusr2;
-  if (u1 == 0 && u2 == 0) return;
+  if (u1 == 0 && u2 == 0) {
+    return;
+  }
 
   applied_sigusr1 = sigusr1_count;
   applied_sigusr2 = sigusr2_count;
 
   long new_max = (long) pool->max_procs + (long) u1 - (long) u2;
-  if (new_max < 1) new_max = 1;
-  if (pool->child_max > 0 && new_max > pool->child_max) new_max = pool->child_max;
+  if (new_max < 1) {
+    new_max = 1;
+  }
+  if (pool->child_max > 0 && new_max > pool->child_max) {
+    new_max = pool->child_max;
+  }
 
   if ((size_t) new_max > pool->capacity) {
     pool->pids = safe_realloc(pool->pids, (size_t) new_max * sizeof(pid_t));
