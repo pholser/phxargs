@@ -1,23 +1,54 @@
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include "process_pool.h"
 #include "util.h"
 
 struct _process_pool {
   size_t max_procs;
+  size_t capacity;
+  long child_max;
   size_t count;
   int status;
   uint8_t halt;
   pid_t* pids;
 };
 
+static volatile sig_atomic_t g_sigusr1_count = 0;
+static volatile sig_atomic_t g_sigusr2_count = 0;
+static sig_atomic_t g_applied_sigusr1 = 0;
+static sig_atomic_t g_applied_sigusr2 = 0;
+
+static void on_sigusr1(int sig) {
+  (void) sig;
+  ++g_sigusr1_count;
+}
+
+static void on_sigusr2(int sig) {
+  (void) sig;
+  ++g_sigusr2_count;
+}
+
+void process_pool_install_signal_handlers(void) {
+  struct sigaction sa;
+  sa.sa_flags = SA_RESTART;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_handler = on_sigusr1;
+  sigaction(SIGUSR1, &sa, NULL);
+  sa.sa_handler = on_sigusr2;
+  sigaction(SIGUSR2, &sa, NULL);
+}
+
 process_pool* process_pool_create(size_t max_procs) {
   process_pool* pool = safe_malloc(sizeof(process_pool));
   pool->max_procs = max_procs;
+  pool->capacity = max_procs;
+  pool->child_max = sysconf(_SC_CHILD_MAX);
   pool->count = 0;
   pool->status = 0;
   pool->halt = 0;
@@ -75,11 +106,32 @@ static void reap_one(process_pool* pool) {
   accumulate_status(pool, child_exit_status(raw_status, &pool->halt));
 }
 
+static void apply_signal_adjustments(process_pool* pool) {
+  sig_atomic_t u1 = g_sigusr1_count - g_applied_sigusr1;
+  sig_atomic_t u2 = g_sigusr2_count - g_applied_sigusr2;
+  if (u1 == 0 && u2 == 0) return;
+
+  g_applied_sigusr1 = g_sigusr1_count;
+  g_applied_sigusr2 = g_sigusr2_count;
+
+  long new_max = (long) pool->max_procs + (long) u1 - (long) u2;
+  if (new_max < 1) new_max = 1;
+  if (pool->child_max > 0 && new_max > pool->child_max) new_max = pool->child_max;
+
+  if ((size_t) new_max > pool->capacity) {
+    pool->pids = safe_realloc(pool->pids, (size_t) new_max * sizeof(pid_t));
+    pool->capacity = (size_t) new_max;
+  }
+
+  pool->max_procs = (size_t) new_max;
+}
+
 uint8_t process_pool_halted(process_pool* pool) {
   return pool->halt;
 }
 
 void process_pool_wait_if_full(process_pool* pool) {
+  apply_signal_adjustments(pool);
   while (pool->count >= pool->max_procs) {
     reap_one(pool);
   }

@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
 #include "appender_mode.h"
-#include "replacer_mode.h"
 #include "options.h"
+#include "process_pool.h"
+#include "replacer_mode.h"
 #include "util.h"
 #include "xargs.h"
 #include "xargs_mode.h"
@@ -12,6 +13,7 @@ struct _xargs {
 };
 
 xargs* xargs_create(int argc, char** argv) {
+  process_pool_install_signal_handlers();
   options* opts = options_create(argc, argv);
   int arg_index = options_optind(opts);
 

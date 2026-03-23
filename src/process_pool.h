@@ -7,6 +7,8 @@
 
 typedef struct _process_pool process_pool;
 
+void process_pool_install_signal_handlers(void);
+
 process_pool* process_pool_create(size_t max_procs);
 
 uint8_t process_pool_halted(process_pool* pool);
