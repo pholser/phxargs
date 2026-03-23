@@ -31,7 +31,7 @@ xargs_mode* xargs_mode_create(
   xargs_mode* mode = safe_malloc(sizeof(xargs_mode));
   mode->ops = ops;
   mode->impl = impl;
-  mode->arg_source = arg_source_init(options_arg_file_path(opts));
+  mode->arg_source = arg_source_open(options_arg_file_path(opts));
   mode->cmd = command_create(opts, arg_index, argc, argv);
   mode->pool = process_pool_create(options_max_procs(opts));
 
@@ -119,5 +119,6 @@ void xargs_mode_destroy(xargs_mode* mode) {
   command_free(mode->cmd);
   tokenizer_destroy(mode->toker);
   process_pool_destroy(mode->pool);
+  arg_source_close(mode->arg_source);
   free(mode);
 }

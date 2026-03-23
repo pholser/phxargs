@@ -3,7 +3,7 @@
 
 #include "arg_source.h"
 
-FILE* arg_source_init(const char* path) {
+FILE* arg_source_open(const char* path) {
   if (path == NULL) {
     return stdin;
   }
@@ -17,7 +17,7 @@ FILE* arg_source_init(const char* path) {
   return arg_source;
 }
 
-void free_arg_source(FILE* arg_source) {
+void arg_source_close(FILE* arg_source) {
   if (arg_source != stdin) {
     fclose(arg_source);
   }
