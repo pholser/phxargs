@@ -4,7 +4,6 @@
 #include <string.h>
 #include <sys/errno.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <unistd.h>
 
 #include "command.h"
@@ -194,7 +193,8 @@ static void recycle_command(command* cmd) {
   if (cmd->arg_placeholder != NULL) {
     command_args_destroy(cmd->replaced_fixed_args);
     cmd->replaced_fixed_args =
-      command_args_create_with_capacity(command_args_count(cmd->fixed_args));
+      command_args_create_with_capacity(
+        command_args_count(cmd->fixed_args));
   }
 
   if (command_max_args_specified(cmd)) {
@@ -206,11 +206,16 @@ static void recycle_command(command* cmd) {
 
 void command_replace_args(command* cmd, char* new_arg) {
   // Do not perform replacement on command word
-  command_args_add(cmd->replaced_fixed_args, command_args_get(cmd->fixed_args, 0));
+  command_args_add(
+    cmd->replaced_fixed_args,
+    command_args_get(cmd->fixed_args, 0));
 
   for (size_t i = 1; i < command_args_count(cmd->fixed_args); ++i) {
     char* replaced =
-      str_replace(command_args_get(cmd->fixed_args, i), cmd->arg_placeholder, new_arg);
+      str_replace(
+        command_args_get(cmd->fixed_args, i),
+        cmd->arg_placeholder,
+        new_arg);
     command_args_add(cmd->replaced_fixed_args, replaced);
     free(replaced);
   }
