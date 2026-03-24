@@ -337,11 +337,9 @@ pid_t command_execute_async(command* cmd) {
     for (size_t i = 0; i < exec_args_count; ++i) {
       int needs_quoting = strchr(exec_args[i], ' ') != NULL
         || strchr(exec_args[i], '\t') != NULL;
-      if (needs_quoting) {
-        fprintf(stderr, "'%s'", exec_args[i]);
-      } else {
-        fprintf(stderr, "%s", exec_args[i]);
-      }
+      
+      fprintf(stderr, needs_quoting ? "'%s'" : "%s", exec_args[i]);
+
       if (i < exec_args_count - 1) {
         fprintf(stderr, " ");
       }
