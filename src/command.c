@@ -265,12 +265,18 @@ uint8_t command_arg_would_exceed_limits(
 
   command_ensure_length_not_exceeded(cmd, new_arg);
 
+  size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
+  uint8_t would_exceed_size = !cmd->line_mode && new_length > cmd->max_length;
+
   if (command_max_args_specified(cmd)) {
-    return command_args_count(cmd->input_args) == cmd->max_args;
+    uint8_t at_max_args = command_args_count(cmd->input_args) == cmd->max_args;
+    if (cmd->terminate_on_too_large_command) {
+      return at_max_args;
+    }
+    return at_max_args || would_exceed_size;
   }
 
-  size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
-  return cmd->line_mode ? 0 : new_length > cmd->max_length;
+  return would_exceed_size;
 }
 
 uint8_t command_should_execute_after_arg_added(command* cmd) {
