@@ -13,6 +13,7 @@ typedef enum {
   NO_TOKEN_ESCAPE,
   IN_TOKEN,
   IN_QUOTED_TOKEN,
+  IN_TOKEN_QUOTED,
   IN_TOKEN_ESCAPE
 } space_tokenizer_state;
 
@@ -126,6 +127,9 @@ char* next_space_token(
             command_increment_line_count(cmd);
           }
           return space_tokenizer_end_token(self);
+        } else if (ch == '\'' || ch == '"') {
+          self->state = IN_TOKEN_QUOTED;
+          self->quote_char = ch;
         } else if (ch == '\\') {
           space_tokenizer_start_in_token_escape(self);
         } else {
@@ -137,6 +141,17 @@ char* next_space_token(
       case IN_QUOTED_TOKEN:
         if (ch == self->quote_char) {
           return space_tokenizer_end_token(self);
+        } else if (ch == '\n') {
+          fprintf(stderr, "phxargs: unterminated quote\n");
+          exit(EXIT_FAILURE);
+        } else {
+          space_tokenizer_append_to_token(self, ch);
+        }
+        break;
+
+      case IN_TOKEN_QUOTED:
+        if (ch == self->quote_char) {
+          self->state = IN_TOKEN;
         } else if (ch == '\n') {
           fprintf(stderr, "phxargs: unterminated quote\n");
           exit(EXIT_FAILURE);
@@ -157,7 +172,7 @@ char* next_space_token(
   } else if (self->state == IN_TOKEN_ESCAPE || self->state == NO_TOKEN_ESCAPE) {
     fprintf(stderr, "phxargs: backslash at EOF\n");
     exit(EXIT_FAILURE);
-  } else if (self->state == IN_QUOTED_TOKEN) {
+  } else if (self->state == IN_QUOTED_TOKEN || self->state == IN_TOKEN_QUOTED) {
     fprintf(stderr, "phxargs: unterminated quote\n");
     exit(EXIT_FAILURE);
   } else {
