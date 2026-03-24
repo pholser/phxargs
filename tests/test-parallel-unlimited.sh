@@ -2,11 +2,12 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
+# -P 0 means unlimited parallelism: all inputs are launched concurrently
+# without throttling. With -r and empty input, no command runs.
 cat > "$phx_expected_output" <<EOF
 EOF
 
 cat > "$phx_expected_error" <<EOF
-phxargs: -P 0: too small
 EOF
 
 /usr/bin/env -i ./run-expected-output-comparison-test.sh \

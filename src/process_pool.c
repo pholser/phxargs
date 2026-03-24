@@ -49,12 +49,12 @@ process_pool* process_pool_create(size_t max_procs) {
   process_pool* pool = safe_malloc(sizeof(process_pool));
 
   pool->max_procs = max_procs;
-  pool->capacity = max_procs;
+  pool->capacity = max_procs == 0 ? 16 : max_procs;
   pool->child_max = sysconf(_SC_CHILD_MAX);
   pool->count = 0;
   pool->status = 0;
   pool->halt = 0;
-  pool->pids = safe_calloc(max_procs, sizeof(pid_t));
+  pool->pids = safe_calloc(pool->capacity, sizeof(pid_t));
 
   return pool;
 }
@@ -126,6 +126,10 @@ static void apply_signal_adjustments(process_pool* pool) {
   applied_sigusr1 = sigusr1_count;
   applied_sigusr2 = sigusr2_count;
 
+  if (pool->max_procs == 0) {
+    return;
+  }
+
   long new_max = (long) pool->max_procs + (long) u1 - (long) u2;
   if (new_max < 1) {
     new_max = 1;
@@ -148,12 +152,16 @@ uint8_t process_pool_halted(process_pool* pool) {
 
 void process_pool_wait_if_full(process_pool* pool) {
   apply_signal_adjustments(pool);
-  while (pool->count >= pool->max_procs) {
+  while (pool->max_procs != 0 && pool->count >= pool->max_procs) {
     reap_one(pool);
   }
 }
 
 void process_pool_submit(process_pool* pool, pid_t pid) {
+  if (pool->count == pool->capacity) {
+    pool->capacity *= 2;
+    pool->pids = safe_realloc(pool->pids, pool->capacity * sizeof(pid_t));
+  }
   pool->pids[pool->count++] = pid;
 }
 
