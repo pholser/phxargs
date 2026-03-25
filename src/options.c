@@ -73,6 +73,7 @@ static size_t parse_number_arg(int opt, const char* arg, char** endptr) {
   }
   if (parsed <= 0) {
     fprintf(stderr, "phxargs: -%c %s: too small\n", opt, arg);
+    exit(EXIT_FAILURE);
   }
 
   return (size_t) parsed;

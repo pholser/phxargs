@@ -16,4 +16,4 @@ EOF
   "$phx_expected_error" \
   '-L 0 -r' \
   '' \
-  0
+  1
