@@ -60,7 +60,7 @@ struct _options {
   char* max_procs_endptr;
 };
 
-static long parse_long_arg(int opt, const char* arg, char** endptr, long min) {
+static long parse_number_arg_with_min(int opt, const char* arg, char** endptr, long min) {
   errno = 0;
   long parsed = strtol(arg, endptr, 10);
 
@@ -77,7 +77,7 @@ static long parse_long_arg(int opt, const char* arg, char** endptr, long min) {
 }
 
 static size_t parse_number_arg(int opt, const char* arg, char** endptr) {
-  return (size_t) parse_long_arg(opt, arg, endptr, 1);
+  return (size_t) parse_number_arg_with_min(opt, arg, endptr, 1);
 }
 
 static void disable_nul_char_as_arg_delimiter(options* opts) {
@@ -159,7 +159,7 @@ static void set_max_command_length(
 }
 
 static void set_max_procs(options* opts, int opt, const char* new_val) {
-  long parsed = parse_long_arg(opt, new_val, &(opts->max_procs_endptr), 0);
+  long parsed = parse_number_arg_with_min(opt, new_val, &(opts->max_procs_endptr), 0);
 
   if (parsed > 0) {
     long child_max = sysconf(_SC_CHILD_MAX);
