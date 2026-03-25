@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "command.h"
 #include "delim_tokenizer.h"
 #include "tokenizer.h"
 #include "util.h"
@@ -12,6 +11,9 @@ struct _delim_tokenizer {
 
   size_t token_start;
   char delim;
+
+  line_count_fn on_line;
+  void* on_line_ctx;
 };
 
 void delim_tokenizer_start_token(delim_tokenizer* t) {
@@ -27,11 +29,7 @@ char* delim_tokenizer_end_token(delim_tokenizer* t) {
   return tokenizer_token(t->base, t->token_start);
 }
 
-char* next_delim_token(
-  tokenizer* t,
-  FILE* token_source,
-  command* cmd) {
-
+char* next_delim_token(tokenizer* t, FILE* token_source) {
   delim_tokenizer* self = (delim_tokenizer*) tokenizer_impl(t);
 
   tokenizer_reset(t);
@@ -42,7 +40,7 @@ char* next_delim_token(
     if (ch != self->delim) {
       delim_tokenizer_append_to_token(self, ch);
     } else {
-      command_increment_line_count(cmd);
+      self->on_line(self->on_line_ctx);
       return delim_tokenizer_end_token(self);
     }
   }
@@ -68,12 +66,16 @@ tokenizer_ops delim_tokenizer_ops = {
 
 delim_tokenizer* delim_tokenizer_create(
   size_t buffer_size,
-  char arg_delimiter) {
+  char arg_delimiter,
+  line_count_fn on_line,
+  void* on_line_ctx) {
 
   delim_tokenizer* t = safe_malloc(sizeof(delim_tokenizer));
 
   t->delim = arg_delimiter;
   t->token_start = 0;
+  t->on_line = on_line;
+  t->on_line_ctx = on_line_ctx;
   t->base = tokenizer_create(&delim_tokenizer_ops, buffer_size, t);
 
   return t;

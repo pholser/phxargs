@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "command.h"
 #include "tokenizer.h"
 #include "space_tokenizer.h"
 #include "util.h"
@@ -25,6 +24,9 @@ struct _space_tokenizer {
   size_t token_start;
 
   char* logical_end_of_input_marker;
+
+  line_count_fn on_line;
+  void* on_line_ctx;
 };
 
 void space_tokenizer_no_token(space_tokenizer* t) {
@@ -81,11 +83,7 @@ char* space_tokenizer_end_token(space_tokenizer* t) {
   return token;
 }
 
-char* next_space_token(
-  tokenizer* t,
-  FILE* token_source,
-  command* cmd) {
-
+char* next_space_token(tokenizer* t, FILE* token_source) {
   space_tokenizer* self = (space_tokenizer*) tokenizer_impl(t);
 
   uint8_t line_has_token = 0;
@@ -99,7 +97,7 @@ char* next_space_token(
           continue;
         } else if (ch == '\n') {
           if (line_has_token && last_char != ' ') {
-            command_increment_line_count(cmd);
+            self->on_line(self->on_line_ctx);
           }
         } else if (ch == '\'' || ch == '"') {
           space_tokenizer_start_quoted_token(self, ch);
@@ -123,7 +121,7 @@ char* next_space_token(
           return space_tokenizer_end_token(self);
         } else if (ch == '\n') {
           if (line_has_token && last_char != ' ') {
-            command_increment_line_count(cmd);
+            self->on_line(self->on_line_ctx);
           }
           return space_tokenizer_end_token(self);
         } else if (ch == '\'' || ch == '"') {
@@ -176,7 +174,7 @@ char* next_space_token(
     exit(EXIT_FAILURE);
   } else {
     if (line_has_token) {
-      command_increment_line_count(cmd);
+      self->on_line(self->on_line_ctx);
       return space_tokenizer_end_token(self);
     }
     return NULL;
@@ -196,11 +194,15 @@ tokenizer_ops space_tokenizer_ops = {
 
 space_tokenizer* space_tokenizer_create(
   size_t buffer_size,
-  char* logical_end_of_input_marker) {
+  char* logical_end_of_input_marker,
+  line_count_fn on_line,
+  void* on_line_ctx) {
 
   space_tokenizer* t = safe_malloc(sizeof(space_tokenizer));
 
   t->logical_end_of_input_marker = safe_strdup(logical_end_of_input_marker);
+  t->on_line = on_line;
+  t->on_line_ctx = on_line_ctx;
   t->base = tokenizer_create(&space_tokenizer_ops, buffer_size, t);
   space_tokenizer_no_token(t);
 

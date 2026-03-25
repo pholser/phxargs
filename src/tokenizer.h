@@ -3,16 +3,13 @@
 
 #include <stdio.h>
 
-#include "command.h"
+typedef void (*line_count_fn)(void* ctx);
 
 typedef struct _tokenizer tokenizer;
 typedef struct _tokenizer_ops tokenizer_ops;
 
 struct _tokenizer_ops {
-  char* (*next_token)(
-    tokenizer* self,
-    FILE* arg_source,
-    command* cmd);
+  char* (*next_token)(tokenizer* self, FILE* arg_source);
   void (*destroy_impl)(void* impl);
 };
 
@@ -23,10 +20,7 @@ tokenizer* tokenizer_create(
 
 void* tokenizer_impl(tokenizer* t);
 
-char* tokenizer_next_token(
-  tokenizer* t,
-  FILE* arg_source,
-  command* cmd);
+char* tokenizer_next_token(tokenizer* t, FILE* arg_source);
 
 size_t tokenizer_pos(tokenizer* t);
 

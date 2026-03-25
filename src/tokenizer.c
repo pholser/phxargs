@@ -28,12 +28,8 @@ void* tokenizer_impl(tokenizer* t) {
   return t->impl;
 }
 
-char* tokenizer_next_token(
-  tokenizer* t,
-  FILE* arg_source,
-  command* cmd) {
-
-  return t->ops->next_token(t, arg_source, cmd);
+char* tokenizer_next_token(tokenizer* t, FILE* arg_source) {
+  return t->ops->next_token(t, arg_source);
 }
 
 size_t tokenizer_pos(tokenizer* t) {

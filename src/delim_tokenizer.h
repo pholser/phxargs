@@ -9,7 +9,9 @@ typedef struct _delim_tokenizer delim_tokenizer;
 
 delim_tokenizer* delim_tokenizer_create(
   size_t buffer_size,
-  char arg_delimiter);
+  char arg_delimiter,
+  line_count_fn on_line,
+  void* on_line_ctx);
 
 tokenizer* delim_tokenizer_as_tokenizer(delim_tokenizer* t);
 

@@ -3,6 +3,10 @@
 
 #include "arg_source.h"
 #include "command.h"
+
+static void increment_line_count(void* ctx) {
+  command_increment_line_count((command*) ctx);
+}
 #include "delim_tokenizer.h"
 #include "options.h"
 #include "process_pool.h"
@@ -43,13 +47,17 @@ xargs_mode* xargs_mode_create(
       delim_tokenizer_as_tokenizer(
         delim_tokenizer_create(
           command_max_length(mode->cmd),
-          options_arg_delimiter(opts)));
+          options_arg_delimiter(opts),
+          increment_line_count,
+          mode->cmd));
   } else {
     mode->toker =
       space_tokenizer_as_tokenizer(
         space_tokenizer_create(
           command_max_length(mode->cmd),
-          options_logical_end_of_input_marker(opts)));
+          options_logical_end_of_input_marker(opts),
+          increment_line_count,
+          mode->cmd));
   }
 
   return mode;
@@ -64,10 +72,7 @@ int xargs_mode_run(xargs_mode* mode) {
 }
 
 char* xargs_mode_next_token(xargs_mode* const mode) {
-  return tokenizer_next_token(
-    mode->toker,
-    mode->arg_source,
-    mode->cmd);
+  return tokenizer_next_token(mode->toker, mode->arg_source);
 }
 
 uint8_t xargs_mode_arg_would_exceed_limits(
