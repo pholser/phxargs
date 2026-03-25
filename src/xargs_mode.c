@@ -4,9 +4,6 @@
 #include "arg_source.h"
 #include "command.h"
 
-static void increment_line_count(void* ctx) {
-  command_increment_line_count((command*) ctx);
-}
 #include "delim_tokenizer.h"
 #include "options.h"
 #include "process_pool.h"
@@ -14,6 +11,10 @@ static void increment_line_count(void* ctx) {
 #include "tokenizer.h"
 #include "util.h"
 #include "xargs_mode.h"
+
+static void increment_line_count(void* ctx) {
+  command_increment_line_count((command*) ctx);
+}
 
 struct _xargs_mode {
   xargs_mode_ops* ops;
