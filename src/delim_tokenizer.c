@@ -47,7 +47,8 @@ char* next_delim_token(tokenizer* t, FILE* token_source) {
 
   if (ferror(token_source)) {
     fprintf(stderr, "phxargs: I/O error\n");
-    exit(EXIT_FAILURE);
+    tokenizer_set_error(t, TOKENIZER_ERR_IO);
+    return NULL;
   } else if (self->token_start == tokenizer_pos(t)) {
     return NULL;
   } else {

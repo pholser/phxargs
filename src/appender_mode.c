@@ -34,6 +34,11 @@ int appender_mode_run(xargs_mode* mode) {
     }
   }
 
+  if (xargs_mode_tokenizer_errored(mode)) {
+    xargs_mode_drain(mode);
+    exit(EXIT_FAILURE);
+  }
+
   if (!input_present) {
     if (!self->suppress_execution_on_empty_input) {
       xargs_mode_execute_command(mode);

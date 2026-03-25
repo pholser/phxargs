@@ -49,10 +49,12 @@ function(get_system_include_paths out_var)
 endfunction()
 
 file(GLOB SOURCES "${SRC_DIR}/*.c")
+set(LIB_SOURCES ${SOURCES})
+list(FILTER LIB_SOURCES EXCLUDE REGEX ".*main\\.c$")
 include_directories(${SRC_DIR})
 
 add_executable(phxargs ${SOURCES})
-add_library(libphxargs STATIC ${SOURCES})
+add_library(libphxargs STATIC ${LIB_SOURCES})
 
 find_program(IWYU_PATH NAMES include-what-you-use iwyu)
 
@@ -107,7 +109,20 @@ foreach(script ${SHELL_TESTS})
   )
 endforeach()
 
+option(ENABLE_FUZZING "Build libFuzzer fuzz targets" OFF)
+
+if(ENABLE_FUZZING)
+  set(FUZZ_LINK_FLAGS "-fsanitize=fuzzer,address,undefined")
+  foreach(fuzz_src fuzz_space_tokenizer fuzz_delim_tokenizer)
+    add_executable(${fuzz_src} "${TEST_DIR}/${fuzz_src}.c")
+    target_include_directories(${fuzz_src} PRIVATE ${SRC_DIR})
+    target_link_libraries(${fuzz_src} libphxargs)
+    target_link_options(${fuzz_src} PRIVATE ${FUZZ_LINK_FLAGS})
+  endforeach()
+endif()
+
 file(GLOB C_TEST_SOURCES "${TEST_DIR}/*.c")
+list(FILTER C_TEST_SOURCES EXCLUDE REGEX ".*fuzz_.*\\.c$")
 foreach(test_source ${C_TEST_SOURCES})
   get_filename_component(test_name ${test_source} NAME_WE)
   add_executable(${test_name} ${test_source})

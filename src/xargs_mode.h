@@ -26,6 +26,7 @@ void* xargs_mode_impl(xargs_mode* mode);
 int xargs_mode_run(xargs_mode* mode);
 
 char* xargs_mode_next_token(xargs_mode* const mode);
+uint8_t xargs_mode_tokenizer_errored(xargs_mode* mode);
 
 uint8_t xargs_mode_arg_would_exceed_limits(
   xargs_mode* mode,

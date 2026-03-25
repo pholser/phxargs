@@ -8,6 +8,7 @@ struct _tokenizer {
   tokenizer_ops* ops;
   buffer* buf;
   void* impl;
+  tokenizer_error err;
 };
 
 tokenizer* tokenizer_create(
@@ -20,6 +21,7 @@ tokenizer* tokenizer_create(
   t->ops = ops;
   t->buf = buffer_create(buffer_size);
   t->impl = impl;
+  t->err = TOKENIZER_ERR_NONE;
 
   return t;
 }
@@ -46,6 +48,14 @@ char* tokenizer_token(tokenizer* t, size_t pos) {
 
 void tokenizer_reset(tokenizer* t) {
   buffer_reset(t->buf);
+}
+
+void tokenizer_set_error(tokenizer* t, tokenizer_error err) {
+  t->err = err;
+}
+
+tokenizer_error tokenizer_get_error(tokenizer* t) {
+  return t->err;
 }
 
 void tokenizer_destroy(tokenizer* t) {

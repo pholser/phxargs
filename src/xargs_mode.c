@@ -76,6 +76,10 @@ char* xargs_mode_next_token(xargs_mode* const mode) {
   return tokenizer_next_token(mode->toker, mode->arg_source);
 }
 
+uint8_t xargs_mode_tokenizer_errored(xargs_mode* mode) {
+  return tokenizer_get_error(mode->toker) != TOKENIZER_ERR_NONE;
+}
+
 uint8_t xargs_mode_arg_would_exceed_limits(
   xargs_mode* mode,
   char* new_arg) {

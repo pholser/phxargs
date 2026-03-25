@@ -5,6 +5,13 @@
 
 typedef void (*line_count_fn)(void* ctx);
 
+typedef enum {
+  TOKENIZER_ERR_NONE = 0,
+  TOKENIZER_ERR_IO,
+  TOKENIZER_ERR_BACKSLASH_AT_EOF,
+  TOKENIZER_ERR_UNTERMINATED_QUOTE
+} tokenizer_error;
+
 typedef struct _tokenizer tokenizer;
 typedef struct _tokenizer_ops tokenizer_ops;
 
@@ -21,6 +28,9 @@ tokenizer* tokenizer_create(
 void* tokenizer_impl(tokenizer* t);
 
 char* tokenizer_next_token(tokenizer* t, FILE* arg_source);
+
+void tokenizer_set_error(tokenizer* t, tokenizer_error err);
+tokenizer_error tokenizer_get_error(tokenizer* t);
 
 size_t tokenizer_pos(tokenizer* t);
 

@@ -25,6 +25,9 @@ int replacer_mode_run(xargs_mode* mode) {
   }
 
   execution_status |= xargs_mode_drain(mode);
+  if (xargs_mode_tokenizer_errored(mode)) {
+    exit(EXIT_FAILURE);
+  }
   return execution_status;
 }
 
