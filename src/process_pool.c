@@ -6,6 +6,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "exit_codes.h"
 #include "process_pool.h"
 #include "util.h"
 
@@ -61,13 +62,13 @@ process_pool* process_pool_create(size_t max_procs) {
 
 static int severity(int phxargs_status) {
   switch (phxargs_status) {
-    case 127: return 6;
-    case 126: return 5;
-    case 125: return 4;
-    case 124: return 3;
-    case 123: return 2;
-    case 1: return 1;
-    default: return 0;
+    case PHXARGS_STATUS_NOT_FOUND:     return 6;
+    case PHXARGS_STATUS_NOT_EXECUTABLE: return 5;
+    case PHXARGS_STATUS_SIGNALLED:     return 4;
+    case PHXARGS_STATUS_HALT:          return 3;
+    case PHXARGS_STATUS_CHILD_FAILED:  return 2;
+    case 1:                            return 1;
+    default:                           return 0;
   }
 }
 
@@ -84,18 +85,18 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
     if (code == 255) {
       fprintf(stderr, "phxargs: child exited with status 255 -- halting\n");
       *halt = 1;
-      return 124;
+      return PHXARGS_STATUS_HALT;
     }
 
     if (code >= 1 && code <= 125) {
-      return 123;
+      return PHXARGS_STATUS_CHILD_FAILED;
     }
 
     return code;
   }
 
   if (WIFSIGNALED(raw_status)) {
-    return 125;
+    return PHXARGS_STATUS_SIGNALLED;
   }
 
   return 1;

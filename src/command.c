@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "command.h"
+#include "exit_codes.h"
 #include "command_args.h"
 #include "str.h"
 #include "util.h"
@@ -63,7 +64,7 @@ static void safe_exec(char** exec_args, uint8_t open_tty) {
 
   int failed_result = errno;
   fprintf(stderr, "phxargs: %s: %s\n", exec_args[0], strerror(failed_result));
-  exit(failed_result == ENOENT ? 127 : 126);
+  exit(failed_result == ENOENT ? PHXARGS_STATUS_NOT_FOUND : PHXARGS_STATUS_NOT_EXECUTABLE);
 }
 
 static void add_fixed_argument(command* cmd, char* new_arg) {
