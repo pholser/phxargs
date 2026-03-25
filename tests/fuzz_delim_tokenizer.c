@@ -25,7 +25,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   delim_tokenizer* dt =
-    delim_tokenizer_create(content_size + 1, delim, noop_line_count, NULL);
+    delim_tokenizer_create(16, delim, noop_line_count, NULL);
   tokenizer* t = delim_tokenizer_as_tokenizer(dt);
 
   while (tokenizer_next_token(t, input) != NULL) {

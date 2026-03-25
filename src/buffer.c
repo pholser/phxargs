@@ -30,6 +30,10 @@ size_t buffer_pos(buffer* buf) {
 }
 
 void buffer_put(buffer* buf, char ch) {
+  if (buf->pos == buf->sz) {
+    buf->sz *= 2;
+    buf->buf = safe_realloc(buf->buf, buf->sz + 1);
+  }
   buf->buf[buf->pos++] = ch;
 }
 

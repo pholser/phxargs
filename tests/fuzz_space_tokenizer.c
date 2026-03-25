@@ -16,7 +16,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   space_tokenizer* st =
-    space_tokenizer_create(size + 1, NULL, noop_line_count, NULL);
+    space_tokenizer_create(16, NULL, noop_line_count, NULL);
   tokenizer* t = space_tokenizer_as_tokenizer(st);
 
   while (tokenizer_next_token(t, input) != NULL) {
