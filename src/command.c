@@ -64,7 +64,10 @@ static void safe_exec(char** exec_args, uint8_t open_tty) {
 
   int failed_result = errno;
   fprintf(stderr, "phxargs: %s: %s\n", exec_args[0], strerror(failed_result));
-  exit(failed_result == ENOENT ? PHXARGS_STATUS_NOT_FOUND : PHXARGS_STATUS_NOT_EXECUTABLE);
+  exit(
+    failed_result == ENOENT
+      ? PHXARGS_STATUS_NOT_FOUND
+      : PHXARGS_STATUS_NOT_EXECUTABLE);
 }
 
 static void add_fixed_argument(command* cmd, char* new_arg) {
@@ -157,7 +160,8 @@ command* command_create(
   cmd->open_tty = options_open_tty(opts);
   cmd->prompt = options_prompt(opts);
   cmd->trace = options_trace(opts);
-  cmd->terminate_on_too_large_command = options_terminate_on_too_large_command(opts);
+  cmd->terminate_on_too_large_command =
+    options_terminate_on_too_large_command(opts);
   cmd->line_mode = options_line_mode(opts);
   cmd->line_count = 0;
   cmd->env_length = calc_env_length();
@@ -229,7 +233,8 @@ static char** build_exec_args(command* cmd, size_t* exec_args_count) {
       : cmd->fixed_args;
 
   *exec_args_count =
-    command_args_count(fixed_args_in_play) + command_args_count(cmd->input_args);
+    command_args_count(fixed_args_in_play)
+      + command_args_count(cmd->input_args);
 
   char** exec_args = safe_calloc(*exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
