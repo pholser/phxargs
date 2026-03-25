@@ -40,13 +40,13 @@ xargs_mode* xargs_mode_create(
     || options_arg_delimiter(opts) != '\0') {
 
     mode->toker =
-      delim_tokenizer_base(
+      delim_tokenizer_as_tokenizer(
         delim_tokenizer_create(
           command_max_length(mode->cmd),
           options_arg_delimiter(opts)));
   } else {
     mode->toker =
-      space_tokenizer_base(
+      space_tokenizer_as_tokenizer(
         space_tokenizer_create(
           command_max_length(mode->cmd),
           options_logical_end_of_input_marker(opts)));

@@ -207,7 +207,7 @@ space_tokenizer* space_tokenizer_create(
   return t;
 }
 
-tokenizer* space_tokenizer_base(space_tokenizer* t) {
+tokenizer* space_tokenizer_as_tokenizer(space_tokenizer* t) {
   return t->base;
 }
 

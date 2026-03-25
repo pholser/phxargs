@@ -59,7 +59,7 @@ replacer_mode* replacer_mode_create(
   return mode;
 }
 
-xargs_mode* replacer_mode_base(replacer_mode* mode) {
+xargs_mode* replacer_mode_as_xargs_mode(replacer_mode* mode) {
   return mode->base;
 }
 

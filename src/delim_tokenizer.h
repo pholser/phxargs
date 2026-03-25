@@ -11,7 +11,7 @@ delim_tokenizer* delim_tokenizer_create(
   size_t buffer_size,
   char arg_delimiter);
 
-tokenizer* delim_tokenizer_base(delim_tokenizer* t);
+tokenizer* delim_tokenizer_as_tokenizer(delim_tokenizer* t);
 
 void delim_tokenizer_destroy(delim_tokenizer* t);
 

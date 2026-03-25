@@ -12,7 +12,7 @@ appender_mode* appender_mode_create(
   int argc,
   char** argv);
 
-xargs_mode* appender_mode_base(appender_mode* mode);
+xargs_mode* appender_mode_as_xargs_mode(appender_mode* mode);
 
 void appender_mode_destroy(appender_mode* mode);
 

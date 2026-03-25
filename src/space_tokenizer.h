@@ -12,7 +12,7 @@ space_tokenizer* space_tokenizer_create(
   size_t buffer_size,
   char* logical_end_of_input_marker);
 
-tokenizer* space_tokenizer_base(space_tokenizer* t);
+tokenizer* space_tokenizer_as_tokenizer(space_tokenizer* t);
 
 void space_tokenizer_destroy(space_tokenizer* t);
 

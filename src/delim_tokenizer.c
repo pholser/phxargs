@@ -79,7 +79,7 @@ delim_tokenizer* delim_tokenizer_create(
   return t;
 }
 
-tokenizer* delim_tokenizer_base(delim_tokenizer* t) {
+tokenizer* delim_tokenizer_as_tokenizer(delim_tokenizer* t) {
   return t->base;
 }
 

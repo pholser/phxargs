@@ -12,7 +12,7 @@ replacer_mode* replacer_mode_create(
   int argc,
   char** argv);
 
-xargs_mode* replacer_mode_base(replacer_mode* mode);
+xargs_mode* replacer_mode_as_xargs_mode(replacer_mode* mode);
 
 void replacer_mode_destroy(replacer_mode* mode);
 
