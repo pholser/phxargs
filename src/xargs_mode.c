@@ -49,7 +49,6 @@ xargs_mode* xargs_mode_create(
       space_tokenizer_base(
         space_tokenizer_create(
           command_max_length(mode->cmd),
-          command_line_mode(mode->cmd),
           options_logical_end_of_input_marker(opts)));
   }
 
