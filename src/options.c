@@ -60,23 +60,24 @@ struct _options {
   char* max_procs_endptr;
 };
 
-static size_t parse_number_arg(int opt, const char* arg, char** endptr) {
+static long parse_long_arg(int opt, const char* arg, char** endptr, long min) {
   errno = 0;
   long parsed = strtol(arg, endptr, 10);
 
-  if (arg == *endptr
-    || errno != 0
-    || (errno == 0 && **endptr != '\0')) {
-
+  if (arg == *endptr || errno != 0 || **endptr != '\0') {
     fprintf(stderr, "phxargs: -%c %s: Invalid\n", opt, arg);
     exit(EXIT_FAILURE);
   }
-  if (parsed <= 0) {
+  if (parsed < min) {
     fprintf(stderr, "phxargs: -%c %s: too small\n", opt, arg);
     exit(EXIT_FAILURE);
   }
 
-  return (size_t) parsed;
+  return parsed;
+}
+
+static size_t parse_number_arg(int opt, const char* arg, char** endptr) {
+  return (size_t) parse_long_arg(opt, arg, endptr, 1);
 }
 
 static void disable_nul_char_as_arg_delimiter(options* opts) {
@@ -158,18 +159,8 @@ static void set_max_command_length(
 }
 
 static void set_max_procs(options* opts, int opt, const char* new_val) {
-  errno = 0;
-  char* endptr = NULL;
-  long parsed = strtol(new_val, &endptr, 10);
+  long parsed = parse_long_arg(opt, new_val, &(opts->max_procs_endptr), 0);
 
-  if (new_val == endptr || errno != 0 || *endptr != '\0') {
-    fprintf(stderr, "phxargs: -%c %s: Invalid\n", opt, new_val);
-    exit(EXIT_FAILURE);
-  }
-  if (parsed < 0) {
-    fprintf(stderr, "phxargs: -%c %s: too small\n", opt, new_val);
-    exit(EXIT_FAILURE);
-  }
   if (parsed > 0) {
     long child_max = sysconf(_SC_CHILD_MAX);
     if (child_max > 0 && parsed > child_max) {
@@ -183,7 +174,6 @@ static void set_max_procs(options* opts, int opt, const char* new_val) {
   }
 
   opts->max_procs = (size_t) parsed;
-  opts->max_procs_endptr = endptr;
 }
 
 static void set_arg_placeholder(options* opts, char* placeholder) {
