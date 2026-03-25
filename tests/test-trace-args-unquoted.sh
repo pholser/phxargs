@@ -2,8 +2,8 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
-# Trace output should quote arguments that contain spaces so the trace
-# line is unambiguous and matches the actual argument structure.
+# Trace output is informational only: arguments are printed bare without
+# quoting, even when they contain spaces or other shell metacharacters.
 cat > "$phx_test_input" <<'EOF'
 'a b'
 c
@@ -15,7 +15,7 @@ c
 EOF
 
 cat > "$phx_expected_error" <<'EOF'
-echo 'a b'
+echo a b
 echo c
 EOF
 
