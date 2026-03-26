@@ -306,7 +306,7 @@ static void configure_options(options* opts, int argc, char** argv) {
 
     opts->max_lines_per_command = 1;
 
-    if (opts->arg_delimiter == '\0' || !opts->use_nul_char_as_arg_delimiter) {
+    if (!opts->use_nul_char_as_arg_delimiter && opts->arg_delimiter == '\0') {
       set_arg_delimiter(opts, '\n');
     }
   }

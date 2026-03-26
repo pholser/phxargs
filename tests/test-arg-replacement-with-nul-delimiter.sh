@@ -2,12 +2,12 @@
 
 source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
 
-printf "arg1!arg2! arg3 and 4" > "$phx_test_input"
+printf "foo\0bar\0baz\0" > "$phx_test_input"
 
 cat > "$phx_expected_output" <<EOF
-hello arg1
-hello arg2
-hello  arg3 and 4
+got: foo
+got: bar
+got: baz
 EOF
 
 cat > "$phx_expected_error" <<EOF
@@ -18,5 +18,5 @@ EOF
   "$phx_test_input" \
   "$phx_expected_output" \
   "$phx_expected_error" \
-  '-I {} -d! echo hello {}' \
-  ''
+  '-I {} -0' \
+  'echo got: {}'
