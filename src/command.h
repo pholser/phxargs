@@ -25,8 +25,6 @@ void command_ensure_length_not_exceeded(command* cmd, char* new_arg);
 
 pid_t command_execute_async(command* cmd);
 
-uint8_t command_line_mode(command* cmd);
-
 size_t command_max_length(command* cmd);
 
 void command_add_input_argument(command* cmd, char* new_arg);

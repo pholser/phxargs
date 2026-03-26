@@ -78,10 +78,6 @@ void command_add_input_argument(command* cmd, char* new_arg) {
   command_args_add(cmd->input_args, new_arg);
 }
 
-uint8_t command_line_mode(command* cmd) {
-  return cmd->line_mode;
-}
-
 size_t command_max_length(command* cmd) {
   return cmd->max_length;
 }
