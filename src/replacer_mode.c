@@ -7,7 +7,6 @@
 
 struct _replacer_mode {
   xargs_mode* base;
-  char* placeholder;
 };
 
 int replacer_mode_run(xargs_mode* mode) {
@@ -32,9 +31,7 @@ int replacer_mode_run(xargs_mode* mode) {
 }
 
 static void replacer_mode_destroy_impl(void* impl) {
-  replacer_mode* mode = (replacer_mode*) impl;
-  free(mode->placeholder);
-  free(mode);
+  free(impl);
 }
 
 xargs_mode_ops replacer_mode_ops = {
@@ -50,7 +47,6 @@ replacer_mode* replacer_mode_create(
 
   replacer_mode* mode = safe_malloc(sizeof(replacer_mode));
 
-  mode->placeholder = safe_strdup(options_arg_placeholder(opts));
   mode->base = xargs_mode_create(
     &replacer_mode_ops,
     opts,
