@@ -245,22 +245,6 @@ static char** build_exec_args(command* cmd, size_t* exec_args_count) {
   return exec_args;
 }
 
-  /*
-   * As long as there are more arguments to read ...
-   * (1) read the next arg, `x`
-   * (2) after having read `x`:
-   *   (a) adding `x` to an empty cmd may make command impossible
-   *       due to overrunning. Fail it.
-   *   (b) in max-args mode, we may be at max args before adding
-   *       `x`. Execute cmd.
-   *   (c) in line mode, we may have in the act of reading `x`
-   *       incremented line count to the max. Execute cmd.
-   *   (d) we may be at a point where adding `x` would cause us
-   *       to exceed implied or explicit size bound. Execute cmd.
-   *
-   * (3) Add `x` to cmd.
-   */
-
 uint8_t command_arg_would_exceed_limits(
   command* cmd,
   char* new_arg) {
