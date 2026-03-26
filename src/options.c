@@ -229,7 +229,7 @@ static void parse_options(options* opts, int argc, char** argv) {
         set_arg_file_path(opts, optarg);
         break;
       case 'd':
-        if (strlen(optarg) > 1) {
+        if (strlen(optarg) != 1) {
           fprintf(stderr, "phxargs: invalid delimiter for -%c\n", opt);
           exit(EXIT_FAILURE);
         }
