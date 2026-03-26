@@ -16,20 +16,20 @@ struct _delim_tokenizer {
   void* on_line_ctx;
 };
 
-void delim_tokenizer_start_token(delim_tokenizer* t) {
+static void delim_tokenizer_start_token(delim_tokenizer* t) {
   t->token_start = tokenizer_pos(t->base);
 }
 
-void delim_tokenizer_append_to_token(delim_tokenizer* t, int ch) {
+static void delim_tokenizer_append_to_token(delim_tokenizer* t, int ch) {
   tokenizer_add(t->base, ch);
 }
 
-char* delim_tokenizer_end_token(delim_tokenizer* t) {
+static char* delim_tokenizer_end_token(delim_tokenizer* t) {
   tokenizer_add(t->base, '\0');
   return tokenizer_token(t->base, t->token_start);
 }
 
-char* next_delim_token(tokenizer* t, FILE* token_source) {
+static char* next_delim_token(tokenizer* t, FILE* token_source) {
   delim_tokenizer* self = (delim_tokenizer*) tokenizer_impl(t);
 
   tokenizer_reset(t);

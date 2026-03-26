@@ -18,7 +18,7 @@ xargs* xargs_create(int argc, char** argv) {
   int arg_index = options_index_of_first_arg(opts);
 
   xargs* x = safe_malloc(sizeof(xargs));
- 
+
   x->mode =
     options_arg_placeholder(opts) == NULL
       ? appender_mode_as_xargs_mode(
@@ -27,7 +27,7 @@ xargs* xargs_create(int argc, char** argv) {
           replacer_mode_create(opts, arg_index, argc, argv));
 
   options_destroy(opts);
- 
+
   return x;
 }
 

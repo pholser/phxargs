@@ -29,14 +29,14 @@ struct _space_tokenizer {
   void* on_line_ctx;
 };
 
-void space_tokenizer_no_token(space_tokenizer* t) {
+static void space_tokenizer_no_token(space_tokenizer* t) {
   tokenizer_reset(t->base);
   t->state = NO_TOKEN;
   t->quote_char = '\0';
   t->token_start = 0;
 }
 
-void space_tokenizer_start_quoted_token(
+static void space_tokenizer_start_quoted_token(
   space_tokenizer* t,
   int quote_char) {
 
@@ -45,31 +45,31 @@ void space_tokenizer_start_quoted_token(
   t->token_start = tokenizer_pos(t->base);
 }
 
-void space_tokenizer_start_no_token_escape(space_tokenizer* t) {
+static void space_tokenizer_start_no_token_escape(space_tokenizer* t) {
   t->state = NO_TOKEN_ESCAPE;
   t->token_start = tokenizer_pos(t->base);
 }
 
-void space_tokenizer_start_in_token_escape(space_tokenizer* t) {
+static void space_tokenizer_start_in_token_escape(space_tokenizer* t) {
   t->state = IN_TOKEN_ESCAPE;
 }
 
-void space_tokenizer_end_escape(space_tokenizer* t, int ch) {
+static void space_tokenizer_end_escape(space_tokenizer* t, int ch) {
   t->state = IN_TOKEN;
   tokenizer_add(t->base, (char) ch);
 }
 
-void space_tokenizer_start_token(space_tokenizer* t, int ch) {
+static void space_tokenizer_start_token(space_tokenizer* t, int ch) {
   t->state = IN_TOKEN;
   t->token_start = tokenizer_pos(t->base);
   tokenizer_add(t->base, (char) ch);
 }
 
-void space_tokenizer_append_to_token(space_tokenizer* t, int ch) {
+static void space_tokenizer_append_to_token(space_tokenizer* t, int ch) {
   tokenizer_add(t->base, (char) ch);
 }
 
-char* space_tokenizer_end_token(space_tokenizer* t) {
+static char* space_tokenizer_end_token(space_tokenizer* t) {
   tokenizer_add(t->base, '\0');
   char* token = tokenizer_token(t->base, t->token_start);
   space_tokenizer_no_token(t);
@@ -83,7 +83,7 @@ char* space_tokenizer_end_token(space_tokenizer* t) {
   return token;
 }
 
-char* next_space_token(tokenizer* t, FILE* token_source) {
+static char* next_space_token(tokenizer* t, FILE* token_source) {
   space_tokenizer* self = (space_tokenizer*) tokenizer_impl(t);
 
   uint8_t line_has_token = 0;
