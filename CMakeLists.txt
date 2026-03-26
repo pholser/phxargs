@@ -39,7 +39,7 @@ function(get_system_include_paths out_var)
         list(APPEND include_paths -isystem "${path}")
       endif()
     endforeach()
-    list(APPEND include_paths -isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include) 
+
 
     set(${out_var} "${include_paths}" PARENT_SCOPE)
   else()
@@ -97,9 +97,15 @@ add_custom_target(run_tests
   DEPENDS phxargs libphxargs
 )
 
-add_custom_target(run_all
-  DEPENDS iwyu run_tests
-)
+if(IWYU_PATH)
+  add_custom_target(run_all
+    DEPENDS iwyu run_tests
+  )
+else()
+  add_custom_target(run_all
+    DEPENDS run_tests
+  )
+endif()
 
 file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh" "${TEST_DIR}/test-*.exp")
 foreach(script ${SHELL_TESTS})
