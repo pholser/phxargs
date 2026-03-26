@@ -29,8 +29,12 @@ char* str_replace(
     tmp += placeholder_len;
   }
 
-  size_t new_len =
-    target_len + (occurrence_count * (replacement_len - placeholder_len));
+  size_t new_len;
+  if (replacement_len >= placeholder_len) {
+    new_len = target_len + occurrence_count * (replacement_len - placeholder_len);
+  } else {
+    new_len = target_len - occurrence_count * (placeholder_len - replacement_len);
+  }
   char* result = safe_calloc(new_len + 1, sizeof(char));
 
   const char* pos = s;

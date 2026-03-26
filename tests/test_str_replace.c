@@ -35,6 +35,17 @@ START_TEST(test_single_str_replace_placeholder_null) {
 }
 END_TEST
 
+START_TEST(test_single_str_replace_shorter_than_placeholder) {
+  char* target = "put {} here and {} there";
+
+  char* result = str_replace(target, "{}", "a");
+
+  ck_assert_str_eq(result, "put a here and a there");
+
+  free(result);
+}
+END_TEST
+
 START_TEST(test_single_str_replace_replacement_null) {
   char* target = "switch % me % out";
 
@@ -49,6 +60,7 @@ Suite* str_replace_suite() {
 
   TCase* tc_str_replace = tcase_create("single string");
   tcase_add_test(tc_str_replace, test_single_str_replace);
+  tcase_add_test(tc_str_replace, test_single_str_replace_shorter_than_placeholder);
   tcase_add_test(tc_str_replace, test_single_str_replace_target_null);
   tcase_add_test(tc_str_replace, test_single_str_replace_placeholder_null);
   tcase_add_test(tc_str_replace, test_single_str_replace_replacement_null);
