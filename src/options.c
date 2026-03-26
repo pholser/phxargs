@@ -30,11 +30,10 @@ struct _options {
 
   /* -L option */
   size_t max_lines_per_command;
-  char* max_lines_endptr;
+  uint8_t line_mode_specified;
 
   /* -n option */
   size_t max_args_per_command;
-  char* max_args_endptr;
 
   /* -o option */
   uint8_t open_tty;
@@ -47,7 +46,7 @@ struct _options {
 
   /* -s option */
   size_t max_command_length;
-  char* max_command_length_endptr;
+  uint8_t max_command_length_specified;
 
   /* -t option */
   uint8_t trace;
@@ -57,14 +56,14 @@ struct _options {
 
   /* -P option */
   size_t max_procs;
-  char* max_procs_endptr;
 };
 
-static long parse_number_arg_with_min(int opt, const char* arg, char** endptr, long min) {
+static long parse_number_arg_with_min(int opt, const char* arg, long min) {
+  char* endptr;
   errno = 0;
-  long parsed = strtol(arg, endptr, 10);
+  long parsed = strtol(arg, &endptr, 10);
 
-  if (arg == *endptr || errno != 0 || **endptr != '\0') {
+  if (arg == endptr || errno != 0 || *endptr != '\0') {
     fprintf(stderr, "phxargs: -%c %s: Invalid\n", opt, arg);
     exit(EXIT_FAILURE);
   }
@@ -76,8 +75,8 @@ static long parse_number_arg_with_min(int opt, const char* arg, char** endptr, l
   return parsed;
 }
 
-static size_t parse_number_arg(int opt, const char* arg, char** endptr) {
-  return (size_t) parse_number_arg_with_min(opt, arg, endptr, 1);
+static size_t parse_number_arg(int opt, const char* arg) {
+  return (size_t) parse_number_arg_with_min(opt, arg, 1);
 }
 
 static void disable_nul_char_as_arg_delimiter(options* opts) {
@@ -117,12 +116,11 @@ static void reset_arg_placeholder(options* opts) {
 
 static void reset_max_lines_per_command(options* opts) {
   opts->max_lines_per_command = 0;
-  opts->max_lines_endptr = NULL;
+  opts->line_mode_specified = 0;
 }
 
 static void reset_max_args_per_command(options* opts) {
   opts->max_args_per_command = 0;
-  opts->max_args_endptr = NULL;
 }
 
 static void set_max_lines_per_command(
@@ -130,8 +128,8 @@ static void set_max_lines_per_command(
   int opt,
   const char* new_val) {
 
-  opts->max_lines_per_command =
-    parse_number_arg(opt, new_val, &(opts->max_lines_endptr));
+  opts->max_lines_per_command = parse_number_arg(opt, new_val);
+  opts->line_mode_specified = 1;
 
   reset_arg_placeholder(opts);
   reset_max_args_per_command(opts);
@@ -142,8 +140,7 @@ static void set_max_args_per_command(
   int opt,
   const char* new_val) {
 
-  opts->max_args_per_command =
-    parse_number_arg(opt, new_val, &(opts->max_args_endptr));
+  opts->max_args_per_command = parse_number_arg(opt, new_val);
 
   reset_arg_placeholder(opts);
   reset_max_lines_per_command(opts);
@@ -154,13 +151,12 @@ static void set_max_command_length(
   int opt,
   const char* new_val) {
 
-  opts->max_command_length =
-    parse_number_arg(opt, new_val, &(opts->max_command_length_endptr));
+  opts->max_command_length = parse_number_arg(opt, new_val);
+  opts->max_command_length_specified = 1;
 }
 
 static void set_max_procs(options* opts, int opt, const char* new_val) {
-  long parsed =
-    parse_number_arg_with_min(opt, new_val, &(opts->max_procs_endptr), 0);
+  long parsed = parse_number_arg_with_min(opt, new_val, 0);
 
   if (parsed > 0) {
     long child_max = sysconf(_SC_CHILD_MAX);
@@ -218,9 +214,8 @@ static void init_options(options* opts) {
   opts->open_tty = 0;
   opts->prompt = 0;
   opts->max_procs = 1;
-  opts->max_procs_endptr = NULL;
   opts->max_command_length = 0;
-  opts->max_command_length_endptr = NULL;
+  opts->max_command_length_specified = 0;
   opts->suppress_execution_on_empty_input = 0;
   opts->trace = 0;
   opts->terminate_on_too_large_command = 0;
@@ -388,9 +383,9 @@ uint8_t options_terminate_on_too_large_command(options* opts) {
 }
 
 uint8_t options_line_mode(options* opts) {
-  return opts->max_lines_endptr != NULL;
+  return opts->line_mode_specified;
 }
 
 uint8_t options_max_command_length_specified(options* opts) {
-  return opts->max_command_length_endptr != NULL;
+  return opts->max_command_length_specified;
 }
