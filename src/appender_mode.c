@@ -96,7 +96,7 @@ appender_mode* appender_mode_create(
       argv,
       mode);
 
-    return mode;
+  return mode;
 }
 
 xargs_mode* appender_mode_as_xargs_mode(appender_mode* mode) {
