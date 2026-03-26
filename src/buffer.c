@@ -41,10 +41,6 @@ void buffer_reset(buffer* buf) {
   buf->pos = 0;
 }
 
-uint8_t buffer_full(buffer* buf) {
-  return buf->pos == buf->sz;
-}
-
 void buffer_destroy(buffer* buf) {
   free(buf->buf);
   free(buf);

@@ -16,8 +16,6 @@ void buffer_put(buffer* buf, char ch);
 
 void buffer_reset(buffer* buf);
 
-uint8_t buffer_full(buffer* buf);
-
 void buffer_destroy(buffer* buf);
 
 #endif  // PHXARGS_BUFFER_H
