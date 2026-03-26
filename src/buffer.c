@@ -21,11 +21,11 @@ buffer* buffer_create(size_t sz) {
   return buf;
 }
 
-char* buffer_start(buffer* buf) {
+char* buffer_start(const buffer* buf) {
   return buf->buf;
 }
 
-size_t buffer_pos(buffer* buf) {
+size_t buffer_pos(const buffer* buf) {
   return buf->pos;
 }
 

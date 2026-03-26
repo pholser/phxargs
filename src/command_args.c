@@ -33,21 +33,21 @@ command_args* command_args_create(void) {
   return command_args_create_with_capacity(10);
 }
 
-void command_args_add(command_args* args, char* new_arg) {
+void command_args_add(command_args* args, const char* new_arg) {
   reallocate_if_needed(args);
   args->args[args->count++] = safe_strdup(new_arg);
   args->length += strlen(new_arg) + 1;
 }
 
-size_t command_args_count(command_args* args) {
+size_t command_args_count(const command_args* args) {
   return args->count;
 }
 
-size_t command_args_length(command_args* args) {
+size_t command_args_length(const command_args* args) {
   return args->length;
 }
 
-char* command_args_get(command_args* args, size_t i) {
+char* command_args_get(const command_args* args, size_t i) {
   return args->args[i];
 }
 

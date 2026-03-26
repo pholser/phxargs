@@ -70,29 +70,29 @@ static void safe_exec(char** exec_args, uint8_t open_tty) {
       : PHXARGS_STATUS_NOT_EXECUTABLE);
 }
 
-static void add_fixed_argument(command* cmd, char* new_arg) {
+static void add_fixed_argument(command* cmd, const char* new_arg) {
   command_args_add(cmd->fixed_args, new_arg);
 }
 
-void command_add_input_argument(command* cmd, char* new_arg) {
+void command_add_input_argument(command* cmd, const char* new_arg) {
   command_args_add(cmd->input_args, new_arg);
 }
 
-size_t command_max_length(command* cmd) {
+size_t command_max_length(const command* cmd) {
   return cmd->max_length;
 }
 
-size_t command_length(command* cmd) {
+size_t command_length(const command* cmd) {
   return cmd->env_length
     + command_args_length(cmd->fixed_args)
     + command_args_length(cmd->input_args);
 }
 
-static uint8_t command_max_args_specified(command* cmd) {
+static uint8_t command_max_args_specified(const command* cmd) {
   return cmd->max_args > 0;
 }
 
-static size_t decide_max_length(command* cmd, options* opts) {
+static size_t decide_max_length(const command* cmd, const options* opts) {
   size_t max_length =
     ((size_t) sysconf(_SC_ARG_MAX)) - (2 * cmd->env_length) - 2048;
   if (options_max_command_length_specified(opts)) {
@@ -121,8 +121,8 @@ static size_t decide_max_length(command* cmd, options* opts) {
 }
 
 void command_ensure_length_not_exceeded(
-  command* cmd,
-  char* new_arg) {
+  const command* cmd,
+  const char* new_arg) {
 
   if (cmd->arg_placeholder != NULL || command_args_count(cmd->input_args) == 0) {
     size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
@@ -196,7 +196,7 @@ static void recycle_command(command* cmd) {
   }
 }
 
-void command_replace_args(command* cmd, char* new_arg) {
+void command_replace_args(command* cmd, const char* new_arg) {
   // Do not perform replacement on command word
   command_args_add(
     cmd->replaced_fixed_args,
@@ -237,8 +237,8 @@ static char** build_exec_args(command* cmd, size_t* exec_args_count) {
 }
 
 uint8_t command_arg_would_exceed_limits(
-  command* cmd,
-  char* new_arg) {
+  const command* cmd,
+  const char* new_arg) {
 
   command_ensure_length_not_exceeded(cmd, new_arg);
 
@@ -256,7 +256,7 @@ uint8_t command_arg_would_exceed_limits(
   return would_exceed_size;
 }
 
-uint8_t command_should_execute_after_arg_added(command* cmd) {
+uint8_t command_should_execute_after_arg_added(const command* cmd) {
   if (cmd->terminate_on_too_large_command
     && command_length(cmd) > cmd->max_length) {
 
@@ -271,7 +271,7 @@ uint8_t command_should_execute_after_arg_added(command* cmd) {
   return 0;
 }
 
-uint8_t command_input_args_remain(command* cmd) {
+uint8_t command_input_args_remain(const command* cmd) {
   return command_args_count(cmd->input_args) > 0;
 }
 

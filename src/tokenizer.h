@@ -25,18 +25,18 @@ tokenizer* tokenizer_create(
   size_t buffer_size,
   void* impl);
 
-void* tokenizer_impl(tokenizer* t);
+void* tokenizer_impl(const tokenizer* t);
 
 char* tokenizer_next_token(tokenizer* t, FILE* arg_source);
 
 void tokenizer_set_error(tokenizer* t, tokenizer_error err);
-tokenizer_error tokenizer_get_error(tokenizer* t);
+tokenizer_error tokenizer_get_error(const tokenizer* t);
 
-size_t tokenizer_pos(tokenizer* t);
+size_t tokenizer_pos(const tokenizer* t);
 
 void tokenizer_add(tokenizer* t, char ch);
 
-char* tokenizer_token(tokenizer* t, size_t pos);
+char* tokenizer_token(const tokenizer* t, size_t pos);
 
 void tokenizer_reset(tokenizer* t);
 

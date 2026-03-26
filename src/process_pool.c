@@ -152,7 +152,7 @@ static void apply_signal_adjustments(process_pool* pool) {
   pool->max_procs = (size_t) new_max;
 }
 
-uint8_t process_pool_halted(process_pool* pool) {
+uint8_t process_pool_halted(const process_pool* pool) {
   return pool->halt;
 }
 

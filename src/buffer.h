@@ -8,9 +8,9 @@ typedef struct _buffer buffer;
 
 buffer* buffer_create(size_t sz);
 
-char* buffer_start(buffer* buf);
+char* buffer_start(const buffer* buf);
 
-size_t buffer_pos(buffer* buf);
+size_t buffer_pos(const buffer* buf);
 
 void buffer_put(buffer* buf, char ch);
 

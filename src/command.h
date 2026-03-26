@@ -15,23 +15,23 @@ command* command_create(
   int argc,
   char** argv);
 
-uint8_t command_arg_would_exceed_limits(command* cmd, char* new_arg);
+uint8_t command_arg_would_exceed_limits(const command* cmd, const char* new_arg);
 
-uint8_t command_should_execute_after_arg_added(command* cmd);
+uint8_t command_should_execute_after_arg_added(const command* cmd);
 
-void command_replace_args(command* cmd, char* token);
+void command_replace_args(command* cmd, const char* token);
 
-void command_ensure_length_not_exceeded(command* cmd, char* new_arg);
+void command_ensure_length_not_exceeded(const command* cmd, const char* new_arg);
 
 pid_t command_execute_async(command* cmd);
 
-size_t command_max_length(command* cmd);
+size_t command_max_length(const command* cmd);
 
-void command_add_input_argument(command* cmd, char* new_arg);
+void command_add_input_argument(command* cmd, const char* new_arg);
 
-uint8_t command_input_args_remain(command* cmd);
+uint8_t command_input_args_remain(const command* cmd);
 
-size_t command_length(command* cmd);
+size_t command_length(const command* cmd);
 
 void command_increment_line_count(command* cmd);
 
