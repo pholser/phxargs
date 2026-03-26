@@ -34,7 +34,7 @@ struct _command {
   command_args* replaced_fixed_args;
 };
 
-static size_t calc_env_length() {
+static size_t calc_env_length(void) {
   size_t sz = 0;
   for (char** e = environ; *e != NULL; ++e) {
     sz += strlen(*e) + 1;
@@ -42,7 +42,7 @@ static size_t calc_env_length() {
   return sz;
 }
 
-static pid_t safe_fork() {
+static pid_t safe_fork(void) {
   pid_t pid = fork();
   if (pid < 0) {
     perror("phxargs: fork");
@@ -279,7 +279,7 @@ void command_increment_line_count(command* cmd) {
   ++cmd->line_count;
 }
 
-static uint8_t confirm_execution() {
+static uint8_t confirm_execution(void) {
   FILE* tty = fopen("/dev/tty", "r");
   if (tty == NULL) {
     perror("phxargs: cannot open /dev/tty");
