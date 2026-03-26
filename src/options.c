@@ -25,7 +25,6 @@ struct _options {
   char* logical_end_of_input_marker;
 
   /* -I option */
-  uint8_t arg_placeholder_enabled;
   char* arg_placeholder;
 
   /* -L option */
@@ -110,7 +109,6 @@ static void reset_logical_end_of_input_marker(options* opts) {
 }
 
 static void reset_arg_placeholder(options* opts) {
-  opts->arg_placeholder_enabled = 0;
   opts->arg_placeholder = NULL;
 }
 
@@ -174,7 +172,6 @@ static void set_max_procs(options* opts, int opt, const char* new_val) {
 }
 
 static void set_arg_placeholder(options* opts, char* placeholder) {
-  opts->arg_placeholder_enabled = 1;
   opts->arg_placeholder = placeholder;
 
   reset_max_lines_per_command(opts);
@@ -295,7 +292,7 @@ static void configure_options(options* opts, int argc, char** argv) {
   /* -I implies -x */
   /* -I basically nullifies -E */
   /* -I implies -L 1, and uses '\n' as delimiter if no other in force */
-  if (opts->arg_placeholder_enabled) {
+  if (opts->arg_placeholder != NULL) {
     enable_terminate_on_too_large_command(opts);
     reset_logical_end_of_input_marker(opts);
 
