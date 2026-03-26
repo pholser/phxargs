@@ -39,10 +39,10 @@ char* str_replace(
   char* new_pos = result;
   while ((tmp = strstr(pos, placeholder)) != NULL) {
     size_t prefix_len = tmp - pos;
-    strncpy(new_pos, pos, prefix_len);
+    memcpy(new_pos, pos, prefix_len);
     new_pos += prefix_len;
 
-    strncpy(new_pos, repl, replacement_len);
+    memcpy(new_pos, repl, replacement_len);
     new_pos += replacement_len;
 
     pos = tmp + placeholder_len;
