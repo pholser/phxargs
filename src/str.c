@@ -13,7 +13,7 @@ char* str_replace(
     return NULL;
   }
   if (placeholder == NULL || strlen(placeholder) == 0) {
-    return strdup(s);
+    return safe_strdup(s);
   }
   const char* repl = replacement == NULL ? "" : replacement;
 
