@@ -322,7 +322,7 @@ void options_destroy(options* opts) {
   free(opts);
 }
 
-int options_optind(options* opts) {
+int options_index_of_first_arg(options* opts) {
   return opts->optind_val;
 }
 

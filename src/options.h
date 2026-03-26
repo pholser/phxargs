@@ -10,7 +10,7 @@ options* options_create(int argc, char** argv);
 
 void options_destroy(options* opts);
 
-int options_optind(options* opts);
+int options_index_of_first_arg(options* opts);
 
 uint8_t options_use_nul_char_as_arg_delimiter(options* opts);
 

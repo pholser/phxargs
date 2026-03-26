@@ -15,7 +15,7 @@ struct _xargs {
 xargs* xargs_create(int argc, char** argv) {
   process_pool_install_signal_handlers();
   options* opts = options_create(argc, argv);
-  int arg_index = options_optind(opts);
+  int arg_index = options_index_of_first_arg(opts);
 
   xargs* x = safe_malloc(sizeof(xargs));
  
