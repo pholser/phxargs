@@ -29,11 +29,9 @@ char* str_replace(
     tmp += placeholder_len;
   }
 
-  size_t change_magnitude_per_occurrence =
-    replacement_len > placeholder_len
-      ? replacement_len - placeholder_len
-      : placeholder_len - replacement_len;
-  size_t new_len = target_len + occurrence_count * change_magnitude_per_occurrence;
+  ptrdiff_t size_delta = (ptrdiff_t) occurrence_count
+    * ((ptrdiff_t) replacement_len - (ptrdiff_t) placeholder_len);
+  size_t new_len = (size_t) ((ptrdiff_t) target_len + size_delta);
   char* result = safe_calloc(new_len + 1, sizeof(char));
 
   const char* pos = s;
