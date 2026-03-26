@@ -17,8 +17,6 @@ size_t command_args_length(command_args* args);
 
 char* command_args_get(command_args* args, size_t i);
 
-command_args* command_args_clone(command_args* args);
-
 void command_args_destroy(command_args* args);
 
 #endif  // PHXARGS_COMMAND_ARGS_H

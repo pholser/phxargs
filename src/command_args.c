@@ -51,14 +51,6 @@ char* command_args_get(command_args* args, size_t i) {
   return args->args[i];
 }
 
-command_args* command_args_clone(command_args* args) {
-  command_args* copy = command_args_create_with_capacity(args->capacity);
-  for (size_t i = 0; i < args->count; ++i) {
-    command_args_add(copy, args->args[i]);
-  }
-  return copy;
-}
-
 void command_args_destroy(command_args* args) {
   for (size_t i = 0; i < args->count; ++i) {
     free(args->args[i]);
