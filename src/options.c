@@ -147,7 +147,7 @@ static void set_max_args_per_command(
 }
 
 static void set_max_command_length(
-  options* const opts,
+  options* opts,
   int opt,
   const char* new_val) {
 
