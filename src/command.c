@@ -124,16 +124,7 @@ void command_ensure_length_not_exceeded(
   command* cmd,
   char* new_arg) {
 
-  if (cmd->arg_placeholder == NULL) {
-    size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
-
-    if (command_args_count(cmd->input_args) == 0) {
-      if (new_length > cmd->max_length) {
-        fprintf(stderr, "phxargs: command too long\n");
-        exit(EXIT_FAILURE);
-      }
-    }
-  } else {
+  if (cmd->arg_placeholder != NULL || command_args_count(cmd->input_args) == 0) {
     size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
     if (new_length > cmd->max_length) {
       fprintf(stderr, "phxargs: command too long\n");
