@@ -104,14 +104,19 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
 
 static void reap_one(process_pool* pool) {
   int raw_status;
-  pid_t pid = waitpid(pool->pids[0], &raw_status, 0);
+  pid_t pid = waitpid(-1, &raw_status, 0);
 
   if (pid == -1) {
     perror("phxargs: waitpid");
     exit(EXIT_FAILURE);
   }
 
-  pool->pids[0] = pool->pids[pool->count - 1];
+  for (size_t i = 0; i < pool->count; ++i) {
+    if (pool->pids[i] == pid) {
+      pool->pids[i] = pool->pids[pool->count - 1];
+      break;
+    }
+  }
   --pool->count;
 
   accumulate_status(pool, child_exit_status(raw_status, &pool->halt));
