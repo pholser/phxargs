@@ -88,7 +88,6 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
 
   uint8_t line_has_token = 0;
 
-  int last_char = 0;
   int ch;
   while ((ch = getc(token_source)) != EOF) {
     switch (self->state) {
@@ -96,7 +95,7 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
         if (ch == ' ' || ch == '\t') {
           continue;
         } else if (ch == '\n') {
-          if (line_has_token && last_char != ' ') {
+          if (line_has_token) {
             self->on_line(self->on_line_ctx);
           }
         } else if (ch == '\'' || ch == '"') {
@@ -117,10 +116,9 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
 
       case IN_TOKEN:
         if (ch == ' ' || ch == '\t') {
-          last_char = ch;
           return space_tokenizer_end_token(self);
         } else if (ch == '\n') {
-          if (line_has_token && last_char != ' ') {
+          if (line_has_token) {
             self->on_line(self->on_line_ctx);
           }
           return space_tokenizer_end_token(self);
@@ -130,7 +128,6 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
         } else if (ch == '\\') {
           space_tokenizer_start_in_token_escape(self);
         } else {
-          last_char = ch;
           space_tokenizer_append_to_token(self, ch);
         }
         break;
