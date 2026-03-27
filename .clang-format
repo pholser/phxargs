@@ -27,7 +27,7 @@ MaxEmptyLinesToKeep: 1
 KeepEmptyLinesAtTheStartOfBlocks: false
 
 # Spacing
-SpaceAfterCStyleCast: false
+SpaceAfterCStyleCast: true
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false
 SpacesInParentheses: false

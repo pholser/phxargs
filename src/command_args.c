@@ -14,7 +14,7 @@ struct command_args_s {
 static void reallocate_if_needed(command_args* args) {
   if (args->count + 1 > args->capacity) {
     args->capacity *= 2;
-    args->args = (char**)safe_realloc(args->args, args->capacity * sizeof(char*));
+    args->args = (char**) safe_realloc(args->args, args->capacity * sizeof(char*));
   }
 }
 
@@ -23,7 +23,7 @@ command_args* command_args_create_with_capacity(size_t capacity) {
 
   args->count = 0;
   args->capacity = capacity;
-  args->args = (char**)safe_calloc(args->capacity, sizeof(char*));
+  args->args = (char**) safe_calloc(args->capacity, sizeof(char*));
   args->length = 0;
 
   return args;
@@ -55,6 +55,6 @@ void command_args_destroy(command_args* args) {
   for (size_t i = 0; i < args->count; ++i) {
     free(args->args[i]);
   }
-  free((void*)args->args);
+  free((void*) args->args);
   free(args);
 }

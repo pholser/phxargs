@@ -21,7 +21,7 @@ static void delim_tokenizer_start_token(delim_tokenizer* t) {
 }
 
 static void delim_tokenizer_append_to_token(delim_tokenizer* t, int ch) {
-  tokenizer_add(t->base, (char)ch);
+  tokenizer_add(t->base, (char) ch);
 }
 
 static char* delim_tokenizer_end_token(delim_tokenizer* t) {

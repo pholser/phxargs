@@ -223,7 +223,7 @@ static char** build_exec_args(command* cmd, size_t* exec_args_count) {
     command_args_count(fixed_args_in_play)
       + command_args_count(cmd->input_args);
 
-  char** exec_args = (char**)safe_calloc(*exec_args_count + 1, sizeof(char*));
+  char** exec_args = (char**) safe_calloc(*exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
     exec_args[i] = safe_strdup(command_args_get(fixed_args_in_play, i));
   }
@@ -335,7 +335,7 @@ pid_t command_execute_async(command* cmd) {
     for (size_t i = 0; i < exec_args_count; ++i) {
       free(exec_args[i]);
     }
-    free((void*)exec_args);
+    free((void*) exec_args);
   }
 
   exit(EXIT_SUCCESS);
