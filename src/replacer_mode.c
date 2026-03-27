@@ -34,7 +34,7 @@ static void replacer_mode_destroy_impl(void* impl) {
   free(impl);
 }
 
-xargs_mode_ops replacer_mode_ops = {
+static xargs_mode_ops replacer_mode_ops = {
   .run = replacer_mode_run,
   .destroy_impl = replacer_mode_destroy_impl
 };

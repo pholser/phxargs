@@ -60,7 +60,7 @@ static void delim_tokenizer_destroy_impl(void* impl) {
   free(impl);
 }
 
-tokenizer_ops delim_tokenizer_ops = {
+static tokenizer_ops delim_tokenizer_ops = {
   .next_token = next_delim_token,
   .destroy_impl = delim_tokenizer_destroy_impl
 };

@@ -72,7 +72,7 @@ static void appender_mode_destroy_impl(void* impl) {
   free(impl);
 }
 
-xargs_mode_ops appender_mode_ops = {
+static xargs_mode_ops appender_mode_ops = {
   .run = appender_mode_run,
   .destroy_impl = appender_mode_destroy_impl
 };
