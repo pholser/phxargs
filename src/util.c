@@ -1,7 +1,9 @@
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "util.h"
 
@@ -30,6 +32,16 @@ void* safe_realloc(void* ptr, size_t size) {
     exit(EXIT_FAILURE);
   }
   return new_ptr;
+}
+
+long safe_sysconf(int name) {
+  errno = 0;
+  long result = sysconf(name);
+  if (result == -1 && errno != 0) {
+    perror("phxargs: sysconf");
+    exit(EXIT_FAILURE);
+  }
+  return result;
 }
 
 char* safe_strdup(const char* s) {

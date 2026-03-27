@@ -157,7 +157,7 @@ static void set_max_procs(options* opts, int opt, const char* new_val) {
   long parsed = parse_number_arg_with_min(opt, new_val, 0);
 
   if (parsed > 0) {
-    long child_max = sysconf(_SC_CHILD_MAX);
+    long child_max = safe_sysconf(_SC_CHILD_MAX);
     if (child_max > 0 && parsed > child_max) {
       fprintf(
         stderr,

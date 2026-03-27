@@ -11,6 +11,8 @@ void* safe_realloc(void* ptr, size_t size);
 
 char* safe_strdup(const char* s);
 
+long safe_sysconf(int name);
+
 static inline size_t min(size_t a, size_t b) {
   return a < b ? a : b;
 }

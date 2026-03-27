@@ -93,7 +93,7 @@ static uint8_t command_max_args_specified(const command* cmd) {
 }
 
 static size_t decide_max_length(const command* cmd, const options* opts) {
-  long sc_arg_max = sysconf(_SC_ARG_MAX);
+  long sc_arg_max = safe_sysconf(_SC_ARG_MAX);
   size_t max_length = sc_arg_max > 0
     ? (size_t) sc_arg_max - (2 * cmd->env_length) - 2048
     : (size_t) 128 * 1024;

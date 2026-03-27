@@ -51,7 +51,7 @@ process_pool* process_pool_create(size_t max_procs) {
 
   pool->max_procs = max_procs;
   pool->capacity = max_procs == 0 ? 16 : max_procs;
-  pool->child_max = sysconf(_SC_CHILD_MAX);
+  pool->child_max = safe_sysconf(_SC_CHILD_MAX);
   pool->count = 0;
   pool->status = 0;
   pool->halt = 0;
