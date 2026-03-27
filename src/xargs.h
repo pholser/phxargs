@@ -1,7 +1,7 @@
 #ifndef PHXARGS_XARGS_H
 #define PHXARGS_XARGS_H
 
-typedef struct _xargs xargs;
+typedef struct xargs_s xargs;
 
 xargs* xargs_create(int argc, char** argv);
 

@@ -4,7 +4,7 @@
 #include "buffer.h"
 #include "util.h"
 
-struct _buffer {
+struct buffer_s {
   char* buf;
   size_t sz;
   size_t pos;

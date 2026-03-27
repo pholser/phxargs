@@ -1,0 +1,62 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+# Indentation
+IndentWidth: 2
+TabWidth: 2
+UseTab: Never
+ContinuationIndentWidth: 2
+
+# Braces
+BreakBeforeBraces: Attach
+
+# Pointers and references
+PointerAlignment: Left
+
+# Column limit
+ColumnLimit: 80
+
+# Parameters: don't pack, always break if they don't fit on one line
+BinPackParameters: false
+BinPackArguments: false
+AlignAfterOpenBracket: AlwaysBreak
+
+# Blank lines
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+# Spacing
+SpaceAfterCStyleCast: false
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceBeforeSquareBrackets: false
+SpaceAfterLogicalNot: false
+
+# Short constructs: never collapse onto one line
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+
+# Includes
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Local project includes ("foo.h")
+  - Regex: '^"'
+    Priority: 2
+  # System includes (<foo.h>)
+  - Regex: '^<'
+    Priority: 1
+
+# Operator placement: break before operators, not after
+BreakBeforeBinaryOperators: NonAssignment
+AlignOperands: DontAlign
+BreakBeforeTernaryOperators: true
+
+# Misc
+Cpp11BracedListStyle: false
+ReflowComments: false

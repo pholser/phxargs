@@ -9,7 +9,7 @@
 #include "options.h"
 #include "util.h"
 
-struct _options {
+struct options_s {
   int optind_val;
 
   /* -0 option */

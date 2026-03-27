@@ -7,7 +7,7 @@
 
 #include "options.h"
 
-typedef struct _command command;
+typedef struct command_s command;
 
 command* command_create(
   options* opts,

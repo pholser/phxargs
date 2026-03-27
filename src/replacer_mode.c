@@ -5,7 +5,7 @@
 #include "util.h"
 #include "xargs_mode.h"
 
-struct _replacer_mode {
+struct replacer_mode_s {
   xargs_mode* base;
 };
 

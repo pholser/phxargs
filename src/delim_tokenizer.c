@@ -6,7 +6,7 @@
 #include "tokenizer.h"
 #include "util.h"
 
-struct _delim_tokenizer {
+struct delim_tokenizer_s {
   tokenizer* base;
 
   size_t token_start;

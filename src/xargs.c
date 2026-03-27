@@ -8,7 +8,7 @@
 #include "xargs.h"
 #include "xargs_mode.h"
 
-struct _xargs {
+struct xargs_s {
   xargs_mode* mode;
 };
 

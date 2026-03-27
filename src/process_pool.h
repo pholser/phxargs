@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-typedef struct _process_pool process_pool;
+typedef struct process_pool_s process_pool;
 
 void process_pool_install_signal_handlers(void);
 

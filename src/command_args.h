@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-typedef struct _command_args command_args;
+typedef struct command_args_s command_args;
 
 command_args* command_args_create(void);
 

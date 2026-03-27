@@ -5,10 +5,10 @@
 
 #include "options.h"
 
-typedef struct _xargs_mode xargs_mode;
-typedef struct _xargs_mode_ops xargs_mode_ops;
+typedef struct xargs_mode_s xargs_mode;
+typedef struct xargs_mode_ops_s xargs_mode_ops;
 
-struct _xargs_mode_ops {
+struct xargs_mode_ops_s {
   int (*run)(xargs_mode* self);
   void (*destroy_impl)(void* impl);
 };

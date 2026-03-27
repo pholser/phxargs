@@ -16,7 +16,7 @@ static void increment_line_count(void* ctx) {
   command_increment_line_count((command*) ctx);
 }
 
-struct _xargs_mode {
+struct xargs_mode_s {
   xargs_mode_ops* ops;
   FILE* arg_source;
   command* cmd;

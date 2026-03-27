@@ -6,7 +6,7 @@
 #include "util.h"
 #include "xargs_mode.h"
 
-struct _appender_mode {
+struct appender_mode_s {
   xargs_mode* base;
   uint8_t suppress_execution_on_empty_input;
 };

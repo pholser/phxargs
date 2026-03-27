@@ -4,7 +4,7 @@
 #include "tokenizer.h"
 #include "util.h"
 
-struct _tokenizer {
+struct tokenizer_s {
   tokenizer_ops* ops;
   buffer* buf;
   void* impl;

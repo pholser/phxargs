@@ -5,7 +5,7 @@
 
 #include "tokenizer.h"
 
-typedef struct _space_tokenizer space_tokenizer;
+typedef struct space_tokenizer_s space_tokenizer;
 
 space_tokenizer* space_tokenizer_create(
   size_t buffer_size,

@@ -5,7 +5,7 @@
 
 #include "tokenizer.h"
 
-typedef struct _delim_tokenizer delim_tokenizer;
+typedef struct delim_tokenizer_s delim_tokenizer;
 
 delim_tokenizer* delim_tokenizer_create(
   size_t buffer_size,

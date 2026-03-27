@@ -4,7 +4,7 @@
 #include "command_args.h"
 #include "util.h"
 
-struct _command_args {
+struct command_args_s {
   size_t count;
   size_t capacity;
   char** args;

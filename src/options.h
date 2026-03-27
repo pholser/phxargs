@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct _options options;
+typedef struct options_s options;
 
 options* options_create(int argc, char** argv);
 

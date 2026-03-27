@@ -12,10 +12,10 @@ typedef enum {
   TOKENIZER_ERR_UNTERMINATED_QUOTE
 } tokenizer_error;
 
-typedef struct _tokenizer tokenizer;
-typedef struct _tokenizer_ops tokenizer_ops;
+typedef struct tokenizer_s tokenizer;
+typedef struct tokenizer_ops_s tokenizer_ops;
 
-struct _tokenizer_ops {
+struct tokenizer_ops_s {
   char* (*next_token)(tokenizer* self, FILE* arg_source);
   void (*destroy_impl)(void* impl);
 };

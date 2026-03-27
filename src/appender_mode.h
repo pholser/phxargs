@@ -4,7 +4,7 @@
 #include "options.h"
 #include "xargs_mode.h"
 
-typedef struct _appender_mode appender_mode;
+typedef struct appender_mode_s appender_mode;
 
 appender_mode* appender_mode_create(
   options* opts,

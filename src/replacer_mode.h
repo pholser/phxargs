@@ -4,7 +4,7 @@
 #include "options.h"
 #include "xargs_mode.h"
 
-typedef struct _replacer_mode replacer_mode;
+typedef struct replacer_mode_s replacer_mode;
 
 replacer_mode* replacer_mode_create(
   options* opts,

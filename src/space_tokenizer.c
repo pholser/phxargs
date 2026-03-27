@@ -16,7 +16,7 @@ typedef enum {
   IN_TOKEN_ESCAPE
 } space_tokenizer_state;
 
-struct _space_tokenizer {
+struct space_tokenizer_s {
   tokenizer* base;
 
   space_tokenizer_state state;

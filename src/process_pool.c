@@ -10,7 +10,7 @@
 #include "process_pool.h"
 #include "util.h"
 
-struct _process_pool {
+struct process_pool_s {
   size_t max_procs;
   size_t capacity;
   long child_max;

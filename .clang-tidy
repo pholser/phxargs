@@ -1,0 +1,47 @@
+---
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  readability-braces-around-statements,
+  readability-identifier-naming,
+  readability-redundant-declaration,
+  readability-redundant-preprocessor,
+  misc-redundant-expression,
+  misc-unused-parameters,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters
+
+CheckOptions:
+  # Functions: snake_case
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+  # Variables: snake_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  # Parameters: snake_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  # Struct members: snake_case
+  - key: readability-identifier-naming.MemberCase
+    value: lower_case
+  # Typedefs: snake_case
+  - key: readability-identifier-naming.TypedefCase
+    value: lower_case
+  # Enums: snake_case type name
+  - key: readability-identifier-naming.EnumCase
+    value: lower_case
+  # Enum constants: UPPER_SNAKE_CASE
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  # Macros: UPPER_SNAKE_CASE
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  # Global constants: UPPER_SNAKE_CASE
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+  # Function pointer typedefs: snake_case with _fn suffix
+  - key: readability-identifier-naming.TypedefSuffix
+    value: ''
+
+FormatStyle: file
+HeaderFilterRegex: '.*'
