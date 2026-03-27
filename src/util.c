@@ -24,12 +24,12 @@ void* safe_malloc(size_t size) {
 }
 
 void* safe_realloc(void* ptr, size_t size) {
-  ptr = realloc(ptr, size);
-  if (ptr == NULL) {
+  void* new_ptr = realloc(ptr, size);
+  if (new_ptr == NULL) {
     perror("phxargs: realloc");
     exit(EXIT_FAILURE);
   }
-  return ptr;
+  return new_ptr;
 }
 
 char* safe_strdup(const char* s) {
