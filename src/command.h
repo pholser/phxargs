@@ -1,8 +1,8 @@
 #ifndef PHXARGS_COMMAND_H
 #define PHXARGS_COMMAND_H
 
+#include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <sys/types.h>
 
 #include "options.h"
@@ -15,9 +15,9 @@ command* command_create(
   int argc,
   char** argv);
 
-uint8_t command_arg_would_exceed_limits(const command* cmd, const char* new_arg);
+bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg);
 
-uint8_t command_should_execute_after_arg_added(const command* cmd);
+bool command_should_execute_after_arg_added(const command* cmd);
 
 void command_replace_args(command* cmd, const char* token);
 
@@ -29,7 +29,7 @@ size_t command_max_length(const command* cmd);
 
 void command_add_input_argument(command* cmd, const char* new_arg);
 
-uint8_t command_input_args_remain(const command* cmd);
+bool command_input_args_remain(const command* cmd);
 
 size_t command_length(const command* cmd);
 

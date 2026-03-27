@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -86,7 +86,7 @@ static char* space_tokenizer_end_token(space_tokenizer* t) {
 static char* next_space_token(tokenizer* t, FILE* token_source) {
   space_tokenizer* self = (space_tokenizer*) tokenizer_impl(t);
 
-  uint8_t line_has_token = 0;
+  bool line_has_token = false;
 
   int ch;
   while ((ch = getc(token_source)) != EOF) {

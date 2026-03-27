@@ -1,7 +1,7 @@
 #ifndef PHXARGS_XARGS_MODE_H
 #define PHXARGS_XARGS_MODE_H
 
-#include <stdint.h>
+#include <stdbool.h>
 
 #include "options.h"
 
@@ -26,13 +26,13 @@ void* xargs_mode_impl(const xargs_mode* mode);
 int xargs_mode_run(xargs_mode* mode);
 
 char* xargs_mode_next_token(xargs_mode* const mode);
-uint8_t xargs_mode_tokenizer_errored(const xargs_mode* mode);
+bool xargs_mode_tokenizer_errored(const xargs_mode* mode);
 
-uint8_t xargs_mode_arg_would_exceed_limits(
+bool xargs_mode_arg_would_exceed_limits(
   xargs_mode* mode,
   const char* arg);
 
-uint8_t xargs_mode_should_execute_command_after_arg_added(
+bool xargs_mode_should_execute_command_after_arg_added(
   const xargs_mode* mode);
 
 void xargs_mode_execute_command(xargs_mode* mode);
@@ -43,7 +43,7 @@ void xargs_mode_add_input_argument(
   xargs_mode* mode,
   const char* new_arg);
 
-uint8_t xargs_mode_input_args_remain(const xargs_mode* mode);
+bool xargs_mode_input_args_remain(const xargs_mode* mode);
 
 void xargs_mode_ensure_command_length_not_exceeded(
   xargs_mode* mode,

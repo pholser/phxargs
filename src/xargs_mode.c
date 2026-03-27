@@ -76,18 +76,18 @@ char* xargs_mode_next_token(xargs_mode* const mode) {
   return tokenizer_next_token(mode->toker, mode->arg_source);
 }
 
-uint8_t xargs_mode_tokenizer_errored(const xargs_mode* mode) {
+bool xargs_mode_tokenizer_errored(const xargs_mode* mode) {
   return tokenizer_get_error(mode->toker) != TOKENIZER_ERR_NONE;
 }
 
-uint8_t xargs_mode_arg_would_exceed_limits(
+bool xargs_mode_arg_would_exceed_limits(
   xargs_mode* mode,
   const char* new_arg) {
 
   return command_arg_would_exceed_limits(mode->cmd, new_arg);
 }
 
-uint8_t xargs_mode_should_execute_command_after_arg_added(
+bool xargs_mode_should_execute_command_after_arg_added(
   const xargs_mode* mode) {
 
   return command_should_execute_after_arg_added(mode->cmd);
@@ -112,7 +112,7 @@ void xargs_mode_add_input_argument(
   command_add_input_argument(mode->cmd, new_arg);
 }
 
-uint8_t xargs_mode_input_args_remain(const xargs_mode* mode) {
+bool xargs_mode_input_args_remain(const xargs_mode* mode) {
   return command_input_args_remain(mode->cmd);
 }
 

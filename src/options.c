@@ -323,7 +323,7 @@ int options_index_of_first_arg(const options* opts) {
   return opts->optind_val;
 }
 
-uint8_t options_use_nul_char_as_arg_delimiter(const options* opts) {
+bool options_use_nul_char_as_arg_delimiter(const options* opts) {
   return opts->use_nul_char_as_arg_delimiter;
 }
 
@@ -351,11 +351,11 @@ size_t options_max_args_per_command(const options* opts) {
   return opts->max_args_per_command;
 }
 
-uint8_t options_open_tty(const options* opts) {
+bool options_open_tty(const options* opts) {
   return opts->open_tty;
 }
 
-uint8_t options_prompt(const options* opts) {
+bool options_prompt(const options* opts) {
   return opts->prompt;
 }
 
@@ -363,7 +363,7 @@ size_t options_max_procs(const options* opts) {
   return opts->max_procs;
 }
 
-uint8_t options_suppress_execution_on_empty_input(const options* opts) {
+bool options_suppress_execution_on_empty_input(const options* opts) {
   return opts->suppress_execution_on_empty_input;
 }
 
@@ -371,18 +371,18 @@ size_t options_max_command_length(const options* opts) {
   return opts->max_command_length;
 }
 
-uint8_t options_trace(const options* opts) {
+bool options_trace(const options* opts) {
   return opts->trace;
 }
 
-uint8_t options_terminate_on_too_large_command(const options* opts) {
+bool options_terminate_on_too_large_command(const options* opts) {
   return opts->terminate_on_too_large_command;
 }
 
-uint8_t options_line_mode(const options* opts) {
+bool options_line_mode(const options* opts) {
   return opts->line_mode_specified;
 }
 
-uint8_t options_max_command_length_specified(const options* opts) {
+bool options_max_command_length_specified(const options* opts) {
   return opts->max_command_length_specified;
 }

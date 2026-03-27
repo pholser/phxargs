@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -30,7 +31,7 @@ int appender_mode_run(xargs_mode* mode) {
   appender_mode* self = (appender_mode*) xargs_mode_impl(mode);
 
   int execution_status = EXIT_SUCCESS;
-  uint8_t input_present = 0;
+  bool input_present = false;
 
   char* token;
   for (token = xargs_mode_next_token(mode);

@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,7 +53,7 @@ static pid_t safe_fork(void) {
   return pid;
 }
 
-static void safe_exec(char** exec_args, uint8_t open_tty) {
+static void safe_exec(char** exec_args, bool open_tty) {
   if (open_tty) {
     if (freopen("/dev/tty", "r", stdin) == NULL) {
       perror("phxargs: cannot reopen stdin as /dev/tty");
@@ -88,7 +89,7 @@ size_t command_length(const command* cmd) {
     + command_args_length(cmd->input_args);
 }
 
-static uint8_t command_max_args_specified(const command* cmd) {
+static bool command_max_args_specified(const command* cmd) {
   return cmd->max_args > 0;
 }
 
@@ -238,17 +239,17 @@ static char** build_exec_args(command* cmd, size_t* exec_args_count) {
   return exec_args;
 }
 
-uint8_t command_arg_would_exceed_limits(
+bool command_arg_would_exceed_limits(
   const command* cmd,
   const char* new_arg) {
 
   command_ensure_length_not_exceeded(cmd, new_arg);
 
   size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
-  uint8_t would_exceed_size = !cmd->line_mode && new_length > cmd->max_length;
+  bool would_exceed_size = !cmd->line_mode && new_length > cmd->max_length;
 
   if (command_max_args_specified(cmd)) {
-    uint8_t at_max_args = command_args_count(cmd->input_args) == cmd->max_args;
+    bool at_max_args = command_args_count(cmd->input_args) == cmd->max_args;
     if (cmd->terminate_on_too_large_command) {
       return at_max_args;
     }
@@ -258,7 +259,7 @@ uint8_t command_arg_would_exceed_limits(
   return would_exceed_size;
 }
 
-uint8_t command_should_execute_after_arg_added(const command* cmd) {
+bool command_should_execute_after_arg_added(const command* cmd) {
   if (cmd->terminate_on_too_large_command
     && command_length(cmd) > cmd->max_length) {
 
@@ -273,7 +274,7 @@ uint8_t command_should_execute_after_arg_added(const command* cmd) {
   return 0;
 }
 
-uint8_t command_input_args_remain(const command* cmd) {
+bool command_input_args_remain(const command* cmd) {
   return command_args_count(cmd->input_args) > 0;
 }
 
@@ -281,7 +282,7 @@ void command_increment_line_count(command* cmd) {
   ++cmd->line_count;
 }
 
-static uint8_t confirm_execution(void) {
+static bool confirm_execution(void) {
   FILE* tty = fopen("/dev/tty", "r");
   if (tty == NULL) {
     perror("phxargs: cannot open /dev/tty");
@@ -325,7 +326,7 @@ pid_t command_execute_async(command* cmd) {
     }
   }
 
-  uint8_t execute = 1;
+  bool execute = true;
   if (cmd->prompt) {
     fprintf(stderr, "?...");
     execute = confirm_execution();
