@@ -2,7 +2,6 @@
 #define PHXARGS_SPACE_TOKENIZER_H
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include "tokenizer.h"
 

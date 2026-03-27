@@ -2,7 +2,6 @@
 #define PHXARGS_BUFFER_H
 
 #include <stddef.h>
-#include <stdint.h>
 
 typedef struct _buffer buffer;
 

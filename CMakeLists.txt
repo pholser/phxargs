@@ -40,6 +40,16 @@ function(get_system_include_paths out_var)
       endif()
     endforeach()
 
+    if(APPLE)
+      execute_process(
+        COMMAND xcrun --show-sdk-path
+        OUTPUT_VARIABLE macos_sdk_path
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      if(macos_sdk_path)
+        list(APPEND include_paths -isystem "${macos_sdk_path}/usr/include")
+      endif()
+    endif()
 
     set(${out_var} "${include_paths}" PARENT_SCOPE)
   else()
@@ -66,6 +76,8 @@ endif()
 
 if(IWYU_PATH)
   get_system_include_paths(SYSTEM_INCLUDE_PATHS)
+  separate_arguments(IWYU_C_FLAGS_DEBUG NATIVE_COMMAND "${CMAKE_C_FLAGS_DEBUG}")
+  separate_arguments(IWYU_C_FLAGS NATIVE_COMMAND "${CMAKE_C_FLAGS}")
 
   add_custom_target(iwyu
     COMMAND ${CMAKE_COMMAND} -E echo "Running IWYU analysis for all source files..."
@@ -74,7 +86,7 @@ if(IWYU_PATH)
   foreach(source_file ${SOURCES})
     add_custom_command(
       TARGET iwyu
-      COMMAND ${IWYU_PATH} --std=c99 ${CMAKE_C_FLAGS_DEBUG} ${CMAKE_C_FLAGS}
+      COMMAND ${IWYU_PATH} --std=c99 ${IWYU_C_FLAGS_DEBUG} ${IWYU_C_FLAGS}
               ${SYSTEM_INCLUDE_PATHS} -I${SRC_DIR}
               -Xiwyu --mapping_file=${CMAKE_SOURCE_DIR}/phxargs.iwyu.imp
               ${source_file}
