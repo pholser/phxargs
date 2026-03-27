@@ -1,14 +1,12 @@
+#include "str.h"
+
 #include <stddef.h>
 #include <string.h>
 
-#include "str.h"
 #include "util.h"
 
 char* str_replace(
-  const char* s,
-  const char* placeholder,
-  const char* replacement) {
-
+  const char* s, const char* placeholder, const char* replacement) {
   if (s == NULL) {
     return NULL;
   }
@@ -29,9 +27,8 @@ char* str_replace(
     tmp += placeholder_len;
   }
 
-  ptrdiff_t size_delta =
-    (ptrdiff_t) occurrence_count
-      * ((ptrdiff_t) replacement_len - (ptrdiff_t) placeholder_len);
+  ptrdiff_t size_delta = (ptrdiff_t) occurrence_count
+    * ((ptrdiff_t) replacement_len - (ptrdiff_t) placeholder_len);
   size_t new_len = (size_t) ((ptrdiff_t) target_len + size_delta);
   char* result = safe_calloc(new_len + 1, sizeof(char));
 
@@ -52,4 +49,3 @@ char* str_replace(
 
   return result;
 }
-

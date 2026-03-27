@@ -18,4 +18,4 @@
 /* Command was not found. */
 #define PHXARGS_STATUS_NOT_FOUND 127
 
-#endif  // PHXARGS_EXIT_CODES_H
+#endif // PHXARGS_EXIT_CODES_H

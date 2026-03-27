@@ -17,4 +17,4 @@ void buffer_reset(buffer* buf);
 
 void buffer_destroy(buffer* buf);
 
-#endif  // PHXARGS_BUFFER_H
+#endif // PHXARGS_BUFFER_H

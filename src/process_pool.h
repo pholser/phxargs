@@ -21,4 +21,4 @@ int process_pool_drain(process_pool* pool);
 
 void process_pool_destroy(process_pool* pool);
 
-#endif  // PHXARGS_PROCESS_POOL_H
+#endif // PHXARGS_PROCESS_POOL_H

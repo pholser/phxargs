@@ -1,7 +1,7 @@
+#include "arg_source.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "arg_source.h"
 
 FILE* arg_source_open(const char* path) {
   if (path == NULL) {
@@ -22,4 +22,3 @@ void arg_source_close(FILE* arg_source) {
     fclose(arg_source);
   }
 }
-

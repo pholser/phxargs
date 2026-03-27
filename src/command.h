@@ -9,11 +9,7 @@
 
 typedef struct command_s command;
 
-command* command_create(
-  options* opts,
-  int arg_index,
-  int argc,
-  char** argv);
+command* command_create(options* opts, int arg_index, int argc, char** argv);
 
 bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg);
 
@@ -21,7 +17,8 @@ bool command_should_execute_after_arg_added(const command* cmd);
 
 void command_replace_args(command* cmd, const char* token);
 
-void command_ensure_length_not_exceeded(const command* cmd, const char* new_arg);
+void command_ensure_length_not_exceeded(
+  const command* cmd, const char* new_arg);
 
 pid_t command_execute_async(command* cmd);
 
@@ -37,4 +34,4 @@ void command_increment_line_count(command* cmd);
 
 void command_free(command* cmd);
 
-#endif  // PHXARGS_COMMAND_H
+#endif // PHXARGS_COMMAND_H

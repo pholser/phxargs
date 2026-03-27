@@ -28,29 +28,23 @@ int xargs_mode_run(xargs_mode* mode);
 char* xargs_mode_next_token(xargs_mode* const mode);
 bool xargs_mode_tokenizer_errored(const xargs_mode* mode);
 
-bool xargs_mode_arg_would_exceed_limits(
-  xargs_mode* mode,
-  const char* arg);
+bool xargs_mode_arg_would_exceed_limits(xargs_mode* mode, const char* arg);
 
-bool xargs_mode_should_execute_command_after_arg_added(
-  const xargs_mode* mode);
+bool xargs_mode_should_execute_command_after_arg_added(const xargs_mode* mode);
 
 void xargs_mode_execute_command(xargs_mode* mode);
 
 int xargs_mode_drain(xargs_mode* mode);
 
-void xargs_mode_add_input_argument(
-  xargs_mode* mode,
-  const char* new_arg);
+void xargs_mode_add_input_argument(xargs_mode* mode, const char* new_arg);
 
 bool xargs_mode_input_args_remain(const xargs_mode* mode);
 
 void xargs_mode_ensure_command_length_not_exceeded(
-  xargs_mode* mode,
-  const char* new_arg);
+  xargs_mode* mode, const char* new_arg);
 
 void xargs_replace_args(xargs_mode* mode, const char* new_arg);
 
 void xargs_mode_destroy(xargs_mode* mode);
 
-#endif  // PHXARGS_XARGS_MODE_H
+#endif // PHXARGS_XARGS_MODE_H

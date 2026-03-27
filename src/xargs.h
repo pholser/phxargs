@@ -9,5 +9,4 @@ int xargs_run(xargs* x);
 
 void xargs_destroy(xargs* x);
 
-#endif  // PHXARGS_XARGS_H
-
+#endif // PHXARGS_XARGS_H

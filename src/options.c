@@ -1,12 +1,13 @@
+#include "options.h"
+
 #include <assert.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 #include <unistd.h>
 
-#include "options.h"
 #include "util.h"
 
 struct options_s {
@@ -121,11 +122,8 @@ static void reset_max_args_per_command(options* opts) {
   opts->max_args_per_command = 0;
 }
 
-static void set_max_lines_per_command(
-  options* opts,
-  int opt,
-  const char* new_val) {
-
+static void
+set_max_lines_per_command(options* opts, int opt, const char* new_val) {
   opts->max_lines_per_command = parse_number_arg(opt, new_val);
   opts->line_mode_specified = 1;
 
@@ -133,22 +131,16 @@ static void set_max_lines_per_command(
   reset_max_args_per_command(opts);
 }
 
-static void set_max_args_per_command(
-  options* opts,
-  int opt,
-  const char* new_val) {
-
+static void
+set_max_args_per_command(options* opts, int opt, const char* new_val) {
   opts->max_args_per_command = parse_number_arg(opt, new_val);
 
   reset_arg_placeholder(opts);
   reset_max_lines_per_command(opts);
 }
 
-static void set_max_command_length(
-  options* opts,
-  int opt,
-  const char* new_val) {
-
+static void
+set_max_command_length(options* opts, int opt, const char* new_val) {
   opts->max_command_length = parse_number_arg(opt, new_val);
   opts->max_command_length_specified = 1;
 }
@@ -222,61 +214,61 @@ static void parse_options(options* opts, int argc, char** argv) {
   int opt;
   while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:opP:rs:tx")) != -1) {
     switch (opt) {
-      case '0':
-        enable_nul_char_as_arg_delimiter(opts);
-        break;
-      case 'a':
-        set_arg_file_path(opts, optarg);
-        break;
-      case 'd':
-        if (strlen(optarg) != 1) {
-          fprintf(stderr, "phxargs: invalid delimiter for -%c\n", opt);
-          exit(EXIT_FAILURE);
-        }
-        set_arg_delimiter(opts, *optarg);
-        break;
-      case 'E':
-        set_logical_end_of_input_marker(opts, optarg);
-        break;
-      case 'I':
-        set_arg_placeholder(opts, optarg);
-        break;
-      case 'L':
-        set_max_lines_per_command(opts, opt, optarg);
-        break;
-      case 'n':
-        set_max_args_per_command(opts, opt, optarg);
-        break;
-      case 'o':
-        set_open_tty(opts);
-        break;
-      case 'p':
-        enable_prompt(opts);
-        break;
-      case 'P':
-        set_max_procs(opts, opt, optarg);
-        break;
-      case 'r':
-        enable_suppress_execution_on_empty_input(opts);
-        break;
-      case 's':
-        set_max_command_length(opts, opt, optarg);
-        break;
-      case 't':
-        enable_trace(opts);
-        break;
-      case 'x':
-        enable_terminate_on_too_large_command(opts);
-        break;
-      case ':':
-        fprintf(stderr, "phxargs: -%c needs an argument\n", optopt);
+    case '0':
+      enable_nul_char_as_arg_delimiter(opts);
+      break;
+    case 'a':
+      set_arg_file_path(opts, optarg);
+      break;
+    case 'd':
+      if (strlen(optarg) != 1) {
+        fprintf(stderr, "phxargs: invalid delimiter for -%c\n", opt);
         exit(EXIT_FAILURE);
-      case '?':
-        fprintf(stderr, "phxargs: unknown option -%c\n", optopt);
-        exit(EXIT_FAILURE);
-      default:
-        assert(!"reachable");
-        exit(EXIT_FAILURE);
+      }
+      set_arg_delimiter(opts, *optarg);
+      break;
+    case 'E':
+      set_logical_end_of_input_marker(opts, optarg);
+      break;
+    case 'I':
+      set_arg_placeholder(opts, optarg);
+      break;
+    case 'L':
+      set_max_lines_per_command(opts, opt, optarg);
+      break;
+    case 'n':
+      set_max_args_per_command(opts, opt, optarg);
+      break;
+    case 'o':
+      set_open_tty(opts);
+      break;
+    case 'p':
+      enable_prompt(opts);
+      break;
+    case 'P':
+      set_max_procs(opts, opt, optarg);
+      break;
+    case 'r':
+      enable_suppress_execution_on_empty_input(opts);
+      break;
+    case 's':
+      set_max_command_length(opts, opt, optarg);
+      break;
+    case 't':
+      enable_trace(opts);
+      break;
+    case 'x':
+      enable_terminate_on_too_large_command(opts);
+      break;
+    case ':':
+      fprintf(stderr, "phxargs: -%c needs an argument\n", optopt);
+      exit(EXIT_FAILURE);
+    case '?':
+      fprintf(stderr, "phxargs: unknown option -%c\n", optopt);
+      exit(EXIT_FAILURE);
+    default:
+      assert(!"reachable");
+      exit(EXIT_FAILURE);
     }
   }
 }

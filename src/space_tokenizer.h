@@ -17,4 +17,4 @@ tokenizer* space_tokenizer_as_tokenizer(space_tokenizer* t);
 
 void space_tokenizer_destroy(space_tokenizer* t);
 
-#endif  // PHXARGS_SPACE_TOKENIZER_H
+#endif // PHXARGS_SPACE_TOKENIZER_H

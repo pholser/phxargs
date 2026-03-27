@@ -1,16 +1,16 @@
+#include "xargs_mode.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "arg_source.h"
 #include "command.h"
-
 #include "delim_tokenizer.h"
 #include "options.h"
 #include "process_pool.h"
 #include "space_tokenizer.h"
 #include "tokenizer.h"
 #include "util.h"
-#include "xargs_mode.h"
 
 static void increment_line_count(void* ctx) {
   command_increment_line_count((command*) ctx);
@@ -32,7 +32,6 @@ xargs_mode* xargs_mode_create(
   int argc,
   char** argv,
   void* impl) {
-
   xargs_mode* mode = safe_malloc(sizeof(xargs_mode));
 
   mode->ops = ops;
@@ -41,24 +40,20 @@ xargs_mode* xargs_mode_create(
   mode->cmd = command_create(opts, arg_index, argc, argv);
   mode->pool = process_pool_create(options_max_procs(opts));
 
-  if (options_use_nul_char_as_arg_delimiter(opts)
+  if (
+    options_use_nul_char_as_arg_delimiter(opts)
     || options_arg_delimiter(opts) != '\0') {
-
-    mode->toker =
-      delim_tokenizer_as_tokenizer(
-        delim_tokenizer_create(
-          command_max_length(mode->cmd),
-          options_arg_delimiter(opts),
-          increment_line_count,
-          mode->cmd));
+    mode->toker = delim_tokenizer_as_tokenizer(delim_tokenizer_create(
+      command_max_length(mode->cmd),
+      options_arg_delimiter(opts),
+      increment_line_count,
+      mode->cmd));
   } else {
-    mode->toker =
-      space_tokenizer_as_tokenizer(
-        space_tokenizer_create(
-          command_max_length(mode->cmd),
-          options_logical_end_of_input_marker(opts),
-          increment_line_count,
-          mode->cmd));
+    mode->toker = space_tokenizer_as_tokenizer(space_tokenizer_create(
+      command_max_length(mode->cmd),
+      options_logical_end_of_input_marker(opts),
+      increment_line_count,
+      mode->cmd));
   }
 
   return mode;
@@ -80,16 +75,11 @@ bool xargs_mode_tokenizer_errored(const xargs_mode* mode) {
   return tokenizer_get_error(mode->toker) != TOKENIZER_ERR_NONE;
 }
 
-bool xargs_mode_arg_would_exceed_limits(
-  xargs_mode* mode,
-  const char* new_arg) {
-
+bool xargs_mode_arg_would_exceed_limits(xargs_mode* mode, const char* new_arg) {
   return command_arg_would_exceed_limits(mode->cmd, new_arg);
 }
 
-bool xargs_mode_should_execute_command_after_arg_added(
-  const xargs_mode* mode) {
-
+bool xargs_mode_should_execute_command_after_arg_added(const xargs_mode* mode) {
   return command_should_execute_after_arg_added(mode->cmd);
 }
 
@@ -105,10 +95,7 @@ int xargs_mode_drain(xargs_mode* mode) {
   return process_pool_drain(mode->pool);
 }
 
-void xargs_mode_add_input_argument(
-  xargs_mode* mode,
-  const char* new_arg) {
-
+void xargs_mode_add_input_argument(xargs_mode* mode, const char* new_arg) {
   command_add_input_argument(mode->cmd, new_arg);
 }
 
@@ -117,9 +104,7 @@ bool xargs_mode_input_args_remain(const xargs_mode* mode) {
 }
 
 void xargs_mode_ensure_command_length_not_exceeded(
-  xargs_mode* mode,
-  const char* new_arg) {
-
+  xargs_mode* mode, const char* new_arg) {
   command_ensure_length_not_exceeded(mode->cmd, new_arg);
 }
 

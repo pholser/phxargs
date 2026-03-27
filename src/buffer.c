@@ -1,7 +1,8 @@
+#include "buffer.h"
+
 #include <stddef.h>
 #include <stdlib.h>
 
-#include "buffer.h"
 #include "util.h"
 
 struct buffer_s {

@@ -1,7 +1,8 @@
+#include "command_args.h"
+
 #include <stdlib.h>
 #include <string.h>
 
-#include "command_args.h"
 #include "util.h"
 
 struct command_args_s {
@@ -14,7 +15,8 @@ struct command_args_s {
 static void reallocate_if_needed(command_args* args) {
   if (args->count + 1 > args->capacity) {
     args->capacity *= 2;
-    args->args = (char**) safe_realloc((void*) args->args, args->capacity * sizeof(char*));
+    args->args =
+      (char**) safe_realloc((void*) args->args, args->capacity * sizeof(char*));
   }
 }
 

@@ -1,10 +1,11 @@
+#include "space_tokenizer.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "tokenizer.h"
-#include "space_tokenizer.h"
 #include "util.h"
 
 typedef enum {
@@ -36,10 +37,8 @@ static void space_tokenizer_no_token(space_tokenizer* t) {
   t->token_start = 0;
 }
 
-static void space_tokenizer_start_quoted_token(
-  space_tokenizer* t,
-  int quote_char) {
-
+static void
+space_tokenizer_start_quoted_token(space_tokenizer* t, int quote_char) {
   t->state = IN_QUOTED_TOKEN;
   t->quote_char = quote_char;
   t->token_start = tokenizer_pos(t->base);
@@ -91,74 +90,74 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
   int ch;
   while ((ch = getc(token_source)) != EOF) {
     switch (self->state) {
-      case NO_TOKEN:
-        if (ch == ' ' || ch == '\t') {
-          continue;
-        } else if (ch == '\n') {
-          if (line_has_token) {
-            self->on_line(self->on_line_ctx);
-          }
-        } else if (ch == '\'' || ch == '"') {
-          space_tokenizer_start_quoted_token(self, ch);
-          line_has_token = 1;
-        } else if (ch == '\\') {
-          space_tokenizer_start_no_token_escape(self);
-          line_has_token = 1;
-        } else {
-          space_tokenizer_start_token(self, ch);
-          line_has_token = 1;
+    case NO_TOKEN:
+      if (ch == ' ' || ch == '\t') {
+        continue;
+      } else if (ch == '\n') {
+        if (line_has_token) {
+          self->on_line(self->on_line_ctx);
         }
-        break;
+      } else if (ch == '\'' || ch == '"') {
+        space_tokenizer_start_quoted_token(self, ch);
+        line_has_token = 1;
+      } else if (ch == '\\') {
+        space_tokenizer_start_no_token_escape(self);
+        line_has_token = 1;
+      } else {
+        space_tokenizer_start_token(self, ch);
+        line_has_token = 1;
+      }
+      break;
 
-      case NO_TOKEN_ESCAPE:
-        space_tokenizer_end_escape(self, ch);
-        break;
+    case NO_TOKEN_ESCAPE:
+      space_tokenizer_end_escape(self, ch);
+      break;
 
-      case IN_TOKEN:
-        if (ch == ' ' || ch == '\t') {
-          return space_tokenizer_end_token(self);
-        } else if (ch == '\n') {
-          if (line_has_token) {
-            self->on_line(self->on_line_ctx);
-          }
-          return space_tokenizer_end_token(self);
-        } else if (ch == '\'' || ch == '"') {
-          self->state = IN_TOKEN_QUOTED;
-          self->quote_char = ch;
-        } else if (ch == '\\') {
-          space_tokenizer_start_in_token_escape(self);
-        } else {
-          space_tokenizer_append_to_token(self, ch);
+    case IN_TOKEN:
+      if (ch == ' ' || ch == '\t') {
+        return space_tokenizer_end_token(self);
+      } else if (ch == '\n') {
+        if (line_has_token) {
+          self->on_line(self->on_line_ctx);
         }
-        break;
+        return space_tokenizer_end_token(self);
+      } else if (ch == '\'' || ch == '"') {
+        self->state = IN_TOKEN_QUOTED;
+        self->quote_char = ch;
+      } else if (ch == '\\') {
+        space_tokenizer_start_in_token_escape(self);
+      } else {
+        space_tokenizer_append_to_token(self, ch);
+      }
+      break;
 
-      case IN_QUOTED_TOKEN:
-        if (ch == self->quote_char) {
-          return space_tokenizer_end_token(self);
-        } else if (ch == '\n') {
-          fprintf(stderr, "phxargs: unterminated quote\n");
-          tokenizer_set_error(t, TOKENIZER_ERR_UNTERMINATED_QUOTE);
-          return NULL;
-        } else {
-          space_tokenizer_append_to_token(self, ch);
-        }
-        break;
+    case IN_QUOTED_TOKEN:
+      if (ch == self->quote_char) {
+        return space_tokenizer_end_token(self);
+      } else if (ch == '\n') {
+        fprintf(stderr, "phxargs: unterminated quote\n");
+        tokenizer_set_error(t, TOKENIZER_ERR_UNTERMINATED_QUOTE);
+        return NULL;
+      } else {
+        space_tokenizer_append_to_token(self, ch);
+      }
+      break;
 
-      case IN_TOKEN_QUOTED:
-        if (ch == self->quote_char) {
-          self->state = IN_TOKEN;
-        } else if (ch == '\n') {
-          fprintf(stderr, "phxargs: unterminated quote\n");
-          tokenizer_set_error(t, TOKENIZER_ERR_UNTERMINATED_QUOTE);
-          return NULL;
-        } else {
-          space_tokenizer_append_to_token(self, ch);
-        }
-        break;
+    case IN_TOKEN_QUOTED:
+      if (ch == self->quote_char) {
+        self->state = IN_TOKEN;
+      } else if (ch == '\n') {
+        fprintf(stderr, "phxargs: unterminated quote\n");
+        tokenizer_set_error(t, TOKENIZER_ERR_UNTERMINATED_QUOTE);
+        return NULL;
+      } else {
+        space_tokenizer_append_to_token(self, ch);
+      }
+      break;
 
-      case IN_TOKEN_ESCAPE:
-        space_tokenizer_end_escape(self, ch);
-        break;
+    case IN_TOKEN_ESCAPE:
+      space_tokenizer_end_escape(self, ch);
+      break;
     }
   }
 
@@ -189,17 +188,15 @@ static void space_tokenizer_destroy_impl(void* impl) {
   free(t);
 }
 
-static tokenizer_ops space_tokenizer_ops = {
-  .next_token = next_space_token,
-  .destroy_impl = space_tokenizer_destroy_impl
-};
+static tokenizer_ops space_tokenizer_ops = { .next_token = next_space_token,
+                                             .destroy_impl =
+                                               space_tokenizer_destroy_impl };
 
 space_tokenizer* space_tokenizer_create(
   size_t buffer_size,
   const char* logical_end_of_input_marker,
   line_count_fn on_line,
   void* on_line_ctx) {
-
   space_tokenizer* t = safe_malloc(sizeof(space_tokenizer));
 
   t->logical_end_of_input_marker = safe_strdup(logical_end_of_input_marker);

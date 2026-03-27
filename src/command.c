@@ -1,3 +1,5 @@
+#include "command.h"
+
 #include <errno.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -7,9 +9,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "command.h"
-#include "exit_codes.h"
 #include "command_args.h"
+#include "exit_codes.h"
 #include "str.h"
 #include "util.h"
 
@@ -66,9 +67,8 @@ static void safe_exec(char** exec_args, bool open_tty) {
   int failed_result = errno;
   fprintf(stderr, "phxargs: %s: %s\n", exec_args[0], strerror(failed_result));
   exit(
-    failed_result == ENOENT
-      ? PHXARGS_STATUS_NOT_FOUND
-      : PHXARGS_STATUS_NOT_EXECUTABLE);
+    failed_result == ENOENT ? PHXARGS_STATUS_NOT_FOUND
+                            : PHXARGS_STATUS_NOT_EXECUTABLE);
 }
 
 static void add_fixed_argument(command* cmd, const char* new_arg) {
@@ -84,8 +84,7 @@ size_t command_max_length(const command* cmd) {
 }
 
 size_t command_length(const command* cmd) {
-  return cmd->env_length
-    + command_args_length(cmd->fixed_args)
+  return cmd->env_length + command_args_length(cmd->fixed_args)
     + command_args_length(cmd->input_args);
 }
 
@@ -119,15 +118,14 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
       return specified;
     }
   } else {
-    return min((size_t)128 * 1024, max_length);
+    return min((size_t) 128 * 1024, max_length);
   }
 }
 
 void command_ensure_length_not_exceeded(
-  const command* cmd,
-  const char* new_arg) {
-
-  if (cmd->arg_placeholder != NULL || command_args_count(cmd->input_args) == 0) {
+  const command* cmd, const char* new_arg) {
+  if (
+    cmd->arg_placeholder != NULL || command_args_count(cmd->input_args) == 0) {
     size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
     if (new_length > cmd->max_length) {
       fprintf(stderr, "phxargs: command too long\n");
@@ -136,12 +134,7 @@ void command_ensure_length_not_exceeded(
   }
 }
 
-command* command_create(
-  options* opts,
-  int arg_index,
-  int argc,
-  char** argv) {
-
+command* command_create(options* opts, int arg_index, int argc, char** argv) {
   command* cmd = safe_malloc(sizeof(command));
 
   cmd->max_lines = options_max_lines_per_command(opts);
@@ -188,8 +181,7 @@ static void recycle_command(command* cmd) {
   if (cmd->arg_placeholder != NULL) {
     command_args_destroy(cmd->replaced_fixed_args);
     cmd->replaced_fixed_args =
-      command_args_create_with_capacity(
-        command_args_count(cmd->fixed_args));
+      command_args_create_with_capacity(command_args_count(cmd->fixed_args));
   }
 
   if (command_max_args_specified(cmd)) {
@@ -202,15 +194,11 @@ static void recycle_command(command* cmd) {
 void command_replace_args(command* cmd, const char* new_arg) {
   // Do not perform replacement on command word
   command_args_add(
-    cmd->replaced_fixed_args,
-    command_args_get(cmd->fixed_args, 0));
+    cmd->replaced_fixed_args, command_args_get(cmd->fixed_args, 0));
 
   for (size_t i = 1; i < command_args_count(cmd->fixed_args); ++i) {
-    char* replaced =
-      str_replace(
-        command_args_get(cmd->fixed_args, i),
-        cmd->arg_placeholder,
-        new_arg);
+    char* replaced = str_replace(
+      command_args_get(cmd->fixed_args, i), cmd->arg_placeholder, new_arg);
     command_args_add(cmd->replaced_fixed_args, replaced);
     free(replaced);
   }
@@ -218,13 +206,10 @@ void command_replace_args(command* cmd, const char* new_arg) {
 
 static char** build_exec_args(command* cmd, size_t* exec_args_count) {
   command_args* fixed_args_in_play =
-    cmd->arg_placeholder != NULL
-      ? cmd->replaced_fixed_args
-      : cmd->fixed_args;
+    cmd->arg_placeholder != NULL ? cmd->replaced_fixed_args : cmd->fixed_args;
 
-  *exec_args_count =
-    command_args_count(fixed_args_in_play)
-      + command_args_count(cmd->input_args);
+  *exec_args_count = command_args_count(fixed_args_in_play)
+    + command_args_count(cmd->input_args);
 
   char** exec_args = (char**) safe_calloc(*exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
@@ -239,10 +224,7 @@ static char** build_exec_args(command* cmd, size_t* exec_args_count) {
   return exec_args;
 }
 
-bool command_arg_would_exceed_limits(
-  const command* cmd,
-  const char* new_arg) {
-
+bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg) {
   command_ensure_length_not_exceeded(cmd, new_arg);
 
   size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
@@ -260,9 +242,9 @@ bool command_arg_would_exceed_limits(
 }
 
 bool command_should_execute_after_arg_added(const command* cmd) {
-  if (cmd->terminate_on_too_large_command
+  if (
+    cmd->terminate_on_too_large_command
     && command_length(cmd) > cmd->max_length) {
-
     fprintf(stderr, "phxargs: command too long\n");
     exit(EXIT_FAILURE);
   }

@@ -1,3 +1,5 @@
+#include "xargs.h"
+
 #include <stdlib.h>
 
 #include "appender_mode.h"
@@ -5,7 +7,6 @@
 #include "process_pool.h"
 #include "replacer_mode.h"
 #include "util.h"
-#include "xargs.h"
 #include "xargs_mode.h"
 
 struct xargs_s {
@@ -19,12 +20,11 @@ xargs* xargs_create(int argc, char** argv) {
 
   xargs* x = safe_malloc(sizeof(xargs));
 
-  x->mode =
-    options_arg_placeholder(opts) == NULL
-      ? appender_mode_as_xargs_mode(
-          appender_mode_create(opts, arg_index, argc, argv))
-      : replacer_mode_as_xargs_mode(
-          replacer_mode_create(opts, arg_index, argc, argv));
+  x->mode = options_arg_placeholder(opts) == NULL
+    ? appender_mode_as_xargs_mode(
+        appender_mode_create(opts, arg_index, argc, argv))
+    : replacer_mode_as_xargs_mode(
+        replacer_mode_create(opts, arg_index, argc, argv));
 
   options_destroy(opts);
 
@@ -39,4 +39,3 @@ void xargs_destroy(xargs* x) {
   xargs_mode_destroy(x->mode);
   free(x);
 }
-

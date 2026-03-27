@@ -1,8 +1,9 @@
+#include "appender_mode.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "appender_mode.h"
 #include "options.h"
 #include "util.h"
 #include "xargs_mode.h"
@@ -34,10 +35,8 @@ int appender_mode_run(xargs_mode* mode) {
   bool input_present = false;
 
   char* token;
-  for (token = xargs_mode_next_token(mode);
-    token != NULL;
-    token = xargs_mode_next_token(mode)) {
-
+  for (token = xargs_mode_next_token(mode); token != NULL;
+       token = xargs_mode_next_token(mode)) {
     input_present = 1;
 
     if (xargs_mode_arg_would_exceed_limits(mode, token)) {
@@ -73,29 +72,18 @@ static void appender_mode_destroy_impl(void* impl) {
   free(impl);
 }
 
-static xargs_mode_ops appender_mode_ops = {
-  .run = appender_mode_run,
-  .destroy_impl = appender_mode_destroy_impl
-};
+static xargs_mode_ops appender_mode_ops = { .run = appender_mode_run,
+                                            .destroy_impl =
+                                              appender_mode_destroy_impl };
 
-appender_mode* appender_mode_create(
-  options* opts,
-  int arg_index,
-  int argc,
-  char** argv) {
-
+appender_mode*
+appender_mode_create(options* opts, int arg_index, int argc, char** argv) {
   appender_mode* mode = safe_malloc(sizeof(appender_mode));
 
   mode->suppress_execution_on_empty_input =
     options_suppress_execution_on_empty_input(opts);
   mode->base =
-    xargs_mode_create(
-      &appender_mode_ops,
-      opts,
-      arg_index,
-      argc,
-      argv,
-      mode);
+    xargs_mode_create(&appender_mode_ops, opts, arg_index, argc, argv, mode);
 
   return mode;
 }

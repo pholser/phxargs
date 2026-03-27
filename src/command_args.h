@@ -19,4 +19,4 @@ char* command_args_get(const command_args* args, size_t i);
 
 void command_args_destroy(command_args* args);
 
-#endif  // PHXARGS_COMMAND_ARGS_H
+#endif // PHXARGS_COMMAND_ARGS_H

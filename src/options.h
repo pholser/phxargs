@@ -44,4 +44,4 @@ bool options_line_mode(const options* opts);
 
 bool options_max_command_length_specified(const options* opts);
 
-#endif  // PHXARGS_OPTIONS_H
+#endif // PHXARGS_OPTIONS_H

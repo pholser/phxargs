@@ -7,5 +7,4 @@ FILE* arg_source_open(const char* path);
 
 void arg_source_close(FILE* arg_source);
 
-#endif  // PHXARGS_ARG_SOURCE_H
-
+#endif // PHXARGS_ARG_SOURCE_H

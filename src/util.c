@@ -1,11 +1,11 @@
+#include "util.h"
+
 #include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-#include "util.h"
 
 void* safe_calloc(size_t count, size_t size) {
   void* ptr = calloc(count, size);
@@ -58,4 +58,3 @@ char* safe_strdup(const char* s) {
 
   return copy;
 }
-

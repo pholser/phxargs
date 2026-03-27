@@ -20,10 +20,7 @@ struct tokenizer_ops_s {
   void (*destroy_impl)(void* impl);
 };
 
-tokenizer* tokenizer_create(
-  tokenizer_ops* ops,
-  size_t buffer_size,
-  void* impl);
+tokenizer* tokenizer_create(tokenizer_ops* ops, size_t buffer_size, void* impl);
 
 void* tokenizer_impl(const tokenizer* t);
 
@@ -42,4 +39,4 @@ void tokenizer_reset(tokenizer* t);
 
 void tokenizer_destroy(tokenizer* t);
 
-#endif  // PHXARGS_TOKENIZER_H
+#endif // PHXARGS_TOKENIZER_H
