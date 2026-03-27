@@ -120,7 +120,7 @@ void xargs_mode_ensure_command_length_not_exceeded(
   xargs_mode* mode,
   const char* new_arg) {
 
-  return command_ensure_length_not_exceeded(mode->cmd, new_arg);
+  command_ensure_length_not_exceeded(mode->cmd, new_arg);
 }
 
 void xargs_replace_args(xargs_mode* mode, const char* new_arg) {
