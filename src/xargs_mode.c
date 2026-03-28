@@ -1,5 +1,6 @@
 #include "xargs_mode.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
