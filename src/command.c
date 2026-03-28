@@ -253,7 +253,7 @@ bool command_should_execute_after_arg_added(const command* cmd) {
     return cmd->line_count == cmd->max_lines;
   }
 
-  return 0;
+  return false;
 }
 
 bool command_input_args_remain(const command* cmd) {
