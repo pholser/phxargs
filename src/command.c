@@ -278,6 +278,12 @@ static bool confirm_execution(void) {
     exit(EXIT_FAILURE);
   }
 
+  if (buf[strcspn(buf, "\n")] != '\n') {
+    int ch;
+    while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
+    }
+  }
+
   fclose(tty);
   return (buf[0] == 'y' || buf[0] == 'Y');
 }
