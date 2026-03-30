@@ -134,17 +134,7 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
         break;
 
       case IN_QUOTED_TOKEN:
-        if (ch == self->quote_char) {
-          return space_tokenizer_end_token(self);
-        } else if (ch == '\n') {
-          fprintf(stderr, "phxargs: unterminated quote\n");
-          tokenizer_set_error(t, TOKENIZER_ERR_UNTERMINATED_QUOTE);
-          return NULL;
-        } else {
-          space_tokenizer_append_to_token(self, ch);
-        }
-        break;
-
+        /* fallthrough */
       case IN_TOKEN_QUOTED:
         if (ch == self->quote_char) {
           self->state = IN_TOKEN;
