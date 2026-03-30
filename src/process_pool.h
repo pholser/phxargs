@@ -7,9 +7,9 @@
 
 typedef struct process_pool_s process_pool;
 
-void process_pool_install_signal_handlers(void);
-
 process_pool* process_pool_create(size_t max_procs);
+
+void process_pool_install_signal_handlers(void);
 
 bool process_pool_halted(const process_pool* pool);
 

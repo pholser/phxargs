@@ -8,8 +8,6 @@ typedef struct options_s options;
 
 options* options_create(int argc, char** argv);
 
-void options_destroy(options* opts);
-
 int options_index_of_first_arg(const options* opts);
 
 bool options_use_nul_char_as_arg_delimiter(const options* opts);
@@ -43,5 +41,7 @@ bool options_terminate_on_too_large_command(const options* opts);
 bool options_line_mode(const options* opts);
 
 bool options_max_command_length_specified(const options* opts);
+
+void options_destroy(options* opts);
 
 #endif // PHXARGS_OPTIONS_H

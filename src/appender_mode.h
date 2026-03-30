@@ -6,8 +6,11 @@
 
 typedef struct appender_mode_s appender_mode;
 
-appender_mode*
-appender_mode_create(options* opts, int arg_index, int argc, char** argv);
+appender_mode* appender_mode_create(
+  options* opts,
+  int arg_index,
+  int argc,
+  char** argv);
 
 xargs_mode* appender_mode_as_xargs_mode(appender_mode* mode);
 

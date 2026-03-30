@@ -32,6 +32,6 @@ size_t command_length(const command* cmd);
 
 void command_increment_line_count(command* cmd);
 
-void command_free(command* cmd);
+void command_destroy(command* cmd);
 
 #endif // PHXARGS_COMMAND_H

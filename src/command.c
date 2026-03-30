@@ -329,7 +329,7 @@ pid_t command_execute_async(command* cmd) {
   exit(EXIT_SUCCESS);
 }
 
-void command_free(command* cmd) {
+void command_destroy(command* cmd) {
   command_args_destroy(cmd->input_args);
   command_args_destroy(cmd->fixed_args);
   command_args_destroy(cmd->replaced_fixed_args);

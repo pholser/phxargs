@@ -115,7 +115,7 @@ void xargs_replace_args(xargs_mode* mode, const char* new_arg) {
 
 void xargs_mode_destroy(xargs_mode* mode) {
   mode->ops->destroy_impl(mode->impl);
-  command_free(mode->cmd);
+  command_destroy(mode->cmd);
   tokenizer_destroy(mode->toker);
   process_pool_destroy(mode->pool);
   arg_source_close(mode->arg_source);

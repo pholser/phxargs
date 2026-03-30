@@ -27,6 +27,7 @@ void* tokenizer_impl(const tokenizer* t);
 char* tokenizer_next_token(tokenizer* t, FILE* arg_source);
 
 void tokenizer_set_error(tokenizer* t, tokenizer_error err);
+
 tokenizer_error tokenizer_get_error(const tokenizer* t);
 
 size_t tokenizer_pos(const tokenizer* t);
