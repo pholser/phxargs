@@ -1,0 +1,72 @@
+#!/usr/bin/env expect -f
+
+# Tests that a multi-char response to one prompt does not bleed into the next.
+# Uses -n 1 so each arg gets its own prompt.
+
+set script_dir [file dirname [file normalize [info script]]]
+set phxargs_bin "$script_dir/../build/phxargs"
+
+spawn $phxargs_bin -p -n 1 echo
+
+# Add a small delay before sending input
+sleep 1
+
+send "arg1 arg2\r"
+send \x04
+
+set timeout 60
+
+# First prompt: respond with multi-char "yes"
+expect {
+  "echo arg1*" {
+    send "yes\r"
+  }
+  timeout {
+    puts "Timeout on first prompt"
+    exit 1
+  }
+  eof {
+    puts "EOF on first prompt"
+    exit 1
+  }
+}
+
+# First command should execute
+expect {
+  "arg1" {
+  }
+  timeout {
+    puts "Timeout waiting for first command output"
+    exit 1
+  }
+  eof {
+    puts "EOF waiting for first command output"
+    exit 1
+  }
+}
+
+# Second prompt: respond with "n" — leftover chars from "yes" must not
+# have pre-answered this prompt
+expect {
+  "echo arg2*" {
+    send "n\r"
+    expect eof
+  }
+  timeout {
+    puts "Timeout on second prompt"
+    exit 1
+  }
+  eof {
+    puts "EOF on second prompt"
+    exit 1
+  }
+}
+
+catch wait result
+set exit_status [lindex $result 3]
+
+if {$exit_status != 0} {
+  puts "Expected exit status 0, got $exit_status"
+  exit 1
+}
+exit 0
