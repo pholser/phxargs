@@ -1,6 +1,9 @@
-#!/usr/bin/expect -f
+#!/usr/bin/env expect -f
 
-spawn /Users/paulholser/c/phxargs/build/phxargs -o /Users/paulholser/c/phxargs/tests/open-tty-script.sh 
+set script_dir [file dirname [file normalize [info script]]]
+set phxargs_bin "$script_dir/../build/phxargs"
+
+spawn $phxargs_bin -o "$script_dir/open-tty-script.sh"
 
 # Add a small delay before sending input
 sleep 1

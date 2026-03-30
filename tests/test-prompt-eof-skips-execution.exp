@@ -1,8 +1,9 @@
 #!/usr/bin/env expect -f
 
-##### TODO: source build variables as in shell tests
+set script_dir [file dirname [file normalize [info script]]]
+set phxargs_bin "$script_dir/../build/phxargs"
 
-spawn /Users/paulholser/c/phxargs/build/phxargs -p echo "test"
+spawn $phxargs_bin -p echo "test"
 
 # Add a small delay before sending input
 sleep 1
