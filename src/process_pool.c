@@ -1,5 +1,6 @@
 #include "process_pool.h"
 
+#include <assert.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -83,7 +84,7 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
     return PHXARGS_STATUS_SIGNALLED;
   }
 
-  return 1;
+  assert(!"reachable");
 }
 
 static void reap_one(process_pool* pool) {
