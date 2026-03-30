@@ -1,0 +1,38 @@
+#!/usr/bin/env expect -f
+
+##### TODO: source build variables as in shell tests
+
+spawn /Users/paulholser/c/phxargs/build/phxargs -p echo "test"
+
+# Add a small delay before sending input
+sleep 1
+
+send "arg1\r"
+send \x04
+
+set timeout 60
+expect {
+  "echo test arg1*" {
+    # Send EOF (Ctrl+D) instead of a yes/no response
+    send \x04
+    expect eof
+  }
+  timeout {
+    puts "Timeout occurred"
+    exit 1
+  }
+  eof {
+    puts "EOF occurred unexpectedly"
+    exit 1
+  }
+}
+
+catch wait result
+set exit_status [lindex $result 3]
+
+# EOF on prompt should skip execution and exit 0
+if {$exit_status != 0} {
+  puts "Expected exit status 0, got $exit_status"
+  exit 1
+}
+exit 0

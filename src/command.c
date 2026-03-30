@@ -276,11 +276,6 @@ static bool confirm_execution(void) {
   }
 
   int first = fgetc(tty);
-  if (first == EOF) {
-    perror("phxargs: cannot read from /dev/tty");
-    fclose(tty);
-    exit(EXIT_FAILURE);
-  }
 
   int ch;
   while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
