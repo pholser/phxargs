@@ -101,13 +101,13 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
           }
         } else if (ch == '\'' || ch == '"') {
           space_tokenizer_start_quoted_token(self, ch);
-          line_has_token = 1;
+          line_has_token = true;
         } else if (ch == '\\') {
           space_tokenizer_start_no_token_escape(self);
-          line_has_token = 1;
+          line_has_token = true;
         } else {
           space_tokenizer_start_token(self, ch);
-          line_has_token = 1;
+          line_has_token = true;
         }
         break;
 

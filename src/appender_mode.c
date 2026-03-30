@@ -39,7 +39,7 @@ int appender_mode_run(xargs_mode* mode) {
     token != NULL;
     token = xargs_mode_next_token(mode)) {
 
-      input_present = 1;
+    input_present = true;
 
     if (xargs_mode_arg_would_exceed_limits(mode, token)) {
       xargs_mode_execute_command(mode);
