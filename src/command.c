@@ -67,8 +67,9 @@ static void safe_exec(char** exec_args, bool open_tty) {
   int failed_result = errno;
   fprintf(stderr, "phxargs: %s: %s\n", exec_args[0], strerror(failed_result));
   exit(
-    failed_result == ENOENT ? PHXARGS_STATUS_NOT_FOUND
-                            : PHXARGS_STATUS_NOT_EXECUTABLE);
+    failed_result == ENOENT
+      ? PHXARGS_STATUS_NOT_FOUND
+      : PHXARGS_STATUS_NOT_EXECUTABLE);
 }
 
 static void add_fixed_argument(command* cmd, const char* new_arg) {
@@ -97,9 +98,11 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
   size_t max_length = sc_arg_max > 0
     ? (size_t) sc_arg_max - (2 * cmd->env_length) - 2048
     : (size_t) 128 * 1024;
+
   if (options_max_command_length_specified(opts)) {
     size_t min_length = command_length(cmd);
     size_t specified = options_max_command_length(opts);
+
     if (specified < min_length) {
       fprintf(
         stderr,
@@ -124,8 +127,9 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
 
 void command_ensure_length_not_exceeded(
   const command* cmd, const char* new_arg) {
-  if (
-    cmd->arg_placeholder != NULL || command_args_count(cmd->input_args) == 0) {
+  if (cmd->arg_placeholder != NULL
+    || command_args_count(cmd->input_args) == 0) {
+  
     size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
     if (new_length > cmd->max_length) {
       fprintf(stderr, "phxargs: command too long\n");
@@ -242,9 +246,9 @@ bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg) {
 }
 
 bool command_should_execute_after_arg_added(const command* cmd) {
-  if (
-    cmd->terminate_on_too_large_command
+  if (cmd->terminate_on_too_large_command
     && command_length(cmd) > cmd->max_length) {
+
     fprintf(stderr, "phxargs: command too long\n");
     exit(EXIT_FAILURE);
   }
@@ -271,21 +275,19 @@ static bool confirm_execution(void) {
     exit(EXIT_FAILURE);
   }
 
-  char buf[4];
-  if (fgets(buf, sizeof(buf), tty) == NULL) {
+  int first = fgetc(tty);
+  if (first == EOF) {
     perror("phxargs: cannot read from /dev/tty");
     fclose(tty);
     exit(EXIT_FAILURE);
   }
 
-  if (buf[strcspn(buf, "\n")] != '\n') {
-    int ch;
-    while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
-    }
+  int ch;
+  while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
   }
 
   fclose(tty);
-  return (buf[0] == 'y' || buf[0] == 'Y');
+  return (first == 'y' || first == 'Y');
 }
 
 pid_t command_execute_async(command* cmd) {
