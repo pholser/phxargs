@@ -86,30 +86,32 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
     ? (size_t) sc_arg_max - (2 * cmd->env_length) - 2048
     : (size_t) 128 * 1024;
 
-  if (options_max_command_length_specified(opts)) {
-    size_t min_length = command_length(cmd);
-    size_t specified = options_max_command_length(opts);
-
-    if (specified < min_length) {
-      fprintf(
-        stderr,
-        "phxargs: -s %zu: too small (minimum %zu bytes)\n",
-        specified,
-        min_length);
-      exit(EXIT_FAILURE);
-    } else if (specified > max_length) {
-      fprintf(
-        stderr,
-        "phxargs: -s %zu: too large (maximum %zu bytes)\n",
-        specified,
-        max_length);
-      exit(EXIT_FAILURE);
-    } else {
-      return specified;
-    }
-  } else {
+  if (!options_max_command_length_specified(opts)) {
     return min((size_t) 128 * 1024, max_length);
   }
+
+  size_t min_length = command_length(cmd);
+  size_t specified = options_max_command_length(opts);
+
+  if (specified < min_length) {
+    fprintf(
+      stderr,
+      "phxargs: -s %zu: too small (minimum %zu bytes)\n",
+      specified,
+      min_length);
+    exit(EXIT_FAILURE);
+  }
+
+  if (specified > max_length) {
+    fprintf(
+      stderr,
+      "phxargs: -s %zu: too large (maximum %zu bytes)\n",
+      specified,
+      max_length);
+    exit(EXIT_FAILURE);
+  }
+
+  return specified;
 }
 
 static void recycle_command(command* cmd) {
