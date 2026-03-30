@@ -307,6 +307,11 @@ static void configure_options(options* opts, int argc, char** argv) {
     }
   }
 
+  if (opts->prompt && opts->max_procs > 1) {
+    fprintf(stderr, "phxargs: -p and -P are mutually exclusive\n");
+    exit(EXIT_FAILURE);
+  }
+
   opts->optind_val = optind;
 }
 
