@@ -72,11 +72,11 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
       return PHXARGS_STATUS_HALT;
     }
 
-    if (code >= 1 && code <= 125) {
-      return PHXARGS_STATUS_CHILD_FAILED;
+    if (code == 0 || code == 126 || code == 127) {
+      return code;
     }
 
-    return code;
+    return PHXARGS_STATUS_CHILD_FAILED;
   }
 
   if (WIFSIGNALED(raw_status)) {
