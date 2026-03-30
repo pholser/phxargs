@@ -1,0 +1,38 @@
+#!/usr/bin/env expect -f
+
+set script_dir [file dirname [file normalize [info script]]]
+set phxargs_bin "$script_dir/../build/phxargs"
+
+spawn $phxargs_bin -p echo "test"
+
+# Add a small delay before sending input
+sleep 1
+
+send "arg1\r"
+send \x04
+
+set timeout 60
+expect {
+  "echo test arg1*" {
+    send "n\r"
+    expect eof
+  }
+  timeout {
+    puts "Timeout occurred"
+    exit 1
+  }
+  eof {
+    puts "EOF occurred unexpectedly"
+    exit 1
+  }
+}
+
+catch wait result
+set exit_status [lindex $result 3]
+
+# Declining the prompt should skip execution and exit 0
+if {$exit_status != 0} {
+  puts "Expected exit status 0, got $exit_status"
+  exit 1
+}
+exit 0
