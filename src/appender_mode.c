@@ -35,9 +35,11 @@ int appender_mode_run(xargs_mode* mode) {
   bool input_present = false;
 
   char* token;
-  for (token = xargs_mode_next_token(mode); token != NULL;
-       token = xargs_mode_next_token(mode)) {
-    input_present = 1;
+  for (token = xargs_mode_next_token(mode);
+    token != NULL;
+    token = xargs_mode_next_token(mode)) {
+
+      input_present = 1;
 
     if (xargs_mode_arg_would_exceed_limits(mode, token)) {
       xargs_mode_execute_command(mode);
@@ -72,12 +74,17 @@ static void appender_mode_destroy_impl(void* impl) {
   free(impl);
 }
 
-static xargs_mode_ops appender_mode_ops = { .run = appender_mode_run,
-                                            .destroy_impl =
-                                              appender_mode_destroy_impl };
+static xargs_mode_ops appender_mode_ops = {
+  .run = appender_mode_run,
+  .destroy_impl = appender_mode_destroy_impl
+};
 
-appender_mode*
-appender_mode_create(options* opts, int arg_index, int argc, char** argv) {
+appender_mode* appender_mode_create(
+  options* opts,
+  int arg_index,
+  int argc,
+  char** argv) {
+
   appender_mode* mode = safe_malloc(sizeof(appender_mode));
 
   mode->suppress_execution_on_empty_input =

@@ -39,20 +39,20 @@ static void on_sigusr2(int sig) {
 
 static int severity(int phxargs_status) {
   switch (phxargs_status) {
-  case PHXARGS_STATUS_NOT_FOUND:
-    return 6;
-  case PHXARGS_STATUS_NOT_EXECUTABLE:
-    return 5;
-  case PHXARGS_STATUS_SIGNALLED:
-    return 4;
-  case PHXARGS_STATUS_HALT:
-    return 3;
-  case PHXARGS_STATUS_CHILD_FAILED:
-    return 2;
-  case 1:
-    return 1;
-  default:
-    return 0;
+    case PHXARGS_STATUS_NOT_FOUND:
+      return 6;
+    case PHXARGS_STATUS_NOT_EXECUTABLE:
+      return 5;
+    case PHXARGS_STATUS_SIGNALLED:
+      return 4;
+    case PHXARGS_STATUS_HALT:
+      return 3;
+    case PHXARGS_STATUS_CHILD_FAILED:
+      return 2;
+    case 1:
+      return 1;
+    default:
+      return 0;
   }
 }
 
@@ -88,8 +88,8 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
 
 static void reap_one(process_pool* pool) {
   int raw_status;
-  pid_t pid = waitpid(-1, &raw_status, 0);
 
+  pid_t pid = waitpid(-1, &raw_status, 0);
   if (pid == -1) {
     perror("phxargs: waitpid");
     exit(EXIT_FAILURE);

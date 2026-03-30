@@ -34,16 +34,6 @@ void* safe_realloc(void* ptr, size_t size) {
   return new_ptr;
 }
 
-long safe_sysconf(int name) {
-  errno = 0;
-  long result = sysconf(name);
-  if (result == -1 && errno != 0) {
-    perror("phxargs: sysconf");
-    exit(EXIT_FAILURE);
-  }
-  return result;
-}
-
 char* safe_strdup(const char* s) {
   if (s == NULL) {
     return NULL;
@@ -57,4 +47,16 @@ char* safe_strdup(const char* s) {
   }
 
   return copy;
+}
+
+long safe_sysconf(int name) {
+  errno = 0;
+
+  long result = sysconf(name);
+  if (result == -1 && errno != 0) {
+    perror("phxargs: sysconf");
+    exit(EXIT_FAILURE);
+  }
+
+  return result;
 }

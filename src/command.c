@@ -244,15 +244,19 @@ void command_replace_args(command* cmd, const char* new_arg) {
     cmd->replaced_fixed_args, command_args_get(cmd->fixed_args, 0));
 
   for (size_t i = 1; i < command_args_count(cmd->fixed_args); ++i) {
-    char* replaced = str_replace(
-      command_args_get(cmd->fixed_args, i), cmd->arg_placeholder, new_arg);
+    char* replaced =
+      str_replace(
+        command_args_get(cmd->fixed_args, i),
+        cmd->arg_placeholder, new_arg);
     command_args_add(cmd->replaced_fixed_args, replaced);
     free(replaced);
   }
 }
 
 void command_ensure_length_not_exceeded(
-  const command* cmd, const char* new_arg) {
+  const command* cmd,
+  const char* new_arg) {
+
   if (cmd->arg_placeholder != NULL
     || command_args_count(cmd->input_args) == 0) {
 

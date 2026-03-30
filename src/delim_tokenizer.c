@@ -61,15 +61,17 @@ static void delim_tokenizer_destroy_impl(void* impl) {
   free(impl);
 }
 
-static tokenizer_ops delim_tokenizer_ops = { .next_token = next_delim_token,
-                                             .destroy_impl =
-                                               delim_tokenizer_destroy_impl };
+static tokenizer_ops delim_tokenizer_ops = {
+  .next_token = next_delim_token,
+  .destroy_impl = delim_tokenizer_destroy_impl
+};
 
 delim_tokenizer* delim_tokenizer_create(
   size_t buffer_size,
   char arg_delimiter,
   line_count_fn on_line,
   void* on_line_ctx) {
+
   delim_tokenizer* t = safe_malloc(sizeof(delim_tokenizer));
 
   t->delim = arg_delimiter;

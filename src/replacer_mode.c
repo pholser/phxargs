@@ -14,11 +14,12 @@ int replacer_mode_run(xargs_mode* mode) {
   int execution_status = EXIT_SUCCESS;
 
   char* token;
-  for (token = xargs_mode_next_token(mode); token != NULL;
-       token = xargs_mode_next_token(mode)) {
+  for (token = xargs_mode_next_token(mode);
+    token != NULL;
+    token = xargs_mode_next_token(mode)) {
+
     xargs_mode_ensure_command_length_not_exceeded(mode, token);
     xargs_replace_args(mode, token);
-
     xargs_mode_execute_command(mode);
   }
 
@@ -35,12 +36,17 @@ static void replacer_mode_destroy_impl(void* impl) {
   free(impl);
 }
 
-static xargs_mode_ops replacer_mode_ops = { .run = replacer_mode_run,
-                                            .destroy_impl =
-                                              replacer_mode_destroy_impl };
+static xargs_mode_ops replacer_mode_ops = {
+  .run = replacer_mode_run,
+  .destroy_impl = replacer_mode_destroy_impl
+};
 
-replacer_mode*
-replacer_mode_create(options* opts, int arg_index, int argc, char** argv) {
+replacer_mode* replacer_mode_create(
+  options* opts,
+  int arg_index,
+  int argc,
+  char** argv) {
+
   replacer_mode* mode = safe_malloc(sizeof(replacer_mode));
 
   mode->base =

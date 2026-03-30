@@ -16,7 +16,9 @@ static void reallocate_if_needed(command_args* args) {
   if (args->count + 1 > args->capacity) {
     args->capacity *= 2;
     args->args =
-      (char**) safe_realloc((void*) args->args, args->capacity * sizeof(char*));
+      (char**) safe_realloc(
+        (void*) args->args,
+        args->capacity * sizeof(char*));
   }
 }
 

@@ -12,8 +12,11 @@ struct tokenizer_s {
   tokenizer_error err;
 };
 
-tokenizer*
-tokenizer_create(tokenizer_ops* ops, size_t buffer_size, void* impl) {
+tokenizer* tokenizer_create(
+  tokenizer_ops* ops,
+  size_t buffer_size,
+  void* impl) {
+
   tokenizer* t = safe_malloc(sizeof(tokenizer));
 
   t->ops = ops;

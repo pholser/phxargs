@@ -11,6 +11,9 @@ ContinuationIndentWidth: 2
 # Braces
 BreakBeforeBraces: Attach
 
+# Switch/case
+IndentCaseLabels: true
+
 # Pointers and references
 PointerAlignment: Left
 

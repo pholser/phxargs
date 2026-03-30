@@ -41,9 +41,9 @@ xargs_mode* xargs_mode_create(
   mode->cmd = command_create(opts, arg_index, argc, argv);
   mode->pool = process_pool_create(options_max_procs(opts));
 
-  if (
-    options_use_nul_char_as_arg_delimiter(opts)
+  if (options_use_nul_char_as_arg_delimiter(opts)
     || options_arg_delimiter(opts) != '\0') {
+
     mode->toker = delim_tokenizer_as_tokenizer(delim_tokenizer_create(
       command_max_length(mode->cmd),
       options_arg_delimiter(opts),

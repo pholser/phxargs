@@ -6,11 +6,8 @@
 
 typedef struct replacer_mode_s replacer_mode;
 
-replacer_mode* replacer_mode_create(
-  options* opts,
-  int arg_index,
-  int argc,
-  char** argv);
+replacer_mode*
+replacer_mode_create(options* opts, int arg_index, int argc, char** argv);
 
 xargs_mode* replacer_mode_as_xargs_mode(replacer_mode* mode);
 
