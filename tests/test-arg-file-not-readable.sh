@@ -17,21 +17,21 @@ actual_exit=$?
 
 chmod 600 "$phx_unreadable_file"
 
-cat > "$phx_expected_output" <<EOF
-EOF
-
-cat > "$phx_expected_error" <<EOF
-phxargs: cannot open arg file: Permission denied
-EOF
-
 if [ "$actual_exit" -ne 1 ]; then
   echo "$phx_test_name: expected exit 1, got $actual_exit" >&2
   exit 1
 fi
 
-diff "$phx_expected_output" "$phx_actual_output"
-out_ok=$?
-diff "$phx_expected_error" "$phx_actual_error"
-err_ok=$?
+if [ -s "$phx_actual_output" ]; then
+  echo "$phx_test_name: expected empty stdout" >&2
+  exit 1
+fi
 
-exit $(( out_ok + err_ok ))
+expected_error="phxargs: $phx_unreadable_file: Permission denied"
+actual_error=$(cat "$phx_actual_error")
+
+if [ "$actual_error" != "$expected_error" ]; then
+  echo "$phx_test_name: stderr differs" >&2
+  diff <(echo "$expected_error") <(echo "$actual_error") >&2
+  exit 1
+fi

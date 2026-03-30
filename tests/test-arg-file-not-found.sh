@@ -6,7 +6,7 @@ cat > "$phx_expected_output" <<EOF
 EOF
 
 cat > "$phx_expected_error" <<EOF
-phxargs: cannot open arg file: No such file or directory
+phxargs: /nonexistent/path/to/file: No such file or directory
 EOF
 
 /usr/bin/env -i ./run-expected-output-comparison-test.sh \
