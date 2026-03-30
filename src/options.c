@@ -309,10 +309,6 @@ options* options_create(int argc, char** argv) {
   return opts;
 }
 
-void options_destroy(options* opts) {
-  free(opts);
-}
-
 int options_index_of_first_arg(const options* opts) {
   return opts->optind_val;
 }
@@ -379,4 +375,8 @@ bool options_line_mode(const options* opts) {
 
 bool options_max_command_length_specified(const options* opts) {
   return opts->max_command_length_specified;
+}
+
+void options_destroy(options* opts) {
+  free(opts);
 }

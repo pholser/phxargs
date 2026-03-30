@@ -32,6 +32,14 @@ char* tokenizer_next_token(tokenizer* t, FILE* arg_source) {
   return t->ops->next_token(t, arg_source);
 }
 
+void tokenizer_set_error(tokenizer* t, tokenizer_error err) {
+  t->err = err;
+}
+
+tokenizer_error tokenizer_get_error(const tokenizer* t) {
+  return t->err;
+}
+
 size_t tokenizer_pos(const tokenizer* t) {
   return buffer_pos(t->buf);
 }
@@ -46,14 +54,6 @@ char* tokenizer_token(const tokenizer* t, size_t pos) {
 
 void tokenizer_reset(tokenizer* t) {
   buffer_reset(t->buf);
-}
-
-void tokenizer_set_error(tokenizer* t, tokenizer_error err) {
-  t->err = err;
-}
-
-tokenizer_error tokenizer_get_error(const tokenizer* t) {
-  return t->err;
 }
 
 void tokenizer_destroy(tokenizer* t) {

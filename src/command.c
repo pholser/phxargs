@@ -76,19 +76,6 @@ static void add_fixed_argument(command* cmd, const char* new_arg) {
   command_args_add(cmd->fixed_args, new_arg);
 }
 
-void command_add_input_argument(command* cmd, const char* new_arg) {
-  command_args_add(cmd->input_args, new_arg);
-}
-
-size_t command_max_length(const command* cmd) {
-  return cmd->max_length;
-}
-
-size_t command_length(const command* cmd) {
-  return cmd->env_length + command_args_length(cmd->fixed_args)
-    + command_args_length(cmd->input_args);
-}
-
 static bool command_max_args_specified(const command* cmd) {
   return cmd->max_args > 0;
 }
@@ -125,17 +112,59 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
   }
 }
 
-void command_ensure_length_not_exceeded(
-  const command* cmd, const char* new_arg) {
-  if (cmd->arg_placeholder != NULL
-    || command_args_count(cmd->input_args) == 0) {
-  
-    size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
-    if (new_length > cmd->max_length) {
-      fprintf(stderr, "phxargs: command too long\n");
-      exit(EXIT_FAILURE);
-    }
+static void recycle_command(command* cmd) {
+  cmd->line_count = 0;
+
+  command_args_destroy(cmd->input_args);
+
+  if (cmd->arg_placeholder != NULL) {
+    command_args_destroy(cmd->replaced_fixed_args);
+    cmd->replaced_fixed_args =
+      command_args_create_with_capacity(command_args_count(cmd->fixed_args));
   }
+
+  if (command_max_args_specified(cmd)) {
+    cmd->input_args = command_args_create_with_capacity(cmd->max_args);
+  } else {
+    cmd->input_args = command_args_create();
+  }
+}
+
+static char** build_exec_args(command* cmd, size_t* exec_args_count) {
+  command_args* fixed_args_in_play =
+    cmd->arg_placeholder != NULL ? cmd->replaced_fixed_args : cmd->fixed_args;
+
+  *exec_args_count = command_args_count(fixed_args_in_play)
+    + command_args_count(cmd->input_args);
+
+  char** exec_args = (char**) safe_calloc(*exec_args_count + 1, sizeof(char*));
+  for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
+    exec_args[i] = safe_strdup(command_args_get(fixed_args_in_play, i));
+  }
+  for (size_t i = 0; i < command_args_count(cmd->input_args); ++i) {
+    exec_args[command_args_count(fixed_args_in_play) + i] =
+      safe_strdup(command_args_get(cmd->input_args, i));
+  }
+  exec_args[*exec_args_count] = NULL;
+
+  return exec_args;
+}
+
+static bool confirm_execution(void) {
+  FILE* tty = fopen("/dev/tty", "r");
+  if (tty == NULL) {
+    perror("phxargs: cannot open /dev/tty");
+    exit(EXIT_FAILURE);
+  }
+
+  int first = fgetc(tty);
+
+  int ch;
+  while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
+  }
+
+  fclose(tty);
+  return (first == 'y' || first == 'Y');
 }
 
 command* command_create(options* opts, int arg_index, int argc, char** argv) {
@@ -177,57 +206,6 @@ command* command_create(options* opts, int arg_index, int argc, char** argv) {
   return cmd;
 }
 
-static void recycle_command(command* cmd) {
-  cmd->line_count = 0;
-
-  command_args_destroy(cmd->input_args);
-
-  if (cmd->arg_placeholder != NULL) {
-    command_args_destroy(cmd->replaced_fixed_args);
-    cmd->replaced_fixed_args =
-      command_args_create_with_capacity(command_args_count(cmd->fixed_args));
-  }
-
-  if (command_max_args_specified(cmd)) {
-    cmd->input_args = command_args_create_with_capacity(cmd->max_args);
-  } else {
-    cmd->input_args = command_args_create();
-  }
-}
-
-void command_replace_args(command* cmd, const char* new_arg) {
-  // Do not perform replacement on command word
-  command_args_add(
-    cmd->replaced_fixed_args, command_args_get(cmd->fixed_args, 0));
-
-  for (size_t i = 1; i < command_args_count(cmd->fixed_args); ++i) {
-    char* replaced = str_replace(
-      command_args_get(cmd->fixed_args, i), cmd->arg_placeholder, new_arg);
-    command_args_add(cmd->replaced_fixed_args, replaced);
-    free(replaced);
-  }
-}
-
-static char** build_exec_args(command* cmd, size_t* exec_args_count) {
-  command_args* fixed_args_in_play =
-    cmd->arg_placeholder != NULL ? cmd->replaced_fixed_args : cmd->fixed_args;
-
-  *exec_args_count = command_args_count(fixed_args_in_play)
-    + command_args_count(cmd->input_args);
-
-  char** exec_args = (char**) safe_calloc(*exec_args_count + 1, sizeof(char*));
-  for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
-    exec_args[i] = safe_strdup(command_args_get(fixed_args_in_play, i));
-  }
-  for (size_t i = 0; i < command_args_count(cmd->input_args); ++i) {
-    exec_args[command_args_count(fixed_args_in_play) + i] =
-      safe_strdup(command_args_get(cmd->input_args, i));
-  }
-  exec_args[*exec_args_count] = NULL;
-
-  return exec_args;
-}
-
 bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg) {
   command_ensure_length_not_exceeded(cmd, new_arg);
 
@@ -260,29 +238,30 @@ bool command_should_execute_after_arg_added(const command* cmd) {
   return false;
 }
 
-bool command_input_args_remain(const command* cmd) {
-  return command_args_count(cmd->input_args) > 0;
+void command_replace_args(command* cmd, const char* new_arg) {
+  // Do not perform replacement on command word
+  command_args_add(
+    cmd->replaced_fixed_args, command_args_get(cmd->fixed_args, 0));
+
+  for (size_t i = 1; i < command_args_count(cmd->fixed_args); ++i) {
+    char* replaced = str_replace(
+      command_args_get(cmd->fixed_args, i), cmd->arg_placeholder, new_arg);
+    command_args_add(cmd->replaced_fixed_args, replaced);
+    free(replaced);
+  }
 }
 
-void command_increment_line_count(command* cmd) {
-  ++cmd->line_count;
-}
+void command_ensure_length_not_exceeded(
+  const command* cmd, const char* new_arg) {
+  if (cmd->arg_placeholder != NULL
+    || command_args_count(cmd->input_args) == 0) {
 
-static bool confirm_execution(void) {
-  FILE* tty = fopen("/dev/tty", "r");
-  if (tty == NULL) {
-    perror("phxargs: cannot open /dev/tty");
-    exit(EXIT_FAILURE);
+    size_t new_length = command_length(cmd) + strlen(new_arg) + 1;
+    if (new_length > cmd->max_length) {
+      fprintf(stderr, "phxargs: command too long\n");
+      exit(EXIT_FAILURE);
+    }
   }
-
-  int first = fgetc(tty);
-
-  int ch;
-  while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
-  }
-
-  fclose(tty);
-  return (first == 'y' || first == 'Y');
 }
 
 pid_t command_execute_async(command* cmd) {
@@ -327,6 +306,27 @@ pid_t command_execute_async(command* cmd) {
   }
 
   exit(EXIT_SUCCESS);
+}
+
+size_t command_max_length(const command* cmd) {
+  return cmd->max_length;
+}
+
+void command_add_input_argument(command* cmd, const char* new_arg) {
+  command_args_add(cmd->input_args, new_arg);
+}
+
+bool command_input_args_remain(const command* cmd) {
+  return command_args_count(cmd->input_args) > 0;
+}
+
+size_t command_length(const command* cmd) {
+  return cmd->env_length + command_args_length(cmd->fixed_args)
+    + command_args_length(cmd->input_args);
+}
+
+void command_increment_line_count(command* cmd) {
+  ++cmd->line_count;
 }
 
 void command_destroy(command* cmd) {

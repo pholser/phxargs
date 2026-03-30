@@ -37,31 +37,6 @@ static void on_sigusr2(int sig) {
   ++sigusr2_count;
 }
 
-void process_pool_install_signal_handlers(void) {
-  struct sigaction sa;
-
-  sa.sa_flags = SA_RESTART;
-  sigemptyset(&sa.sa_mask);
-  sa.sa_handler = on_sigusr1;
-  sigaction(SIGUSR1, &sa, NULL);
-  sa.sa_handler = on_sigusr2;
-  sigaction(SIGUSR2, &sa, NULL);
-}
-
-process_pool* process_pool_create(size_t max_procs) {
-  process_pool* pool = safe_malloc(sizeof(process_pool));
-
-  pool->max_procs = max_procs;
-  pool->capacity = max_procs == 0 ? 16 : max_procs;
-  pool->child_max = safe_sysconf(_SC_CHILD_MAX);
-  pool->count = 0;
-  pool->status = 0;
-  pool->halt = 0;
-  pool->pids = safe_calloc(pool->capacity, sizeof(pid_t));
-
-  return pool;
-}
-
 static int severity(int phxargs_status) {
   switch (phxargs_status) {
   case PHXARGS_STATUS_NOT_FOUND:
@@ -159,6 +134,31 @@ static void apply_signal_adjustments(process_pool* pool) {
   }
 
   pool->max_procs = (size_t) new_max;
+}
+
+process_pool* process_pool_create(size_t max_procs) {
+  process_pool* pool = safe_malloc(sizeof(process_pool));
+
+  pool->max_procs = max_procs;
+  pool->capacity = max_procs == 0 ? 16 : max_procs;
+  pool->child_max = safe_sysconf(_SC_CHILD_MAX);
+  pool->count = 0;
+  pool->status = 0;
+  pool->halt = 0;
+  pool->pids = safe_calloc(pool->capacity, sizeof(pid_t));
+
+  return pool;
+}
+
+void process_pool_install_signal_handlers(void) {
+  struct sigaction sa;
+
+  sa.sa_flags = SA_RESTART;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_handler = on_sigusr1;
+  sigaction(SIGUSR1, &sa, NULL);
+  sa.sa_handler = on_sigusr2;
+  sigaction(SIGUSR2, &sa, NULL);
 }
 
 bool process_pool_halted(const process_pool* pool) {

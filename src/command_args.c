@@ -20,6 +20,10 @@ static void reallocate_if_needed(command_args* args) {
   }
 }
 
+command_args* command_args_create(void) {
+  return command_args_create_with_capacity(10);
+}
+
 command_args* command_args_create_with_capacity(size_t capacity) {
   command_args* args = safe_malloc(sizeof(command_args));
 
@@ -29,10 +33,6 @@ command_args* command_args_create_with_capacity(size_t capacity) {
   args->length = 0;
 
   return args;
-}
-
-command_args* command_args_create(void) {
-  return command_args_create_with_capacity(10);
 }
 
 void command_args_add(command_args* args, const char* new_arg) {
