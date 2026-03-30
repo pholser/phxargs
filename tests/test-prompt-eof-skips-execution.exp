@@ -5,9 +5,6 @@ set phxargs_bin "$script_dir/../build/phxargs"
 
 spawn $phxargs_bin -p echo "test"
 
-# Add a small delay before sending input
-sleep 1
-
 send "arg1\r"
 send \x04
 

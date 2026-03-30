@@ -1,0 +1,54 @@
+#!/usr/bin/env expect -f
+
+# Tests that -o correctly reopens stdin as /dev/tty for each invocation
+# independently. Two input tokens are processed serially (-n 1), each
+# producing its own prompt that we answer via the TTY.
+
+set script_dir [file dirname [file normalize [info script]]]
+set phxargs_bin "$script_dir/../build/phxargs"
+
+spawn $phxargs_bin -o -n 1 "$script_dir/open-tty-script.sh"
+
+send "arg1 arg2\r"
+send \x04
+
+set timeout 60
+
+# First invocation: open-tty-script.sh arg1
+expect {
+  "From stdin: arg1" {
+    expect "Enter input:"
+    send "hello\r"
+    expect "Received: hello"
+  }
+  timeout {
+    puts "Timeout on first invocation"
+    exit 1
+  }
+  eof {
+    puts "EOF before first invocation"
+    exit 1
+  }
+}
+
+# Second invocation: open-tty-script.sh arg2
+expect {
+  "From stdin: arg2" {
+    expect "Enter input:"
+    send "world\r"
+    expect "Received: world"
+    expect eof
+  }
+  timeout {
+    puts "Timeout on second invocation"
+    exit 1
+  }
+  eof {
+    puts "EOF before second invocation"
+    exit 1
+  }
+}
+
+catch wait result
+set exit_status [lindex $result 3]
+exit $exit_status

@@ -5,9 +5,6 @@ set phxargs_bin "$script_dir/../build/phxargs"
 
 spawn $phxargs_bin -o "$script_dir/open-tty-script.sh"
 
-# Add a small delay before sending input
-sleep 1
-
 send "arg1 arg2\r"
 send \x04
 
