@@ -50,8 +50,6 @@ static int severity(int phxargs_status) {
       return 3;
     case PHXARGS_STATUS_CHILD_FAILED:
       return 2;
-    case 1:
-      return 1;
     default:
       return 0;
   }
