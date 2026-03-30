@@ -94,12 +94,14 @@ static void reap_one(process_pool* pool) {
     exit(EXIT_FAILURE);
   }
 
-  for (size_t i = 0; i < pool->count; ++i) {
+  size_t i;
+  for (i = 0; i < pool->count; ++i) {
     if (pool->pids[i] == pid) {
       pool->pids[i] = pool->pids[pool->count - 1];
       break;
     }
   }
+  assert(i < pool->count);
   --pool->count;
 
   accumulate_status(pool, child_exit_status(raw_status, &pool->halt));
