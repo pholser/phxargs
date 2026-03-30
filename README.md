@@ -8,12 +8,13 @@ these years.
 - C99-compatible compiler (e.g. `clang` or `gcc`)
 - [CMake](https://cmake.org/) 3.10 or later
 - [Check](https://libcheck.github.io/check/) -- required for building and running the C unit tests
+- [expect](https://core.tcl-lang.org/expect/index) -- required for running the interactive (`*.exp`) tests
 - [include-what-you-use](https://include-what-you-use.org/) (`iwyu`) -- optional, for include analysis
 
 On macOS with Homebrew:
 
 ```sh
-brew install cmake check include-what-you-use
+brew install cmake check expect include-what-you-use
 ```
 
 ## Building
@@ -74,8 +75,8 @@ Reads arguments from standard input (or a file with `-a`) and executes `command`
 | `-L max-lines` | Use at most `max-lines` non-empty input lines per command invocation. Implies `-x`. Mutually exclusive with `-I` and `-n`. |
 | `-n max-args` | Use at most `max-args` arguments per command invocation. Mutually exclusive with `-I` and `-L`. |
 | `-o` | Reopen stdin as `/dev/tty` in the child process before executing the command. |
-| `-p` | Prompt the user before executing each command line. Implies `-t`. |
-| `-P max-procs` | Run up to `max-procs` command invocations in parallel. Defaults to 1 (serial). If a child exits with status 255, no further invocations are started. |
+| `-p` | Prompt the user before executing each command line. Implies `-t`. Mutually exclusive with `-P max-procs > 1`. |
+| `-P max-procs` | Run up to `max-procs` command invocations in parallel. Defaults to 1 (serial). `0` means unlimited. If a child exits with status 255, no further invocations are started. Send `SIGUSR1` to increase the limit by 1; `SIGUSR2` to decrease it (minimum 1). Mutually exclusive with `-p`. |
 | `-r` | Do not run the command if standard input is empty. |
 | `-s max-chars` | Limit the length of each command line to `max-chars` characters. |
 | `-t` | Print each command to stderr before executing it. |
