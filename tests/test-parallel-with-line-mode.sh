@@ -8,19 +8,21 @@ arg3 arg4
 arg5 arg6
 EOF
 
-cat > "$phx_expected_output" <<EOF
-arg1 arg2
-arg3 arg4
-arg5 arg6
-EOF
+# Each parallel invocation writes its output to a separate file to avoid
+# stdout interleaving between concurrent processes.
+out_dir=$(mktemp -d)
+trap 'rm -rf "$out_dir"' EXIT
 
-cat > "$phx_expected_error" <<EOF
-EOF
+/usr/bin/env -i "$phx_build_dir/phxargs" \
+  -P 2 -L 1 \
+  sh -c 'echo "$@" > "'"$out_dir"'/$1"' -- \
+  < "$phx_test_input"
 
-./run-unordered-output-comparison-test.sh \
-  $phx_test_name \
-  "$phx_test_input" \
-  "$phx_expected_output" \
-  "$phx_expected_error" \
-  '-P 2 -L 1' \
-  'echo'
+actual=$(sort "$out_dir"/*)
+expected=$(printf '%s\n' 'arg1 arg2' 'arg3 arg4' 'arg5 arg6' | sort)
+
+if [ "$actual" != "$expected" ]; then
+  echo "$phx_test_name: output differs" >&2
+  diff <(echo "$expected") <(echo "$actual") >&2
+  exit 1
+fi
