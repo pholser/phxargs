@@ -46,7 +46,7 @@ static size_t calc_env_length(void) {
 }
 
 static pid_t safe_fork(void) {
-  pid_t pid = fork();
+  const pid_t pid = fork();
   if (pid < 0) {
     perror("phxargs: fork");
     exit(EXIT_FAILURE);
@@ -145,7 +145,7 @@ static void recycle_command(command* cmd) {
   }
 }
 
-static char** build_exec_args(command* cmd, size_t* exec_args_count) {
+static char** build_exec_args(const command* cmd, size_t* exec_args_count) {
   command_args* const fixed_args_in_play =
     cmd->arg_placeholder != NULL
       ? cmd->replaced_fixed_args
