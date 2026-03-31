@@ -3,7 +3,7 @@
 source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 long_arg=$(printf 'a%.0s' {1..2047})
-echo "$long_arg" > "$phx_test_input"
+printf '%s\n' "$long_arg" > "$phx_test_input"
 
 cat > "$phx_expected_output" <<EOF
 EOF
