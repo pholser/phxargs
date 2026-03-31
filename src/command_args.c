@@ -13,7 +13,7 @@ struct command_args_s {
 };
 
 static void reallocate_if_needed(command_args* args) {
-  if (args->count + 1 > args->capacity) {
+  if (args->count >= args->capacity) {
     args->capacity *= 2;
     args->args =
       (char**) safe_realloc(
