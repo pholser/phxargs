@@ -20,6 +20,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra -O0")
 
+option(ENABLE_SANITIZERS "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
+if(ENABLE_SANITIZERS)
+  set(SANITIZER_FLAGS -fsanitize=address,undefined)
+endif()
+
 function(get_system_include_paths out_var)
   execute_process(
     COMMAND /bin/sh -c
@@ -71,6 +76,12 @@ include_directories(${SRC_DIR})
 
 add_executable(phxargs ${SOURCES})
 add_library(libphxargs STATIC ${LIB_SOURCES})
+
+if(ENABLE_SANITIZERS)
+  target_compile_options(phxargs PRIVATE ${SANITIZER_FLAGS})
+  target_link_options(phxargs PRIVATE ${SANITIZER_FLAGS})
+  target_compile_options(libphxargs PRIVATE ${SANITIZER_FLAGS})
+endif()
 
 find_program(IWYU_PATH NAMES include-what-you-use iwyu)
 
@@ -153,6 +164,10 @@ foreach(test_source ${C_TEST_SOURCES})
   set_target_properties(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
   target_include_directories(${test_name} PRIVATE ${Check_INCLUDE_DIRS})
   target_link_libraries(${test_name} libphxargs ${Check_LIBRARIES})
+  if(ENABLE_SANITIZERS)
+    target_compile_options(${test_name} PRIVATE ${SANITIZER_FLAGS})
+    target_link_options(${test_name} PRIVATE ${SANITIZER_FLAGS})
+  endif()
   add_test(NAME ${test_name} COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${test_name})
   add_dependencies(run_tests ${test_name})
 endforeach()
