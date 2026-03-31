@@ -42,7 +42,8 @@ void xargs_mode_add_input_argument(xargs_mode* mode, const char* new_arg);
 bool xargs_mode_input_args_remain(const xargs_mode* mode);
 
 void xargs_mode_ensure_command_length_not_exceeded(
-  xargs_mode* mode, const char* new_arg);
+  xargs_mode* mode,
+  const char* new_arg);
 
 void xargs_replace_args(xargs_mode* mode, const char* new_arg);
 
