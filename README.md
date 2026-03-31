@@ -111,7 +111,7 @@ Reads arguments from standard input (or a file with `-a`) and executes `command`
 | `0` | All invocations succeeded. |
 | `123` | One or more command invocations exited with a status between 1–125 or 128–254. |
 | `124` | A command invocation exited with status 255; no further invocations were started. |
-| `125` | A command invocation was killed by a signal. |
+| `125` | A command invocation was killed by a signal, or an internal error occurred in phxargs itself. |
 | `126` | The command was found but could not be executed (passed through from the child). |
 | `127` | The command was not found (passed through from the child). |
 
