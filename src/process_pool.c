@@ -83,6 +83,7 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
   }
 
   assert(!"reachable");
+  exit(EXIT_FAILURE);
 }
 
 static void reap_one(process_pool* pool) {
