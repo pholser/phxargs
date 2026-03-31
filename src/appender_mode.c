@@ -80,7 +80,7 @@ static const xargs_mode_ops appender_mode_ops = {
 };
 
 appender_mode* appender_mode_create(
-  options* opts,
+  const options* opts,
   int arg_index,
   int argc,
   const char* const* argv) {

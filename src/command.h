@@ -9,7 +9,7 @@
 
 typedef struct command_s command;
 
-command* command_create(options* opts, int arg_index, int argc, const char* const* argv);
+command* command_create(const options* opts, int arg_index, int argc, const char* const* argv);
 
 bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg);
 

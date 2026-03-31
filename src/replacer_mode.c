@@ -42,7 +42,7 @@ static const xargs_mode_ops replacer_mode_ops = {
 };
 
 replacer_mode* replacer_mode_create(
-  options* opts,
+  const options* opts,
   int arg_index,
   int argc,
   const char* const* argv) {

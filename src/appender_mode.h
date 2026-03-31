@@ -7,7 +7,7 @@
 typedef struct appender_mode_s appender_mode;
 
 appender_mode* appender_mode_create(
-  options* opts,
+  const options* opts,
   int arg_index,
   int argc,
   const char* const* argv);

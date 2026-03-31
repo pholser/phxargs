@@ -15,7 +15,7 @@ struct xargs_mode_ops_s {
 
 xargs_mode* xargs_mode_create(
   const xargs_mode_ops* ops,
-  options* opts,
+  const options* opts,
   int arg_index,
   int argc,
   const char* const* argv,
