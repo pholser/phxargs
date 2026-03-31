@@ -175,7 +175,7 @@ static bool confirm_execution(void) {
     exit(EXIT_FAILURE);
   }
 
-  int first = fgetc(tty);
+  const int first = fgetc(tty);
 
   int ch;
   while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
@@ -185,7 +185,12 @@ static bool confirm_execution(void) {
   return (first == 'y' || first == 'Y');
 }
 
-command* command_create(const options* opts, int arg_index, int argc, const char* const* argv) {
+command* command_create(
+  const options* opts,
+  int arg_index,
+  int argc,
+  const char* const* argv) {
+
   command* cmd = safe_malloc(sizeof(command));
 
   cmd->max_lines = options_max_lines_per_command(opts);
