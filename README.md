@@ -56,6 +56,27 @@ If `include-what-you-use` is installed:
 cmake --build build --target iwyu
 ```
 
+## Sanitizer build
+
+To build with AddressSanitizer and UndefinedBehaviorSanitizer:
+
+```sh
+cmake -S . -B build-san -DENABLE_SANITIZERS=ON
+cmake --build build-san
+ctest --test-dir build-san --output-on-failure
+```
+
+## Fuzzing
+
+To build the libFuzzer fuzz targets (requires a Clang with libFuzzer support):
+
+```sh
+cmake -S . -B build-fuzz -DENABLE_FUZZING=ON
+cmake --build build-fuzz --target fuzz_space_tokenizer --target fuzz_delim_tokenizer
+./build-fuzz/fuzz_space_tokenizer -max_total_time=60
+./build-fuzz/fuzz_delim_tokenizer -max_total_time=60
+```
+
 ## Usage
 
 ```
