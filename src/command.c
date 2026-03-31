@@ -87,7 +87,7 @@ static bool command_max_args_specified(const command* cmd) {
 }
 
 static size_t decide_max_length(const command* cmd, const options* opts) {
-  long sc_arg_max = safe_sysconf(_SC_ARG_MAX);
+  const long sc_arg_max = safe_sysconf(_SC_ARG_MAX);
 
   /* Subtract 2x env_length as a conservative hedge: some platforms count
    * environment variables twice in their ARG_MAX accounting (once for the
@@ -102,8 +102,8 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
     return min((size_t) 128 * 1024, max_length);
   }
 
-  size_t min_length = command_length(cmd);
-  size_t specified = options_max_command_length(opts);
+  const size_t min_length = command_length(cmd);
+  const size_t specified = options_max_command_length(opts);
 
   if (specified < min_length) {
     fprintf(
@@ -146,7 +146,7 @@ static void recycle_command(command* cmd) {
 }
 
 static char** build_exec_args(command* cmd, size_t* exec_args_count) {
-  command_args* fixed_args_in_play =
+  command_args* const fixed_args_in_play =
     cmd->arg_placeholder != NULL
       ? cmd->replaced_fixed_args
       : cmd->fixed_args;

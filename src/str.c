@@ -19,9 +19,9 @@ char* str_replace(
 
   const char* repl = replacement == NULL ? "" : replacement;
 
-  size_t target_len = strlen(s);
-  size_t placeholder_len = strlen(placeholder);
-  size_t replacement_len = strlen(repl);
+  const size_t target_len = strlen(s);
+  const size_t placeholder_len = strlen(placeholder);
+  const size_t replacement_len = strlen(repl);
 
   const char* tmp = s;
 
@@ -31,10 +31,10 @@ char* str_replace(
     tmp += placeholder_len;
   }
 
-  ptrdiff_t size_delta =
+  const ptrdiff_t size_delta =
     (ptrdiff_t) occurrence_count
       * ((ptrdiff_t) replacement_len - (ptrdiff_t) placeholder_len);
-  size_t new_len = (size_t) ((ptrdiff_t) target_len + size_delta);
+  const size_t new_len = (size_t) ((ptrdiff_t) target_len + size_delta);
   char* result = safe_calloc(new_len + 1, sizeof(char));
 
   const char* pos = s;

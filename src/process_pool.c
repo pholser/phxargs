@@ -115,8 +115,8 @@ static void reap_one(process_pool* pool) {
 }
 
 static void apply_signal_adjustments(process_pool* pool) {
-  sig_atomic_t u1 = sigusr1_count - applied_sigusr1;
-  sig_atomic_t u2 = sigusr2_count - applied_sigusr2;
+  const sig_atomic_t u1 = sigusr1_count - applied_sigusr1;
+  const sig_atomic_t u2 = sigusr2_count - applied_sigusr2;
   if (u1 == 0 && u2 == 0) {
     return;
   }
