@@ -13,6 +13,7 @@ void* safe_calloc(size_t count, size_t size) {
     perror("phxargs: calloc");
     exit(EXIT_FAILURE);
   }
+
   return ptr;
 }
 
@@ -22,6 +23,7 @@ void* safe_malloc(size_t size) {
     perror("phxargs: malloc");
     exit(EXIT_FAILURE);
   }
+
   return ptr;
 }
 
@@ -31,6 +33,7 @@ void* safe_realloc(void* ptr, size_t size) {
     perror("phxargs: realloc");
     exit(EXIT_FAILURE);
   }
+
   return new_ptr;
 }
 
@@ -42,6 +45,7 @@ char* safe_strdup(const char* s) {
   size_t len = strlen(s) + 1;
   char* copy = safe_malloc(len);
   memcpy(copy, s, len);
+
   return copy;
 }
 

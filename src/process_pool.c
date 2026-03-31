@@ -108,6 +108,7 @@ static void reap_one(process_pool* pool) {
     }
   }
   assert(i < pool->count);
+
   --pool->count;
 
   accumulate_status(pool, child_exit_status(raw_status, &pool->halt));
