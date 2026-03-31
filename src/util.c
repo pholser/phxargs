@@ -39,13 +39,15 @@ char* safe_strdup(const char* s) {
     return NULL;
   }
 
-  char* copy = strdup(s);
+  size_t len = strlen(s) + 1;
+  char* copy = malloc(len);
 
   if (copy == NULL) {
-    perror("phxargs: strdup");
+    perror("phxargs: malloc");
     exit(EXIT_FAILURE);
   }
 
+  memcpy(copy, s, len);
   return copy;
 }
 
