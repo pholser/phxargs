@@ -176,6 +176,7 @@ static char* next_space_token(tokenizer* t, FILE* token_source) {
 
 static void space_tokenizer_destroy_impl(void* impl) {
   space_tokenizer* t = (space_tokenizer*) impl;
+
   free(t->logical_end_of_input_marker);
   free(t);
 }

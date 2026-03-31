@@ -87,9 +87,11 @@ bool xargs_mode_should_execute_command_after_arg_added(const xargs_mode* mode) {
 
 void xargs_mode_execute_command(xargs_mode* mode) {
   process_pool_wait_if_full(mode->pool);
+
   if (process_pool_halted(mode->pool)) {
     return;
   }
+
   process_pool_submit(mode->pool, command_execute_async(mode->cmd));
 }
 

@@ -34,6 +34,7 @@ void buffer_put(buffer* buf, char ch) {
     buf->sz *= 2;
     buf->buf = safe_realloc(buf->buf, buf->sz + 1);
   }
+
   buf->buf[buf->pos++] = ch;
 }
 

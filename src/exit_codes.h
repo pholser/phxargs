@@ -12,7 +12,8 @@
 /* Command was terminated by a signal. */
 #define PHXARGS_STATUS_SIGNALLED 125
 
-/* An internal error occurred in phxargs itself (e.g. E2BIG from execvp). */
+/* An internal error occurred in phxargs itself (e.g. E2BIG from execvp).
+   Mapping to same exit code as PHXARGS_STATUS_SIGNALLED purposely. */ 
 #define PHXARGS_STATUS_INTERNAL_ERROR 125
 
 /* Command was found but could not be executed (not executable). */

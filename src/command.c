@@ -41,6 +41,7 @@ static size_t calc_env_length(void) {
   for (char** e = environ; *e != NULL; ++e) {
     sz += strlen(*e) + 1;
   }
+
   return sz;
 }
 
@@ -133,7 +134,8 @@ static void recycle_command(command* cmd) {
   if (cmd->arg_placeholder != NULL) {
     command_args_destroy(cmd->replaced_fixed_args);
     cmd->replaced_fixed_args =
-      command_args_create_with_capacity(command_args_count(cmd->fixed_args));
+      command_args_create_with_capacity(
+        command_args_count(cmd->fixed_args));
   }
 
   if (command_max_args_specified(cmd)) {
@@ -145,10 +147,13 @@ static void recycle_command(command* cmd) {
 
 static char** build_exec_args(command* cmd, size_t* exec_args_count) {
   command_args* fixed_args_in_play =
-    cmd->arg_placeholder != NULL ? cmd->replaced_fixed_args : cmd->fixed_args;
+    cmd->arg_placeholder != NULL
+      ? cmd->replaced_fixed_args
+      : cmd->fixed_args;
 
-  *exec_args_count = command_args_count(fixed_args_in_play)
-    + command_args_count(cmd->input_args);
+  *exec_args_count =
+    command_args_count(fixed_args_in_play)
+      + command_args_count(cmd->input_args);
 
   char** exec_args = (char**) safe_calloc(*exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
@@ -254,7 +259,8 @@ bool command_should_execute_after_arg_added(const command* cmd) {
 void command_replace_args(command* cmd, const char* new_arg) {
   // Do not perform replacement on command word
   command_args_add(
-    cmd->replaced_fixed_args, command_args_at(cmd->fixed_args, 0));
+    cmd->replaced_fixed_args,
+    command_args_at(cmd->fixed_args, 0));
 
   for (size_t i = 1; i < command_args_count(cmd->fixed_args); ++i) {
     char* replaced =
@@ -338,7 +344,8 @@ bool command_input_args_remain(const command* cmd) {
 }
 
 size_t command_length(const command* cmd) {
-  return cmd->env_length + command_args_length(cmd->fixed_args)
+  return cmd->env_length
+    + command_args_length(cmd->fixed_args)
     + command_args_length(cmd->input_args);
 }
 

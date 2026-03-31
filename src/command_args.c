@@ -59,6 +59,7 @@ void command_args_destroy(command_args* args) {
   for (size_t i = 0; i < args->count; ++i) {
     free(args->args[i]);
   }
+
   free((void*) args->args);
   free(args);
 }
