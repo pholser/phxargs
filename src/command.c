@@ -66,6 +66,10 @@ static void safe_exec(char** exec_args, bool open_tty) {
 
   int failed_result = errno;
   fprintf(stderr, "phxargs: %s: %s\n", exec_args[0], strerror(failed_result));
+  if (failed_result == E2BIG) {
+    fprintf(stderr, "phxargs: command line too long -- this is a bug\n");
+    exit(PHXARGS_STATUS_INTERNAL_ERROR);
+  }
   exit(
     failed_result == ENOENT
       ? PHXARGS_STATUS_NOT_FOUND

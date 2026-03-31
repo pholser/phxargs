@@ -3,6 +3,9 @@
 
 /* Exit codes defined by the xargs specification. */
 
+/* An internal error occurred in phxargs itself (e.g. E2BIG from execvp). */
+#define PHXARGS_STATUS_INTERNAL_ERROR 125
+
 /* Command ran but exited with a non-zero status between 1 and 125. */
 #define PHXARGS_STATUS_CHILD_FAILED 123
 
