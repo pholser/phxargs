@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # An empty quoted token between other tokens is passed as an empty-string
 # argument, preserving its position in the argument list.

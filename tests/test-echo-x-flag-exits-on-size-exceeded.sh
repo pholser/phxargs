@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # Without -x, -n takes priority over -s and the size limit is not enforced.
 # With -x, phxargs exits if any invocation would exceed the -s limit.

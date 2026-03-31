@@ -18,8 +18,8 @@ make_temp() {
   echo "$temp_file"
 }
 
-phx_test_dir=$(dirname "$(readlink -f "$0")")
-phx_test_name=$(basename "$(readlink -f "$0")" | sed 's/^test-//')
+phx_test_dir=$(cd "$(dirname "$0")" && pwd -P)
+phx_test_name=$(basename "$0" | sed 's/^test-//')
 
 cd "$phx_test_dir" || exit 3
 

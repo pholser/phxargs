@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # -L given after -n cancels max-args mode; batching is by line not arg count.
 # Input has two lines with 3 and 1 tokens. -n 2 -L 1 means -L 1 wins:

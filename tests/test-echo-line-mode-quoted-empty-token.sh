@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # A line containing only a quoted empty token must count as a line in -L mode.
 # Regression test: the closing quote previously caused an early return, so the

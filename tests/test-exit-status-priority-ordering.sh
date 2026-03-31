@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # With two parallel failures of different severities, the higher one should win.
 # "signal" -> killed by SIGTERM (-> 125, severity 4)

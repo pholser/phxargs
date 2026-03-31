@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # A leading NUL byte produces an empty first token with -0.
 # echo receives ("", "a", "b") and prints them space-separated.

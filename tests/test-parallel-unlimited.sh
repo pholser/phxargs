@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # -P 0 means unlimited parallelism: all inputs are launched concurrently
 # without throttling. With -r and empty input, no command runs.

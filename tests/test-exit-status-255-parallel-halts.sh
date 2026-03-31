@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # With -P 2, two children are in flight before halt is detected.
 # Both exit 255, so the halt message should appear twice and exit status is 124.

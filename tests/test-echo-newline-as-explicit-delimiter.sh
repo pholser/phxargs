@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # With -d $'\n', newline is the delimiter and spaces are literal token content.
 # Each line becomes one token regardless of embedded spaces.

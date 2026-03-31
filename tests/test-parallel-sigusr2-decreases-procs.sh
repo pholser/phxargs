@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # Send SIGUSR2 repeatedly to phxargs while it is running with -P 4.
 # max_procs should floor at 1 and phxargs should still produce all output.

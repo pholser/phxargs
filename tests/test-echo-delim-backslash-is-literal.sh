@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # In delimiter mode, backslash is a literal character, not an escape.
 # The backslash before the delimiter is part of the token, not an escape

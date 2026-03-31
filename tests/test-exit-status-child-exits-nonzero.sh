@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # Simplest case: single invocation, child exits non-zero (1).
 # phxargs maps any exit code in [1,125] to 123.

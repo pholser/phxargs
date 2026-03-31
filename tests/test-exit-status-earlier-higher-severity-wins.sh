@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # Serial execution: first child is killed by SIGTERM (-> 125, severity 4),
 # second child exits 1 (-> 123, severity 2).

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # Replacer mode (-I) should propagate child exit status the same as appender mode.
 # Child exits 1; phxargs should exit 123.

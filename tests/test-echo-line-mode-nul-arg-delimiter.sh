@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 printf "arg1\0arg2\0arg3\0arg4\0arg5\0arg6" > "$phx_test_input"
 

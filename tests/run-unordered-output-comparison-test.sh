@@ -8,7 +8,7 @@ phx_xargs_options=$5
 phx_xargs_cmd_line=$6
 phx_expected_exit_status=$7
 
-phx_test_dir=$(dirname "$(readlink -f "$0")")
+phx_test_dir=$(cd "$(dirname "$0")" && pwd -P)
 cd "$phx_test_dir" || exit 3
 
 phx_build_dir="$phx_test_dir/../build"

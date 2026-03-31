@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # An unclosed quote at EOF is an error; phxargs exits 1.
 printf "a 'unclosed" > "$phx_test_input"

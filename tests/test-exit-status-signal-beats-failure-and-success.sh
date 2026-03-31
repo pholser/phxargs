@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # With multiple parallel invocations mixing signal, failure, and success,
 # signal (125, severity 4) should beat failure (123, severity 2) and

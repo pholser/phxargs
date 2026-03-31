@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # -d ' ' splits on literal space only; tabs and newlines are token content.
 # Input "a b<TAB>c" produces two tokens: "a" and "b<TAB>c".

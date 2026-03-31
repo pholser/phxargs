@@ -7,6 +7,7 @@ these years.
 
 - C99-compatible compiler (e.g. `clang` or `gcc`)
 - [CMake](https://cmake.org/) 3.10 or later
+- [Bash](https://www.gnu.org/software/bash/) -- required for running the shell-based tests
 - [Check](https://libcheck.github.io/check/) -- required for building and running the C unit tests
 - [expect](https://core.tcl-lang.org/expect/index) -- required for running the interactive (`*.exp`) tests
 - [include-what-you-use](https://include-what-you-use.org/) (`iwyu`) -- optional, for include analysis
@@ -14,7 +15,7 @@ these years.
 On macOS with Homebrew:
 
 ```sh
-brew install cmake check expect include-what-you-use
+brew install bash cmake check expect include-what-you-use
 ```
 
 ## Building

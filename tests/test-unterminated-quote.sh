@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "$(dirname "$(readlink -f "$0")")"/set-test-context.sh
+source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
 # A newline inside a quoted token is an explicit error; phxargs exits 1.
 # (Contrast with unclosed quote at EOF, which is silently closed.)
