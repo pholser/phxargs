@@ -51,7 +51,7 @@ size_t command_args_length(const command_args* args) {
   return args->length;
 }
 
-char* command_args_get(const command_args* args, size_t i) {
+char* command_args_at(const command_args* args, size_t i) {
   return args->args[i];
 }
 

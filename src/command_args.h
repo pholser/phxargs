@@ -15,7 +15,7 @@ size_t command_args_count(const command_args* args);
 
 size_t command_args_length(const command_args* args);
 
-char* command_args_get(const command_args* args, size_t i);
+char* command_args_at(const command_args* args, size_t i);
 
 void command_args_destroy(command_args* args);
 

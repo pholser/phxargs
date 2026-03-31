@@ -28,7 +28,7 @@ struct appender_mode_s {
  *
  * (3) Add `x` to cmd.
  */
-int appender_mode_run(xargs_mode* mode) {
+static int appender_mode_run(xargs_mode* mode) {
   appender_mode* self = (appender_mode*) xargs_mode_impl(mode);
 
   int execution_status = EXIT_SUCCESS;

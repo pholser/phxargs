@@ -141,11 +141,11 @@ static char** build_exec_args(command* cmd, size_t* exec_args_count) {
 
   char** exec_args = (char**) safe_calloc(*exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
-    exec_args[i] = safe_strdup(command_args_get(fixed_args_in_play, i));
+    exec_args[i] = safe_strdup(command_args_at(fixed_args_in_play, i));
   }
   for (size_t i = 0; i < command_args_count(cmd->input_args); ++i) {
     exec_args[command_args_count(fixed_args_in_play) + i] =
-      safe_strdup(command_args_get(cmd->input_args, i));
+      safe_strdup(command_args_at(cmd->input_args, i));
   }
   exec_args[*exec_args_count] = NULL;
 
@@ -243,12 +243,12 @@ bool command_should_execute_after_arg_added(const command* cmd) {
 void command_replace_args(command* cmd, const char* new_arg) {
   // Do not perform replacement on command word
   command_args_add(
-    cmd->replaced_fixed_args, command_args_get(cmd->fixed_args, 0));
+    cmd->replaced_fixed_args, command_args_at(cmd->fixed_args, 0));
 
   for (size_t i = 1; i < command_args_count(cmd->fixed_args); ++i) {
     char* replaced =
       str_replace(
-        command_args_get(cmd->fixed_args, i),
+        command_args_at(cmd->fixed_args, i),
         cmd->arg_placeholder, new_arg);
     command_args_add(cmd->replaced_fixed_args, replaced);
     free(replaced);

@@ -10,7 +10,7 @@ struct replacer_mode_s {
   xargs_mode* base;
 };
 
-int replacer_mode_run(xargs_mode* mode) {
+static int replacer_mode_run(xargs_mode* mode) {
   int execution_status = EXIT_SUCCESS;
 
   char* token;
