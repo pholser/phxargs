@@ -87,6 +87,10 @@ static bool command_max_args_specified(const command* cmd) {
 
 static size_t decide_max_length(const command* cmd, const options* opts) {
   long sc_arg_max = safe_sysconf(_SC_ARG_MAX);
+  /* Subtract 2x env_length as a conservative hedge: some platforms count
+   * environment variables twice in their ARG_MAX accounting (once for the
+   * string data, once for the pointer array). The extra 2048 bytes covers
+   * the argv pointer array overhead and other kernel bookkeeping. */
   size_t max_length = sc_arg_max > 0
     ? (size_t) sc_arg_max - (2 * cmd->env_length) - 2048
     : (size_t) 128 * 1024;
