@@ -15,21 +15,12 @@ phx_build_dir="$phx_test_dir/../build"
 phx_test_output_dir="$phx_build_dir/output"
 mkdir -p "$phx_test_output_dir"
 
-if [[ "$phx_xargs_options" =~ "-a"[[:space:]] ]]; then
-  /usr/bin/env -i "$phx_build_dir/phxargs" \
-    $phx_xargs_options \
-    $phx_xargs_cmd_line \
-    > "$phx_test_output_dir/phxargs-$phx_test_name.out" \
-    2> "$phx_test_output_dir/phxargs-$phx_test_name.err" \
-    < "$phx_test_input"
-else
-  /usr/bin/env -i "$phx_build_dir/phxargs" \
-    $phx_xargs_options \
-    $phx_xargs_cmd_line \
-    > "$phx_test_output_dir/phxargs-$phx_test_name.out" \
-    2> "$phx_test_output_dir/phxargs-$phx_test_name.err" \
-    < "$phx_test_input"
-fi
+/usr/bin/env -i "$phx_build_dir/phxargs" \
+  $phx_xargs_options \
+  $phx_xargs_cmd_line \
+  > "$phx_test_output_dir/phxargs-$phx_test_name.out" \
+  2> "$phx_test_output_dir/phxargs-$phx_test_name.err" \
+  < "$phx_test_input"
 phx_actual_exit_status=$?
 if [[ -n "$phx_expected_exit_status" \
       && "$phx_expected_exit_status" != "$phx_actual_exit_status" ]] ; then
