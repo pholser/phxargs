@@ -55,7 +55,7 @@ static pid_t safe_fork(void) {
   return pid;
 }
 
-static void safe_exec(char** exec_args, bool open_tty) {
+static void safe_exec(char* const* exec_args, bool open_tty) {
   if (open_tty) {
     if (freopen("/dev/tty", "r", stdin) == NULL) {
       perror("phxargs: cannot reopen stdin as /dev/tty");
@@ -65,7 +65,7 @@ static void safe_exec(char** exec_args, bool open_tty) {
 
   execvp(exec_args[0], exec_args);
 
-  int failed_result = errno;
+  const int failed_result = errno;
   if (failed_result == E2BIG) {
     fprintf(stderr, "phxargs: command line too long -- this is a bug\n");
     exit(PHXARGS_STATUS_INTERNAL_ERROR);
