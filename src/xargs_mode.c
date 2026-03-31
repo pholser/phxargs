@@ -18,7 +18,7 @@ static void increment_line_count(void* ctx) {
 }
 
 struct xargs_mode_s {
-  xargs_mode_ops* ops;
+  const xargs_mode_ops* ops;
   FILE* arg_source;
   command* cmd;
   tokenizer* toker;
@@ -27,11 +27,11 @@ struct xargs_mode_s {
 };
 
 xargs_mode* xargs_mode_create(
-  xargs_mode_ops* ops,
+  const xargs_mode_ops* ops,
   options* opts,
   int arg_index,
   int argc,
-  char** argv,
+  const char* const* argv,
   void* impl) {
 
   xargs_mode* mode = safe_malloc(sizeof(xargs_mode));

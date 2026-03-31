@@ -181,7 +181,7 @@ static void space_tokenizer_destroy_impl(void* impl) {
   free(t);
 }
 
-static tokenizer_ops space_tokenizer_ops = {
+static const tokenizer_ops space_tokenizer_ops = {
   .next_token = next_space_token,
   .destroy_impl = space_tokenizer_destroy_impl
 };

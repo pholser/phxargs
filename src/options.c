@@ -222,9 +222,9 @@ static void init_options(options* opts) {
   opts->terminate_on_too_large_command = 0;
 }
 
-static void parse_options(options* opts, int argc, char** argv) {
+static void parse_options(options* opts, int argc, const char* const* argv) {
   int opt;
-  while ((opt = getopt(argc, argv, ":0a:d:E:I:L:n:opP:rs:tx")) != -1) {
+  while ((opt = getopt(argc, (char* const*) argv, ":0a:d:E:I:L:n:opP:rs:tx")) != -1) {
     switch (opt) {
       case '0':
         enable_nul_char_as_arg_delimiter(opts);
@@ -285,7 +285,7 @@ static void parse_options(options* opts, int argc, char** argv) {
   }
 }
 
-static void configure_options(options* opts, int argc, char** argv) {
+static void configure_options(options* opts, int argc, const char* const* argv) {
   parse_options(opts, argc, argv);
 
   /* -L implies -x */
@@ -315,7 +315,7 @@ static void configure_options(options* opts, int argc, char** argv) {
   opts->optind_val = optind;
 }
 
-options* options_create(int argc, char** argv) {
+options* options_create(int argc, const char* const* argv) {
   options* opts = safe_malloc(sizeof(options));
 
   init_options(opts);

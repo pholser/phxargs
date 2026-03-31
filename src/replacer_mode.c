@@ -36,7 +36,7 @@ static void replacer_mode_destroy_impl(void* impl) {
   free(impl);
 }
 
-static xargs_mode_ops replacer_mode_ops = {
+static const xargs_mode_ops replacer_mode_ops = {
   .run = replacer_mode_run,
   .destroy_impl = replacer_mode_destroy_impl
 };
@@ -45,7 +45,7 @@ replacer_mode* replacer_mode_create(
   options* opts,
   int arg_index,
   int argc,
-  char** argv) {
+  const char* const* argv) {
 
   replacer_mode* mode = safe_malloc(sizeof(replacer_mode));
 

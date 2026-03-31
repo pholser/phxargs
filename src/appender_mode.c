@@ -74,7 +74,7 @@ static void appender_mode_destroy_impl(void* impl) {
   free(impl);
 }
 
-static xargs_mode_ops appender_mode_ops = {
+static const xargs_mode_ops appender_mode_ops = {
   .run = appender_mode_run,
   .destroy_impl = appender_mode_destroy_impl
 };
@@ -83,7 +83,7 @@ appender_mode* appender_mode_create(
   options* opts,
   int arg_index,
   int argc,
-  char** argv) {
+  const char* const* argv) {
 
   appender_mode* mode = safe_malloc(sizeof(appender_mode));
 

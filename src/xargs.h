@@ -3,7 +3,7 @@
 
 typedef struct xargs_s xargs;
 
-xargs* xargs_create(int argc, char** argv);
+xargs* xargs_create(int argc, const char* const* argv);
 
 int xargs_run(xargs* x);
 

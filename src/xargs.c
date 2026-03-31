@@ -13,7 +13,7 @@ struct xargs_s {
   xargs_mode* mode;
 };
 
-xargs* xargs_create(int argc, char** argv) {
+xargs* xargs_create(int argc, const char* const* argv) {
   process_pool_install_signal_handlers();
   options* opts = options_create(argc, argv);
   int arg_index = options_index_of_first_arg(opts);

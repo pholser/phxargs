@@ -6,7 +6,7 @@
 
 typedef struct options_s options;
 
-options* options_create(int argc, char** argv);
+options* options_create(int argc, const char* const* argv);
 
 int options_index_of_first_arg(const options* opts);
 

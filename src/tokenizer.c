@@ -6,14 +6,14 @@
 #include "util.h"
 
 struct tokenizer_s {
-  tokenizer_ops* ops;
+  const tokenizer_ops* ops;
   buffer* buf;
   void* impl;
   tokenizer_error err;
 };
 
 tokenizer* tokenizer_create(
-  tokenizer_ops* ops,
+  const tokenizer_ops* ops,
   size_t buffer_size,
   void* impl) {
 

@@ -14,18 +14,18 @@ struct xargs_mode_ops_s {
 };
 
 xargs_mode* xargs_mode_create(
-  xargs_mode_ops* ops,
+  const xargs_mode_ops* ops,
   options* opts,
   int arg_index,
   int argc,
-  char** argv,
+  const char* const* argv,
   void* impl);
 
 void* xargs_mode_impl(const xargs_mode* mode);
 
 int xargs_mode_run(xargs_mode* mode);
 
-char* xargs_mode_next_token(xargs_mode* const mode);
+char* xargs_mode_next_token(xargs_mode* mode);
 
 bool xargs_mode_tokenizer_errored(const xargs_mode* mode);
 
