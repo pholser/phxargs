@@ -42,7 +42,7 @@ char* safe_strdup(const char* s) {
     return NULL;
   }
 
-  size_t len = strlen(s) + 1;
+  const size_t len = strlen(s) + 1;
   char* copy = safe_malloc(len);
   memcpy(copy, s, len);
 
@@ -52,7 +52,7 @@ char* safe_strdup(const char* s) {
 long safe_sysconf(int name) {
   errno = 0;
 
-  long result = sysconf(name);
+  const long result = sysconf(name);
   if (result == -1 && errno != 0) {
     perror("phxargs: sysconf");
     exit(EXIT_FAILURE);

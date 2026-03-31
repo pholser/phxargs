@@ -13,7 +13,7 @@ struct replacer_mode_s {
 static int replacer_mode_run(xargs_mode* mode) {
   int execution_status = EXIT_SUCCESS;
 
-  char* token;
+  const char* token;
   for (token = xargs_mode_next_token(mode);
     token != NULL;
     token = xargs_mode_next_token(mode)) {

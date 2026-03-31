@@ -31,7 +31,7 @@ void* tokenizer_impl(const tokenizer* t) {
   return t->impl;
 }
 
-char* tokenizer_next_token(tokenizer* t, FILE* arg_source) {
+const char* tokenizer_next_token(tokenizer* t, FILE* arg_source) {
   return t->ops->next_token(t, arg_source);
 }
 
@@ -51,7 +51,7 @@ void tokenizer_add(tokenizer* t, char ch) {
   buffer_put(t->buf, ch);
 }
 
-char* tokenizer_token(const tokenizer* t, size_t pos) {
+const char* tokenizer_token(const tokenizer* t, size_t pos) {
   return buffer_start(t->buf) + pos;
 }
 

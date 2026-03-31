@@ -21,7 +21,7 @@ buffer* buffer_create(size_t sz) {
   return buf;
 }
 
-char* buffer_start(const buffer* buf) {
+const char* buffer_start(const buffer* buf) {
   return buf->buf;
 }
 

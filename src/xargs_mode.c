@@ -69,7 +69,7 @@ int xargs_mode_run(xargs_mode* mode) {
   return mode->ops->run(mode);
 }
 
-char* xargs_mode_next_token(xargs_mode* const mode) {
+const char* xargs_mode_next_token(xargs_mode* const mode) {
   return tokenizer_next_token(mode->toker, mode->arg_source);
 }
 

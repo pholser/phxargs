@@ -25,7 +25,7 @@ void* xargs_mode_impl(const xargs_mode* mode);
 
 int xargs_mode_run(xargs_mode* mode);
 
-char* xargs_mode_next_token(xargs_mode* mode);
+const char* xargs_mode_next_token(xargs_mode* mode);
 
 bool xargs_mode_tokenizer_errored(const xargs_mode* mode);
 

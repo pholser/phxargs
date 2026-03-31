@@ -29,12 +29,12 @@ struct appender_mode_s {
  * (3) Add `x` to cmd.
  */
 static int appender_mode_run(xargs_mode* mode) {
-  appender_mode* self = (appender_mode*) xargs_mode_impl(mode);
+  const appender_mode* self = (const appender_mode*) xargs_mode_impl(mode);
 
   int execution_status = EXIT_SUCCESS;
   bool input_present = false;
 
-  char* token;
+  const char* token;
   for (token = xargs_mode_next_token(mode);
     token != NULL;
     token = xargs_mode_next_token(mode)) {

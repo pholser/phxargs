@@ -7,7 +7,7 @@ typedef struct buffer_s buffer;
 
 buffer* buffer_create(size_t sz);
 
-char* buffer_start(const buffer* buf);
+const char* buffer_start(const buffer* buf);
 
 size_t buffer_pos(const buffer* buf);
 

@@ -70,9 +70,9 @@ static void space_tokenizer_append_to_token(space_tokenizer* t, int ch) {
   tokenizer_add(t->base, (char) ch);
 }
 
-static char* space_tokenizer_end_token(space_tokenizer* t) {
+static const char* space_tokenizer_end_token(space_tokenizer* t) {
   tokenizer_add(t->base, '\0');
-  char* token = tokenizer_token(t->base, t->token_start);
+  const char* token = tokenizer_token(t->base, t->token_start);
   space_tokenizer_no_token(t);
 
   if (t->logical_end_of_input_marker != NULL) {
@@ -84,7 +84,7 @@ static char* space_tokenizer_end_token(space_tokenizer* t) {
   return token;
 }
 
-static char* next_space_token(tokenizer* t, FILE* token_source) {
+static const char* next_space_token(tokenizer* t, FILE* token_source) {
   space_tokenizer* self = (space_tokenizer*) tokenizer_impl(t);
 
   bool line_has_token = false;
