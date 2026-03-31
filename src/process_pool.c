@@ -1,6 +1,7 @@
 #include "process_pool.h"
 
 #include <assert.h>
+#include <errno.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -88,8 +89,12 @@ static int child_exit_status(int raw_status, uint8_t* halt) {
 
 static void reap_one(process_pool* pool) {
   int raw_status;
+  pid_t pid;
 
-  pid_t pid = waitpid(-1, &raw_status, 0);
+  do {
+    pid = waitpid(-1, &raw_status, 0);
+  } while (pid == -1 && errno == EINTR);
+
   if (pid == -1) {
     perror("phxargs: waitpid");
     exit(EXIT_FAILURE);
@@ -153,6 +158,8 @@ process_pool* process_pool_create(size_t max_procs) {
 }
 
 void process_pool_install_signal_handlers(void) {
+  signal(SIGCHLD, SIG_DFL);
+
   struct sigaction sa;
 
   sa.sa_flags = SA_RESTART;
