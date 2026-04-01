@@ -20,6 +20,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra -O0")
 
+# Declare POSIX.1-2008 compliance so glibc exposes getopt, sigaction,
+# waitpid, sysconf, etc. under strict -std=c99 (no extensions).
+add_compile_definitions(_POSIX_C_SOURCE=200809L)
+
 option(ENABLE_SANITIZERS "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 if(ENABLE_SANITIZERS)
   set(SANITIZER_FLAGS -fsanitize=address,undefined)
