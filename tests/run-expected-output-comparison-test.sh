@@ -11,7 +11,7 @@ phx_expected_exit_status=$7
 phx_test_dir=$(cd "$(dirname "$0")" && pwd -P)
 cd "$phx_test_dir" || exit 3
 
-phx_build_dir="$phx_test_dir/../build"
+phx_build_dir="${PHX_BUILD_DIR:-$phx_test_dir/../build}"
 phx_test_output_dir="$phx_build_dir/output"
 mkdir -p "$phx_test_output_dir"
 
