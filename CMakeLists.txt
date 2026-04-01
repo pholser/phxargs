@@ -177,12 +177,18 @@ else()
   )
 endif()
 
-file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh" "${TEST_DIR}/test-*.exp")
+find_program(EXPECT_PATH NAMES expect)
+
+file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh")
 foreach(script ${SHELL_TESTS})
   get_filename_component(test_name ${script} NAME_WE)
-  add_test(NAME ${test_name}
-    COMMAND "${script}"
-  )
+  add_test(NAME ${test_name} COMMAND "${script}")
+endforeach()
+
+file(GLOB EXPECT_TESTS "${TEST_DIR}/test-*.exp")
+foreach(script ${EXPECT_TESTS})
+  get_filename_component(test_name ${script} NAME_WE)
+  add_test(NAME ${test_name} COMMAND "${EXPECT_PATH}" "${script}")
 endforeach()
 
 option(ENABLE_FUZZING "Build libFuzzer fuzz targets" OFF)
