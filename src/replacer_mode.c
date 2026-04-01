@@ -47,7 +47,7 @@ replacer_mode* replacer_mode_create(
   int argc,
   const char* const* argv) {
 
-  replacer_mode* mode = safe_malloc(sizeof(replacer_mode));
+  replacer_mode* mode = phxargs_malloc(sizeof(replacer_mode));
 
   mode->base =
     xargs_mode_create(&replacer_mode_ops, opts, arg_index, argc, argv, mode);

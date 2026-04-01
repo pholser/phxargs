@@ -14,7 +14,7 @@ char* str_replace(
     return NULL;
   }
   if (placeholder == NULL || strlen(placeholder) == 0) {
-    return safe_strdup(s);
+    return phxargs_strdup(s);
   }
 
   const char* repl = replacement == NULL ? "" : replacement;
@@ -22,10 +22,9 @@ char* str_replace(
   const size_t target_len = strlen(s);
   const size_t placeholder_len = strlen(placeholder);
   const size_t replacement_len = strlen(repl);
+  size_t occurrence_count = 0;
 
   const char* tmp = s;
-
-  size_t occurrence_count = 0;
   while ((tmp = strstr(tmp, placeholder)) != NULL) {
     ++occurrence_count;
     tmp += placeholder_len;
@@ -35,7 +34,7 @@ char* str_replace(
     (ptrdiff_t) occurrence_count
       * ((ptrdiff_t) replacement_len - (ptrdiff_t) placeholder_len);
   const size_t new_len = (size_t) ((ptrdiff_t) target_len + size_delta);
-  char* result = safe_calloc(new_len + 1, sizeof(char));
+  char* result = phxargs_calloc(new_len + 1, sizeof(char));
 
   const char* pos = s;
   char* new_pos = result;

@@ -60,7 +60,7 @@ struct options_s {
   size_t max_procs;
 };
 
-static long parse_number_arg_with_min(int opt, const char* arg, long min) {
+static long parse_number_arg_with_min(int opt, const char* arg, long min_val) {
   errno = 0;
 
   char* endptr;
@@ -70,7 +70,7 @@ static long parse_number_arg_with_min(int opt, const char* arg, long min) {
     fprintf(stderr, "phxargs: -%c %s: Invalid\n", opt, arg);
     exit(EXIT_FAILURE);
   }
-  if (parsed < min) {
+  if (parsed < min_val) {
     fprintf(stderr, "phxargs: -%c %s: too small\n", opt, arg);
     exit(EXIT_FAILURE);
   }
@@ -161,7 +161,7 @@ static void set_max_procs(options* opts, int opt, const char* new_val) {
   const long parsed = parse_number_arg_with_min(opt, new_val, 0);
 
   if (parsed > 0) {
-    const long child_max = safe_sysconf(_SC_CHILD_MAX);
+    const long child_max = phxargs_sysconf(_SC_CHILD_MAX);
     if (child_max > 0 && parsed > child_max) {
       fprintf(
         stderr,
@@ -316,7 +316,7 @@ static void configure_options(options* opts, int argc, const char* const* argv) 
 }
 
 options* options_create(int argc, const char* const* argv) {
-  options* opts = safe_malloc(sizeof(options));
+  options* opts = phxargs_malloc(sizeof(options));
 
   init_options(opts);
   configure_options(opts, argc, argv);

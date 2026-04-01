@@ -72,7 +72,7 @@ delim_tokenizer* delim_tokenizer_create(
   line_count_fn on_line,
   void* on_line_ctx) {
 
-  delim_tokenizer* t = safe_malloc(sizeof(delim_tokenizer));
+  delim_tokenizer* t = phxargs_malloc(sizeof(delim_tokenizer));
 
   t->delim = arg_delimiter;
   t->token_start = 0;

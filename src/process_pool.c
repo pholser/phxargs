@@ -137,7 +137,7 @@ static void apply_signal_adjustments(process_pool* pool) {
   }
 
   if ((size_t) new_max > pool->capacity) {
-    pool->pids = safe_realloc(pool->pids, (size_t) new_max * sizeof(pid_t));
+    pool->pids = phxargs_realloc(pool->pids, (size_t) new_max * sizeof(pid_t));
     pool->capacity = (size_t) new_max;
   }
 
@@ -145,15 +145,15 @@ static void apply_signal_adjustments(process_pool* pool) {
 }
 
 process_pool* process_pool_create(size_t max_procs) {
-  process_pool* pool = safe_malloc(sizeof(process_pool));
+  process_pool* pool = phxargs_malloc(sizeof(process_pool));
 
   pool->max_procs = max_procs;
   pool->capacity = max_procs == 0 ? 16 : max_procs;
-  pool->child_max = safe_sysconf(_SC_CHILD_MAX);
+  pool->child_max = phxargs_sysconf(_SC_CHILD_MAX);
   pool->count = 0;
   pool->status = 0;
   pool->halt = 0;
-  pool->pids = safe_calloc(pool->capacity, sizeof(pid_t));
+  pool->pids = phxargs_calloc(pool->capacity, sizeof(pid_t));
 
   return pool;
 }
@@ -185,7 +185,7 @@ void process_pool_wait_if_full(process_pool* pool) {
 void process_pool_submit(process_pool* pool, pid_t pid) {
   if (pool->count == pool->capacity) {
     pool->capacity *= 2;
-    pool->pids = safe_realloc(pool->pids, pool->capacity * sizeof(pid_t));
+    pool->pids = phxargs_realloc(pool->pids, pool->capacity * sizeof(pid_t));
   }
   pool->pids[pool->count++] = pid;
 }

@@ -12,9 +12,9 @@ struct buffer_s {
 };
 
 buffer* buffer_create(size_t sz) {
-  buffer* buf = safe_malloc(sizeof(buffer));
+  buffer* buf = phxargs_malloc(sizeof(buffer));
 
-  buf->buf = safe_calloc(sz + 1, sizeof(char));
+  buf->buf = phxargs_calloc(sz + 1, sizeof(char));
   buf->sz = sz;
   buf->pos = 0;
 
@@ -32,7 +32,7 @@ size_t buffer_pos(const buffer* buf) {
 void buffer_put(buffer* buf, char ch) {
   if (buf->pos == buf->sz) {
     buf->sz *= 2;
-    buf->buf = safe_realloc(buf->buf, buf->sz + 1);
+    buf->buf = phxargs_realloc(buf->buf, buf->sz + 1);
   }
 
   buf->buf[buf->pos++] = ch;

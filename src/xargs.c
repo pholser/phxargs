@@ -18,7 +18,7 @@ xargs* xargs_create(int argc, const char* const* argv) {
   options* opts = options_create(argc, argv);
   int arg_index = options_index_of_first_arg(opts);
 
-  xargs* x = safe_malloc(sizeof(xargs));
+  xargs* x = phxargs_malloc(sizeof(xargs));
 
   x->mode =
     options_arg_placeholder(opts) == NULL

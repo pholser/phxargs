@@ -17,7 +17,7 @@ tokenizer* tokenizer_create(
   size_t buffer_size,
   void* impl) {
 
-  tokenizer* t = safe_malloc(sizeof(tokenizer));
+  tokenizer* t = phxargs_malloc(sizeof(tokenizer));
 
   t->ops = ops;
   t->buf = buffer_create(buffer_size);

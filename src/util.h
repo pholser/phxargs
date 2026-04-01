@@ -3,17 +3,17 @@
 
 #include <stddef.h>
 
-void* safe_calloc(size_t count, size_t size);
+void* phxargs_calloc(size_t count, size_t size);
 
-void* safe_malloc(size_t size);
+void* phxargs_malloc(size_t size);
 
-void* safe_realloc(void* ptr, size_t size);
+void* phxargs_realloc(void* ptr, size_t size);
 
-char* safe_strdup(const char* s);
+char* phxargs_strdup(const char* s);
 
-long safe_sysconf(int name);
+long phxargs_sysconf(int name);
 
-static inline size_t min(size_t a, size_t b) {
+static inline size_t phxargs_min(size_t a, size_t b) {
   return a < b ? a : b;
 }
 

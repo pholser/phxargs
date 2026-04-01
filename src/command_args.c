@@ -16,7 +16,7 @@ static void reallocate_if_needed(command_args* args) {
   if (args->count >= args->capacity) {
     args->capacity *= 2;
     args->args =
-      (char**) safe_realloc(
+      (char**) phxargs_realloc(
         (void*) args->args,
         args->capacity * sizeof(char*));
   }
@@ -27,11 +27,11 @@ command_args* command_args_create(void) {
 }
 
 command_args* command_args_create_with_capacity(size_t capacity) {
-  command_args* args = safe_malloc(sizeof(command_args));
+  command_args* args = phxargs_malloc(sizeof(command_args));
 
   args->count = 0;
   args->capacity = capacity;
-  args->args = (char**) safe_calloc(args->capacity, sizeof(char*));
+  args->args = (char**) phxargs_calloc(args->capacity, sizeof(char*));
   args->length = 0;
 
   return args;
@@ -39,7 +39,7 @@ command_args* command_args_create_with_capacity(size_t capacity) {
 
 void command_args_add(command_args* args, const char* new_arg) {
   reallocate_if_needed(args);
-  args->args[args->count++] = safe_strdup(new_arg);
+  args->args[args->count++] = phxargs_strdup(new_arg);
   args->length += strlen(new_arg) + 1;
 }
 

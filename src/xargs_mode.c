@@ -34,7 +34,7 @@ xargs_mode* xargs_mode_create(
   const char* const* argv,
   void* impl) {
 
-  xargs_mode* mode = safe_malloc(sizeof(xargs_mode));
+  xargs_mode* mode = phxargs_malloc(sizeof(xargs_mode));
 
   mode->ops = ops;
   mode->impl = impl;

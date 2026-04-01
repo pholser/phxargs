@@ -85,7 +85,7 @@ appender_mode* appender_mode_create(
   int argc,
   const char* const* argv) {
 
-  appender_mode* mode = safe_malloc(sizeof(appender_mode));
+  appender_mode* mode = phxargs_malloc(sizeof(appender_mode));
 
   mode->suppress_execution_on_empty_input =
     options_suppress_execution_on_empty_input(opts);

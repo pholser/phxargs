@@ -192,9 +192,9 @@ space_tokenizer* space_tokenizer_create(
   line_count_fn on_line,
   void* on_line_ctx) {
 
-  space_tokenizer* t = safe_malloc(sizeof(space_tokenizer));
+  space_tokenizer* t = phxargs_malloc(sizeof(space_tokenizer));
 
-  t->logical_end_of_input_marker = safe_strdup(logical_end_of_input_marker);
+  t->logical_end_of_input_marker = phxargs_strdup(logical_end_of_input_marker);
   t->on_line = on_line;
   t->on_line_ctx = on_line_ctx;
   t->base = tokenizer_create(&space_tokenizer_ops, buffer_size, t);

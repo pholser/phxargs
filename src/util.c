@@ -7,7 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void* safe_calloc(size_t count, size_t size) {
+void* phxargs_calloc(size_t count, size_t size) {
   void* ptr = calloc(count, size);
   if (ptr == NULL) {
     perror("phxargs: calloc");
@@ -17,7 +17,7 @@ void* safe_calloc(size_t count, size_t size) {
   return ptr;
 }
 
-void* safe_malloc(size_t size) {
+void* phxargs_malloc(size_t size) {
   void* ptr = malloc(size);
   if (ptr == NULL) {
     perror("phxargs: malloc");
@@ -27,7 +27,7 @@ void* safe_malloc(size_t size) {
   return ptr;
 }
 
-void* safe_realloc(void* ptr, size_t size) {
+void* phxargs_realloc(void* ptr, size_t size) {
   void* new_ptr = realloc(ptr, size);
   if (new_ptr == NULL) {
     perror("phxargs: realloc");
@@ -37,19 +37,19 @@ void* safe_realloc(void* ptr, size_t size) {
   return new_ptr;
 }
 
-char* safe_strdup(const char* s) {
+char* phxargs_strdup(const char* s) {
   if (s == NULL) {
     return NULL;
   }
 
   const size_t len = strlen(s) + 1;
-  char* copy = safe_malloc(len);
+  char* copy = phxargs_malloc(len);
   memcpy(copy, s, len);
 
   return copy;
 }
 
-long safe_sysconf(int name) {
+long phxargs_sysconf(int name) {
   errno = 0;
 
   const long result = sysconf(name);

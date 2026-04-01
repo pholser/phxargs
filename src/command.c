@@ -87,7 +87,7 @@ static bool command_max_args_specified(const command* cmd) {
 }
 
 static size_t decide_max_length(const command* cmd, const options* opts) {
-  const long sc_arg_max = safe_sysconf(_SC_ARG_MAX);
+  const long sc_arg_max = phxargs_sysconf(_SC_ARG_MAX);
 
   /* Subtract 2x env_length as a conservative hedge: some platforms count
    * environment variables twice in their ARG_MAX accounting (once for the
@@ -99,7 +99,7 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
       : (size_t) 128 * 1024;
 
   if (!options_max_command_length_specified(opts)) {
-    return min((size_t) 128 * 1024, max_length);
+    return phxargs_min((size_t) 128 * 1024, max_length);
   }
 
   const size_t min_length = command_length(cmd);
@@ -155,13 +155,13 @@ static char** build_exec_args(const command* cmd, size_t* exec_args_count) {
     command_args_count(fixed_args_in_play)
       + command_args_count(cmd->input_args);
 
-  char** exec_args = (char**) safe_calloc(*exec_args_count + 1, sizeof(char*));
+  char** exec_args = (char**) phxargs_calloc(*exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
-    exec_args[i] = safe_strdup(command_args_at(fixed_args_in_play, i));
+    exec_args[i] = phxargs_strdup(command_args_at(fixed_args_in_play, i));
   }
   for (size_t i = 0; i < command_args_count(cmd->input_args); ++i) {
     exec_args[command_args_count(fixed_args_in_play) + i] =
-      safe_strdup(command_args_at(cmd->input_args, i));
+      phxargs_strdup(command_args_at(cmd->input_args, i));
   }
   exec_args[*exec_args_count] = NULL;
 
@@ -191,11 +191,11 @@ command* command_create(
   int argc,
   const char* const* argv) {
 
-  command* cmd = safe_malloc(sizeof(command));
+  command* cmd = phxargs_malloc(sizeof(command));
 
   cmd->max_lines = options_max_lines_per_command(opts);
   cmd->max_args = options_max_args_per_command(opts);
-  cmd->arg_placeholder = safe_strdup(options_arg_placeholder(opts));
+  cmd->arg_placeholder = phxargs_strdup(options_arg_placeholder(opts));
   cmd->open_tty = options_open_tty(opts);
   cmd->prompt = options_prompt(opts);
   cmd->trace = options_trace(opts);
