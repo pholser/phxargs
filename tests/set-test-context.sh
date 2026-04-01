@@ -23,7 +23,7 @@ phx_test_name=$(basename "$0" | sed 's/^test-//')
 
 cd "$phx_test_dir" || exit 3
 
-phx_build_dir="$phx_test_dir/../build"
+phx_build_dir="${PHX_BUILD_DIR:-$phx_test_dir/../build}"
 phx_test_output_dir="$phx_build_dir/output"
 mkdir -p "$phx_test_output_dir"
 
