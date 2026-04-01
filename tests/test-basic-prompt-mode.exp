@@ -1,7 +1,8 @@
 #!/usr/bin/env expect -f
 
 set script_dir [file dirname [file normalize [info script]]]
-set phxargs_bin "$script_dir/../build/phxargs"
+set build_dir [expr {[info exists env(PHX_BUILD_DIR)] ? $env(PHX_BUILD_DIR) : "$script_dir/../build"}]
+set phxargs_bin "$build_dir/phxargs"
 
 spawn $phxargs_bin -p echo "test"
 
