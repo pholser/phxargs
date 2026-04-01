@@ -141,7 +141,25 @@ else()
   message(STATUS "pandoc not found -- man page will not be built")
 endif()
 
-find_package(Check REQUIRED)
+# Find Check. Use pkg-config when available to pick up transitive
+# dependencies (libm, libsubunit) that vary by platform. Fall back to
+# find_package and add Linux-specific extras manually.
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND)
+  pkg_check_modules(Check REQUIRED check)
+else()
+  find_package(Check REQUIRED)
+  if(UNIX AND NOT APPLE)
+    find_library(MATH_LIB m)
+    if(MATH_LIB)
+      list(APPEND Check_LIBRARIES ${MATH_LIB})
+    endif()
+    find_library(SUBUNIT_LIB subunit)
+    if(SUBUNIT_LIB)
+      list(APPEND Check_LIBRARIES ${SUBUNIT_LIB})
+    endif()
+  endif()
+endif()
 enable_testing()
 
 add_custom_target(run_tests
