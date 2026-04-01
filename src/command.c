@@ -45,7 +45,7 @@ static size_t calc_env_length(void) {
   return sz;
 }
 
-static pid_t safe_fork(void) {
+static pid_t phxargs_fork(void) {
   const pid_t pid = fork();
   if (pid < 0) {
     perror("phxargs: fork");
@@ -55,7 +55,7 @@ static pid_t safe_fork(void) {
   return pid;
 }
 
-static void safe_exec(char* const* exec_args, bool open_tty) {
+static void phxargs_exec(char* const* exec_args, bool open_tty) {
   if (open_tty) {
     if (freopen("/dev/tty", "r", stdin) == NULL) {
       perror("phxargs: cannot reopen stdin as /dev/tty");
@@ -155,7 +155,8 @@ static char** build_exec_args(const command* cmd, size_t* exec_args_count) {
     command_args_count(fixed_args_in_play)
       + command_args_count(cmd->input_args);
 
-  char** exec_args = (char**) phxargs_calloc(*exec_args_count + 1, sizeof(char*));
+  char** exec_args =
+    (char**) phxargs_calloc(*exec_args_count + 1, sizeof(char*));
   for (size_t i = 0; i < command_args_count(fixed_args_in_play); ++i) {
     exec_args[i] = phxargs_strdup(command_args_at(fixed_args_in_play, i));
   }
@@ -293,7 +294,7 @@ void command_ensure_length_not_exceeded(
 }
 
 pid_t command_execute_async(command* cmd) {
-  pid_t pid = safe_fork();
+  pid_t pid = phxargs_fork();
 
   // Parent process
   if (pid > 0) {
@@ -325,7 +326,7 @@ pid_t command_execute_async(command* cmd) {
   }
 
   if (execute) {
-    safe_exec(exec_args, cmd->open_tty);
+    phxargs_exec(exec_args, cmd->open_tty);
   } else {
     for (size_t i = 0; i < exec_args_count; ++i) {
       free(exec_args[i]);
