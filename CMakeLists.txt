@@ -182,17 +182,15 @@ find_program(EXPECT_PATH NAMES expect)
 file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh")
 foreach(script ${SHELL_TESTS})
   get_filename_component(test_name ${script} NAME_WE)
-  add_test(NAME ${test_name} COMMAND "${script}")
-  set_tests_properties(${test_name} PROPERTIES
-    ENVIRONMENT "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}")
+  add_test(NAME ${test_name}
+    COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${script}")
 endforeach()
 
 file(GLOB EXPECT_TESTS "${TEST_DIR}/test-*.exp")
 foreach(script ${EXPECT_TESTS})
   get_filename_component(test_name ${script} NAME_WE)
-  add_test(NAME ${test_name} COMMAND "${EXPECT_PATH}" "${script}")
-  set_tests_properties(${test_name} PROPERTIES
-    ENVIRONMENT "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}")
+  add_test(NAME ${test_name}
+    COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${EXPECT_PATH}" "${script}")
 endforeach()
 
 option(ENABLE_FUZZING "Build libFuzzer fuzz targets" OFF)
