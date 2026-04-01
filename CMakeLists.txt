@@ -118,6 +118,25 @@ if(IWYU_PATH)
 endif()
 
 
+find_program(PANDOC_PATH NAMES pandoc)
+
+if(PANDOC_PATH)
+  message(STATUS "pandoc found: ${PANDOC_PATH}")
+  set(MAN_SOURCE ${CMAKE_SOURCE_DIR}/man/phxargs.1.md)
+  set(MAN_OUTPUT ${CMAKE_BINARY_DIR}/phxargs.1)
+  add_custom_command(
+    OUTPUT ${MAN_OUTPUT}
+    COMMAND ${PANDOC_PATH} --standalone --to man ${MAN_SOURCE} -o ${MAN_OUTPUT}
+    DEPENDS ${MAN_SOURCE}
+    COMMENT "Generating man page"
+    VERBATIM
+  )
+  add_custom_target(man ALL DEPENDS ${MAN_OUTPUT})
+  install(FILES ${MAN_OUTPUT} DESTINATION share/man/man1)
+else()
+  message(STATUS "pandoc not found -- man page will not be built")
+endif()
+
 find_package(Check REQUIRED)
 enable_testing()
 
