@@ -95,7 +95,7 @@ appender_mode* appender_mode_create(
   return mode;
 }
 
-xargs_mode* appender_mode_as_xargs_mode(appender_mode* mode) {
+xargs_mode* appender_mode_as_xargs_mode(const appender_mode* mode) {
   return mode->base;
 }
 

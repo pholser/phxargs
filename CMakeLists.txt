@@ -184,6 +184,25 @@ else()
   )
 endif()
 
+find_program(CPPCHECK_PATH NAMES cppcheck)
+if(CPPCHECK_PATH)
+  message(STATUS "cppcheck found: ${CPPCHECK_PATH}")
+  add_custom_target(cppcheck
+    COMMAND ${CPPCHECK_PATH}
+      --enable=warning,style,performance,portability
+      --error-exitcode=1
+      --std=c99
+      --suppress=missingIncludeSystem
+      -I ${SRC_DIR}
+      ${SOURCES}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Running cppcheck"
+    VERBATIM
+  )
+else()
+  message(STATUS "cppcheck not found -- static analysis target unavailable")
+endif()
+
 find_program(EXPECT_PATH NAMES expect)
 
 file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh")

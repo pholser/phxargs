@@ -77,7 +77,7 @@ bool xargs_mode_tokenizer_errored(const xargs_mode* mode) {
   return tokenizer_get_error(mode->toker) != TOKENIZER_ERR_NONE;
 }
 
-bool xargs_mode_arg_would_exceed_limits(xargs_mode* mode, const char* new_arg) {
+bool xargs_mode_arg_would_exceed_limits(const xargs_mode* mode, const char* new_arg) {
   return command_arg_would_exceed_limits(mode->cmd, new_arg);
 }
 
@@ -115,7 +115,7 @@ bool xargs_mode_input_args_remain(const xargs_mode* mode) {
 }
 
 void xargs_mode_ensure_command_length_not_exceeded(
-  xargs_mode* mode, const char* new_arg) {
+  const xargs_mode* mode, const char* new_arg) {
   command_ensure_length_not_exceeded(mode->cmd, new_arg);
 }
 

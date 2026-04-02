@@ -71,3 +71,21 @@ jobs:
 
       - name: Test
         run: ctest --test-dir build-san --output-on-failure
+
+  static-analysis:
+    name: cppcheck
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y cmake cppcheck
+
+      - name: Configure
+        run: cmake -S . -B build
+
+      - name: Run cppcheck
+        run: cmake --build build --target cppcheck

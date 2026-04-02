@@ -13,7 +13,7 @@ space_tokenizer* space_tokenizer_create(
   line_count_fn on_line,
   void* on_line_ctx);
 
-tokenizer* space_tokenizer_as_tokenizer(space_tokenizer* t);
+tokenizer* space_tokenizer_as_tokenizer(const space_tokenizer* t);
 
 void space_tokenizer_destroy(space_tokenizer* t);
 

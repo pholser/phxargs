@@ -29,7 +29,7 @@ const char* xargs_mode_next_token(xargs_mode* mode);
 
 bool xargs_mode_tokenizer_errored(const xargs_mode* mode);
 
-bool xargs_mode_arg_would_exceed_limits(xargs_mode* mode, const char* arg);
+bool xargs_mode_arg_would_exceed_limits(const xargs_mode* mode, const char* arg);
 
 bool xargs_mode_should_execute_command_after_arg_added(xargs_mode* mode);
 
@@ -42,7 +42,7 @@ void xargs_mode_add_input_argument(xargs_mode* mode, const char* new_arg);
 bool xargs_mode_input_args_remain(const xargs_mode* mode);
 
 void xargs_mode_ensure_command_length_not_exceeded(
-  xargs_mode* mode,
+  const xargs_mode* mode,
   const char* new_arg);
 
 void xargs_replace_args(xargs_mode* mode, const char* new_arg);

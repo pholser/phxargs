@@ -13,7 +13,7 @@ delim_tokenizer* delim_tokenizer_create(
   line_count_fn on_line,
   void* on_line_ctx);
 
-tokenizer* delim_tokenizer_as_tokenizer(delim_tokenizer* t);
+tokenizer* delim_tokenizer_as_tokenizer(const delim_tokenizer* t);
 
 void delim_tokenizer_destroy(delim_tokenizer* t);
 
