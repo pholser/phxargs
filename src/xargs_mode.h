@@ -29,7 +29,9 @@ const char* xargs_mode_next_token(xargs_mode* mode);
 
 bool xargs_mode_tokenizer_errored(const xargs_mode* mode);
 
-bool xargs_mode_arg_would_exceed_limits(const xargs_mode* mode, const char* arg);
+bool xargs_mode_arg_would_exceed_limits(
+  const xargs_mode* mode,
+  const char* arg);
 
 bool xargs_mode_should_execute_command_after_arg_added(xargs_mode* mode);
 

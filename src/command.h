@@ -9,7 +9,11 @@
 
 typedef struct command_s command;
 
-command* command_create(const options* opts, int arg_index, int argc, const char* const* argv);
+command* command_create(
+  const options* opts,
+  int arg_index,
+  int argc,
+  const char* const* argv);
 
 bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg);
 
@@ -21,7 +25,8 @@ int command_should_execute_after_arg_added(const command* cmd);
 void command_replace_args(command* cmd, const char* token);
 
 void command_ensure_length_not_exceeded(
-  const command* cmd, const char* new_arg);
+  const command* cmd,
+  const char* new_arg);
 
 pid_t command_execute_async(command* cmd);
 

@@ -51,7 +51,7 @@ static int severity(int phxargs_status) {
       return 3;
     case PHXARGS_STATUS_CHILD_FAILED:
       return 2;
-    default: /* success (0) */
+    default: /* success */
       return 0;
   }
 }
@@ -177,6 +177,7 @@ bool process_pool_halted(const process_pool* pool) {
 
 void process_pool_wait_if_full(process_pool* pool) {
   apply_signal_adjustments(pool);
+
   while (pool->max_procs != 0 && pool->count >= pool->max_procs) {
     reap_one(pool);
   }
@@ -187,6 +188,7 @@ void process_pool_submit(process_pool* pool, pid_t pid) {
     pool->capacity *= 2;
     pool->pids = phxargs_realloc(pool->pids, pool->capacity * sizeof(pid_t));
   }
+
   pool->pids[pool->count++] = pid;
 }
 
