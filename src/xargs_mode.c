@@ -88,6 +88,7 @@ bool xargs_mode_should_execute_command_after_arg_added(xargs_mode* mode) {
     process_pool_drain(mode->pool);
     exit(EXIT_FAILURE);
   }
+
   return result > 0;
 }
 

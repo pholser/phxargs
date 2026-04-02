@@ -62,10 +62,9 @@ struct options_s {
 
 static long parse_number_arg_with_min(int opt, const char* arg, long min_val) {
   errno = 0;
-
   char* endptr;
-  long parsed = strtol(arg, &endptr, 10);
 
+  long parsed = strtol(arg, &endptr, 10);
   if (arg == endptr || errno != 0 || *endptr != '\0') {
     fprintf(stderr, "phxargs: -%c %s: Invalid\n", opt, arg);
     exit(EXIT_FAILURE);
