@@ -3,6 +3,7 @@ set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules" ${CMAKE_PREFIX_PATH})
 cmake_minimum_required(VERSION 3.10)
 
 project(phxargs C)
+include(GNUInstallDirs)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_EXTENSIONS OFF)
 
@@ -84,6 +85,7 @@ list(FILTER LIB_SOURCES EXCLUDE REGEX ".*main\\.c$")
 include_directories(${SRC_DIR})
 
 add_executable(phxargs ${SOURCES})
+install(TARGETS phxargs RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 add_library(libphxargs STATIC ${LIB_SOURCES})
 
 if(ENABLE_SANITIZERS)
@@ -141,7 +143,7 @@ if(PANDOC_PATH)
     VERBATIM
   )
   add_custom_target(man ALL DEPENDS ${MAN_OUTPUT})
-  install(FILES ${MAN_OUTPUT} DESTINATION share/man/man1)
+  install(FILES ${MAN_OUTPUT} DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 else()
   message(STATUS "pandoc not found -- man page will not be built")
 endif()
