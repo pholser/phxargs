@@ -26,7 +26,12 @@ add_compile_definitions(_POSIX_C_SOURCE=200809L)
 
 option(ENABLE_SANITIZERS "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 if(ENABLE_SANITIZERS)
+  # Disable LeakSanitizer for the phxargs binary and libphxargs. Shell tests
+  # run phxargs with env -i (empty environment) and compare exact stderr
+  # output; LSan's leak summaries would contaminate that output. C unit tests
+  # keep full leak detection since they are not run via env -i.
   set(SANITIZER_FLAGS -fsanitize=address,undefined)
+  set(SANITIZER_FLAGS_NO_LEAK -fsanitize=address,undefined -fno-sanitize=leak)
 endif()
 
 function(get_system_include_paths out_var)
@@ -82,9 +87,9 @@ add_executable(phxargs ${SOURCES})
 add_library(libphxargs STATIC ${LIB_SOURCES})
 
 if(ENABLE_SANITIZERS)
-  target_compile_options(phxargs PRIVATE ${SANITIZER_FLAGS})
-  target_link_options(phxargs PRIVATE ${SANITIZER_FLAGS})
-  target_compile_options(libphxargs PRIVATE ${SANITIZER_FLAGS})
+  target_compile_options(phxargs PRIVATE ${SANITIZER_FLAGS_NO_LEAK})
+  target_link_options(phxargs PRIVATE ${SANITIZER_FLAGS_NO_LEAK})
+  target_compile_options(libphxargs PRIVATE ${SANITIZER_FLAGS_NO_LEAK})
 endif()
 
 find_program(IWYU_PATH NAMES include-what-you-use iwyu)

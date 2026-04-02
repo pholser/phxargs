@@ -13,7 +13,10 @@ command* command_create(const options* opts, int arg_index, int argc, const char
 
 bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg);
 
-bool command_should_execute_after_arg_added(const command* cmd);
+/* Returns 1 if the command should execute, 0 if not, -1 if the command
+ * length limit has been exceeded (caller must drain the process pool and
+ * exit). */
+int command_should_execute_after_arg_added(const command* cmd);
 
 void command_replace_args(command* cmd, const char* token);
 

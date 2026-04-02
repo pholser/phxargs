@@ -247,19 +247,18 @@ bool command_arg_would_exceed_limits(const command* cmd, const char* new_arg) {
   return would_exceed_size;
 }
 
-bool command_should_execute_after_arg_added(const command* cmd) {
+int command_should_execute_after_arg_added(const command* cmd) {
   if (cmd->terminate_on_too_large_command
     && command_length(cmd) > cmd->max_length) {
 
-    fprintf(stderr, "phxargs: command too long\n");
-    exit(EXIT_FAILURE);
+    return -1;
   }
 
   if (cmd->line_mode) {
-    return cmd->line_count == cmd->max_lines;
+    return cmd->line_count == cmd->max_lines ? 1 : 0;
   }
 
-  return false;
+  return 0;
 }
 
 void command_replace_args(command* cmd, const char* new_arg) {

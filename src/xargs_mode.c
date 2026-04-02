@@ -81,8 +81,14 @@ bool xargs_mode_arg_would_exceed_limits(xargs_mode* mode, const char* new_arg) {
   return command_arg_would_exceed_limits(mode->cmd, new_arg);
 }
 
-bool xargs_mode_should_execute_command_after_arg_added(const xargs_mode* mode) {
-  return command_should_execute_after_arg_added(mode->cmd);
+bool xargs_mode_should_execute_command_after_arg_added(xargs_mode* mode) {
+  int result = command_should_execute_after_arg_added(mode->cmd);
+  if (result < 0) {
+    fprintf(stderr, "phxargs: command too long\n");
+    process_pool_drain(mode->pool);
+    exit(EXIT_FAILURE);
+  }
+  return result > 0;
 }
 
 void xargs_mode_execute_command(xargs_mode* mode) {
