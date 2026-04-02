@@ -20,7 +20,10 @@ struct tokenizer_ops_s {
   void (*destroy_impl)(void* impl);
 };
 
-tokenizer* tokenizer_create(const tokenizer_ops* ops, size_t buffer_size, void* impl);
+tokenizer* tokenizer_create(
+  const tokenizer_ops* ops,
+  size_t buffer_size,
+  void* impl);
 
 void* tokenizer_impl(const tokenizer* t);
 

@@ -19,7 +19,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-set(CMAKE_C_FLAGS_DEBUG "-g -Wall -Wextra -O0")
+set(CMAKE_C_FLAGS_DEBUG "-g -O0")
+set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
+add_compile_options(-Wall -Wextra -Werror)
 
 # Declare POSIX.1-2008 compliance so glibc exposes getopt, sigaction,
 # waitpid, sysconf, etc. under strict -std=c99 (no extensions).
