@@ -52,6 +52,8 @@ START_TEST(test_single_str_replace_replacement_null) {
   char* result = str_replace(target, "%", NULL);
 
   ck_assert_str_eq(result, "switch  me  out");
+
+  free(result);
 }
 END_TEST
 

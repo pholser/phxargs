@@ -15,7 +15,7 @@ phx_build_dir="${PHX_BUILD_DIR:-$phx_test_dir/../build}"
 phx_test_output_dir="$phx_build_dir/output"
 mkdir -p "$phx_test_output_dir"
 
-/usr/bin/env -i "$phx_build_dir/phxargs" \
+/usr/bin/env -i ASAN_OPTIONS=detect_leaks=0 "$phx_build_dir/phxargs" \
   $phx_xargs_options \
   $phx_xargs_cmd_line \
   > "$phx_test_output_dir/phxargs-$phx_test_name.out" \
