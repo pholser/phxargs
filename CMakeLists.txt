@@ -27,6 +27,15 @@ add_compile_options(-Wall -Wextra -Werror)
 # waitpid, sysconf, etc. under strict -std=c99 (no extensions).
 add_compile_definitions(_POSIX_C_SOURCE=200809L)
 
+option(ENABLE_COVERAGE "Build with gcov/lcov coverage instrumentation" OFF)
+if(ENABLE_COVERAGE)
+  if(ENABLE_SANITIZERS)
+    message(FATAL_ERROR "ENABLE_COVERAGE and ENABLE_SANITIZERS are mutually exclusive")
+  endif()
+  add_compile_options(--coverage)
+  add_link_options(--coverage)
+endif()
+
 option(ENABLE_SANITIZERS "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 if(ENABLE_SANITIZERS)
   # Disable LeakSanitizer for the phxargs binary and libphxargs. Shell tests
@@ -208,6 +217,74 @@ if(CPPCHECK_PATH)
   )
 else()
   message(STATUS "cppcheck not found -- static analysis target unavailable")
+endif()
+
+if(ENABLE_COVERAGE)
+  find_program(LCOV_PATH NAMES lcov)
+  find_program(GENHTML_PATH NAMES genhtml)
+
+  if(LCOV_PATH AND GENHTML_PATH)
+    message(STATUS "lcov found: ${LCOV_PATH}")
+    message(STATUS "genhtml found: ${GENHTML_PATH}")
+
+    # On macOS with Apple Clang, lcov must use llvm-cov as its gcov tool.
+    # llvm-cov is typically only reachable via xcrun, not on PATH directly.
+    if(APPLE)
+      find_program(LLVM_COV_PATH NAMES llvm-cov)
+      if(NOT LLVM_COV_PATH)
+        execute_process(
+          COMMAND xcrun --find llvm-cov
+          OUTPUT_VARIABLE LLVM_COV_PATH
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+          ERROR_QUIET)
+      endif()
+      if(LLVM_COV_PATH)
+        message(STATUS "llvm-cov found: ${LLVM_COV_PATH}")
+        set(LCOV_GCOV_TOOL_ARG --gcov-tool ${CMAKE_SOURCE_DIR}/cmake/llvm-cov-gcov.sh)
+      else()
+        message(WARNING "llvm-cov not found -- coverage may not work correctly on macOS")
+      endif()
+    endif()
+
+    set(COVERAGE_OUTPUT_DIR ${CMAKE_BINARY_DIR}/coverage)
+    set(COVERAGE_INFO ${CMAKE_BINARY_DIR}/coverage.info)
+    set(COVERAGE_INFO_FILTERED ${CMAKE_BINARY_DIR}/coverage-filtered.info)
+
+    add_custom_target(coverage
+      # Zero out stale counters
+      COMMAND ${LCOV_PATH} ${LCOV_GCOV_TOOL_ARG}
+        --zerocounters
+        --directory ${CMAKE_BINARY_DIR}
+      # Run the test suite
+      COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+      # Capture coverage data
+      COMMAND ${LCOV_PATH} ${LCOV_GCOV_TOOL_ARG}
+        --capture
+        --directory ${CMAKE_BINARY_DIR}
+        --ignore-errors unsupported
+        --output-file ${COVERAGE_INFO}
+      # Strip system headers and test sources
+      COMMAND ${LCOV_PATH} ${LCOV_GCOV_TOOL_ARG}
+        --remove ${COVERAGE_INFO}
+          /usr/*
+          /Library/Developer/*
+          ${CMAKE_SOURCE_DIR}/tests/*
+        --ignore-errors unused,unused
+        --output-file ${COVERAGE_INFO_FILTERED}
+      # Generate HTML report
+      COMMAND ${GENHTML_PATH}
+        --output-directory ${COVERAGE_OUTPUT_DIR}
+        ${COVERAGE_INFO_FILTERED}
+      COMMAND ${CMAKE_COMMAND} -E echo
+        "Coverage report: ${COVERAGE_OUTPUT_DIR}/index.html"
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      COMMENT "Generating coverage report"
+      VERBATIM
+    )
+    add_dependencies(coverage phxargs libphxargs)
+  else()
+    message(STATUS "lcov/genhtml not found -- coverage target unavailable")
+  endif()
 endif()
 
 if(BUILD_TESTING)

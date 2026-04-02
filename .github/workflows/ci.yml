@@ -72,6 +72,33 @@ jobs:
       - name: Test
         run: ctest --test-dir build-san --output-on-failure
 
+  coverage:
+    name: coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y cmake check expect pandoc lcov
+
+      - name: Configure
+        run: cmake -S . -B build-cov -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build-cov
+
+      - name: Generate coverage report
+        run: cmake --build build-cov --target coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build-cov/coverage/
+
   static-analysis:
     name: cppcheck
     runs-on: ubuntu-latest
