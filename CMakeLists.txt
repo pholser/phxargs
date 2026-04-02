@@ -148,40 +148,45 @@ else()
   message(STATUS "pandoc not found -- man page will not be built")
 endif()
 
-# Find Check. Use pkg-config when available to pick up transitive
-# dependencies (libm, libsubunit) that vary by platform. Fall back to
-# find_package and add Linux-specific extras manually.
-find_package(PkgConfig)
-if(PKG_CONFIG_FOUND)
-  pkg_check_modules(Check REQUIRED check)
-else()
-  find_package(Check REQUIRED)
-  if(UNIX AND NOT APPLE)
-    find_library(MATH_LIB m)
-    if(MATH_LIB)
-      list(APPEND Check_LIBRARIES ${MATH_LIB})
-    endif()
-    find_library(SUBUNIT_LIB subunit)
-    if(SUBUNIT_LIB)
-      list(APPEND Check_LIBRARIES ${SUBUNIT_LIB})
+option(BUILD_TESTING "Build and register tests" ON)
+
+if(BUILD_TESTING)
+  # Find Check. Use pkg-config when available to pick up transitive
+  # dependencies (libm, libsubunit) that vary by platform. Fall back to
+  # find_package and add Linux-specific extras manually.
+  find_package(PkgConfig)
+  if(PKG_CONFIG_FOUND)
+    pkg_check_modules(Check REQUIRED check)
+  else()
+    find_package(Check REQUIRED)
+    if(UNIX AND NOT APPLE)
+      find_library(MATH_LIB m)
+      if(MATH_LIB)
+        list(APPEND Check_LIBRARIES ${MATH_LIB})
+      endif()
+      find_library(SUBUNIT_LIB subunit)
+      if(SUBUNIT_LIB)
+        list(APPEND Check_LIBRARIES ${SUBUNIT_LIB})
+      endif()
     endif()
   endif()
-endif()
-enable_testing()
 
-add_custom_target(run_tests
-  COMMAND ctest --output-on-failure
-  DEPENDS phxargs libphxargs
-)
+  enable_testing()
 
-if(IWYU_PATH)
-  add_custom_target(run_all
-    DEPENDS iwyu run_tests
+  add_custom_target(run_tests
+    COMMAND ctest --output-on-failure
+    DEPENDS phxargs libphxargs
   )
-else()
-  add_custom_target(run_all
-    DEPENDS run_tests
-  )
+
+  if(IWYU_PATH)
+    add_custom_target(run_all
+      DEPENDS iwyu run_tests
+    )
+  else()
+    add_custom_target(run_all
+      DEPENDS run_tests
+    )
+  endif()
 endif()
 
 find_program(CPPCHECK_PATH NAMES cppcheck)
@@ -203,47 +208,49 @@ else()
   message(STATUS "cppcheck not found -- static analysis target unavailable")
 endif()
 
-find_program(EXPECT_PATH NAMES expect)
+if(BUILD_TESTING)
+  find_program(EXPECT_PATH NAMES expect)
 
-file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh")
-foreach(script ${SHELL_TESTS})
-  get_filename_component(test_name ${script} NAME_WE)
-  add_test(NAME ${test_name}
-    COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${script}")
-endforeach()
+  file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh")
+  foreach(script ${SHELL_TESTS})
+    get_filename_component(test_name ${script} NAME_WE)
+    add_test(NAME ${test_name}
+      COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${script}")
+  endforeach()
 
-file(GLOB EXPECT_TESTS "${TEST_DIR}/test-*.exp")
-foreach(script ${EXPECT_TESTS})
-  get_filename_component(test_name ${script} NAME_WE)
-  add_test(NAME ${test_name}
-    COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${EXPECT_PATH}" "${script}")
-endforeach()
+  file(GLOB EXPECT_TESTS "${TEST_DIR}/test-*.exp")
+  foreach(script ${EXPECT_TESTS})
+    get_filename_component(test_name ${script} NAME_WE)
+    add_test(NAME ${test_name}
+      COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${EXPECT_PATH}" "${script}")
+  endforeach()
 
-option(ENABLE_FUZZING "Build libFuzzer fuzz targets" OFF)
+  option(ENABLE_FUZZING "Build libFuzzer fuzz targets" OFF)
 
-if(ENABLE_FUZZING)
-  set(FUZZ_LINK_FLAGS "-fsanitize=fuzzer,address,undefined")
-  foreach(fuzz_src fuzz_space_tokenizer fuzz_delim_tokenizer)
-    add_executable(${fuzz_src} "${TEST_DIR}/${fuzz_src}.c")
-    target_include_directories(${fuzz_src} PRIVATE ${SRC_DIR})
-    target_link_libraries(${fuzz_src} libphxargs)
-    target_link_options(${fuzz_src} PRIVATE ${FUZZ_LINK_FLAGS})
+  if(ENABLE_FUZZING)
+    set(FUZZ_LINK_FLAGS "-fsanitize=fuzzer,address,undefined")
+    foreach(fuzz_src fuzz_space_tokenizer fuzz_delim_tokenizer)
+      add_executable(${fuzz_src} "${TEST_DIR}/${fuzz_src}.c")
+      target_include_directories(${fuzz_src} PRIVATE ${SRC_DIR})
+      target_link_libraries(${fuzz_src} libphxargs)
+      target_link_options(${fuzz_src} PRIVATE ${FUZZ_LINK_FLAGS})
+    endforeach()
+  endif()
+
+  file(GLOB C_TEST_SOURCES "${TEST_DIR}/*.c")
+  list(FILTER C_TEST_SOURCES EXCLUDE REGEX ".*fuzz_.*\\.c$")
+  foreach(test_source ${C_TEST_SOURCES})
+    get_filename_component(test_name ${test_source} NAME_WE)
+    add_executable(${test_name} ${test_source})
+    set_target_properties(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    target_include_directories(${test_name} PRIVATE ${Check_INCLUDE_DIRS})
+    target_link_directories(${test_name} PRIVATE ${Check_LIBRARY_DIRS})
+    target_link_libraries(${test_name} libphxargs ${Check_LIBRARIES})
+    if(ENABLE_SANITIZERS)
+      target_compile_options(${test_name} PRIVATE ${SANITIZER_FLAGS})
+      target_link_options(${test_name} PRIVATE ${SANITIZER_FLAGS})
+    endif()
+    add_test(NAME ${test_name} COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${test_name})
+    add_dependencies(run_tests ${test_name})
   endforeach()
 endif()
-
-file(GLOB C_TEST_SOURCES "${TEST_DIR}/*.c")
-list(FILTER C_TEST_SOURCES EXCLUDE REGEX ".*fuzz_.*\\.c$")
-foreach(test_source ${C_TEST_SOURCES})
-  get_filename_component(test_name ${test_source} NAME_WE)
-  add_executable(${test_name} ${test_source})
-  set_target_properties(${test_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-  target_include_directories(${test_name} PRIVATE ${Check_INCLUDE_DIRS})
-  target_link_directories(${test_name} PRIVATE ${Check_LIBRARY_DIRS})
-  target_link_libraries(${test_name} libphxargs ${Check_LIBRARIES})
-  if(ENABLE_SANITIZERS)
-    target_compile_options(${test_name} PRIVATE ${SANITIZER_FLAGS})
-    target_link_options(${test_name} PRIVATE ${SANITIZER_FLAGS})
-  endif()
-  add_test(NAME ${test_name} COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${test_name})
-  add_dependencies(run_tests ${test_name})
-endforeach()
