@@ -9,7 +9,7 @@ cat > "$phx_expected_error" <<EOF
 phxargs: unknown option -Z
 EOF
 
-/usr/bin/env -i ./run-expected-output-comparison-test.sh \
+./run-expected-output-comparison-test.sh \
   $phx_test_name \
   "$phx_test_input" \
   "$phx_expected_output" \
