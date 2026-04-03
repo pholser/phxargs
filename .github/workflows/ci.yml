@@ -99,6 +99,47 @@ jobs:
           name: coverage-report
           path: build-cov/coverage/
 
+  fuzz:
+    name: fuzz
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y cmake clang
+
+      - name: Configure
+        run: |
+          cmake -S . -B build-fuzz \
+            -DENABLE_FUZZING=ON \
+            -DBUILD_TESTING=OFF \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build fuzz targets
+        run: cmake --build build-fuzz --target fuzz_space_tokenizer fuzz_delim_tokenizer
+
+      - name: Fuzz space_tokenizer
+        run: |
+          mkdir -p tests/corpus/space_tokenizer
+          build-fuzz/fuzz_space_tokenizer \
+            -max_total_time=30 \
+            -max_len=256 \
+            tests/corpus/space_tokenizer \
+            tests/seeds/space_tokenizer
+
+      - name: Fuzz delim_tokenizer
+        run: |
+          mkdir -p tests/corpus/delim_tokenizer
+          build-fuzz/fuzz_delim_tokenizer \
+            -max_total_time=30 \
+            -max_len=256 \
+            tests/corpus/delim_tokenizer \
+            tests/seeds/delim_tokenizer
+
   static-analysis:
     name: cppcheck
     runs-on: ubuntu-latest
