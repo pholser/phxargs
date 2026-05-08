@@ -57,7 +57,7 @@ jobs:
         with:
           usesh: true
           prepare: |
-            pkg install -y cmake check expect
+            pkg install -y bash cmake check expect
           run: |
             cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
             cmake --build build
