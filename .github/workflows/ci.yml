@@ -40,6 +40,29 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
+  freebsd:
+    name: FreeBSD / ${{ matrix.build_type }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and test on FreeBSD
+        uses: vmactions/freebsd-vm@v1
+        with:
+          usesh: true
+          prepare: |
+            pkg install -y cmake check expect pandoc
+          run: |
+            cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+            cmake --build build
+            ctest --test-dir build --output-on-failure
+
   sanitizers:
     name: ${{ matrix.os }} / sanitizers
     runs-on: ${{ matrix.os }}
