@@ -2,6 +2,11 @@
 
 source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
+if [ "$(id -u)" -eq 0 ]; then
+  echo "$phx_test_name: skipped (running as root)" >&2
+  exit 0
+fi
+
 phx_unreadable_file=$(make_temp "$phx_test_output_dir" unreadable)
 chmod 000 "$phx_unreadable_file"
 
