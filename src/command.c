@@ -331,7 +331,8 @@ pid_t command_execute_async(command* cmd) {
       *p++ = '\n';
     }
 
-    (void) write(STDERR_FILENO, trace_buf, trace_len);
+    ssize_t nw = write(STDERR_FILENO, trace_buf, trace_len);
+    (void) nw;
     free(trace_buf);
   }
 
