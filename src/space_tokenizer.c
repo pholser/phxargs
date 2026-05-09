@@ -85,60 +85,65 @@ static const char* space_tokenizer_end_token(space_tokenizer* t) {
 }
 
 static void handle_no_token_char(
-  space_tokenizer* self,
+  space_tokenizer* t,
   int ch,
   bool* line_has_token) {
 
   if (ch == ' ' || ch == '\t') {
     return;
   }
+
   if (ch == '\n') {
     if (*line_has_token) {
-      self->on_input_boundary(self->on_input_boundary_ctx);
+      t->on_input_boundary(t->on_input_boundary_ctx);
     }
     return;
   }
+
   if (ch == '\'' || ch == '"') {
-    space_tokenizer_start_quoted_token(self, ch);
+    space_tokenizer_start_quoted_token(t, ch);
   } else if (ch == '\\') {
-    space_tokenizer_start_no_token_escape(self);
+    space_tokenizer_start_no_token_escape(t);
   } else {
-    space_tokenizer_start_token(self, ch);
+    space_tokenizer_start_token(t, ch);
   }
+
   *line_has_token = true;
 }
 
 static bool handle_in_token_char(
-  space_tokenizer* self,
+  space_tokenizer* t,
   int ch,
   bool line_has_token,
   const char** out) {
 
   if (ch == ' ' || ch == '\t') {
-    *out = space_tokenizer_end_token(self);
+    *out = space_tokenizer_end_token(t);
     return true;
   }
+
   if (ch == '\n') {
     if (line_has_token) {
-      self->on_input_boundary(self->on_input_boundary_ctx);
+      t->on_input_boundary(t->on_input_boundary_ctx);
     }
-    *out = space_tokenizer_end_token(self);
+    *out = space_tokenizer_end_token(t);
     return true;
   }
+
   if (ch == '\'' || ch == '"') {
-    self->state = IN_TOKEN_QUOTED;
-    self->quote_char = ch;
+    t->state = IN_TOKEN_QUOTED;
+    t->quote_char = ch;
   } else if (ch == '\\') {
-    space_tokenizer_start_in_token_escape(self);
+    space_tokenizer_start_in_token_escape(t);
   } else {
-    space_tokenizer_append_to_token(self, ch);
+    space_tokenizer_append_to_token(t, ch);
   }
+
   return false;
 }
 
 static bool handle_quoted_char(
   space_tokenizer* self,
-  tokenizer* t,
   int ch,
   const char** out) {
 
@@ -146,41 +151,46 @@ static bool handle_quoted_char(
     self->state = IN_TOKEN;
     return false;
   }
+
   if (ch == '\n') {
     fprintf(stderr, "phxargs: unterminated quote\n");
-    tokenizer_set_error(t, TOKENIZER_ERR_UNTERMINATED_QUOTE);
+    tokenizer_set_error(self->base, TOKENIZER_ERR_UNTERMINATED_QUOTE);
     *out = NULL;
     return true;
   }
+
   space_tokenizer_append_to_token(self, ch);
   return false;
 }
 
 static const char* handle_eof(
-  tokenizer* t,
   space_tokenizer* self,
   FILE* token_source,
   bool line_has_token) {
 
   if (ferror(token_source)) {
     fprintf(stderr, "phxargs: I/O error\n");
-    tokenizer_set_error(t, TOKENIZER_ERR_IO);
+    tokenizer_set_error(self->base, TOKENIZER_ERR_IO);
     return NULL;
   }
+
   if (self->state == IN_TOKEN_ESCAPE || self->state == NO_TOKEN_ESCAPE) {
     fprintf(stderr, "phxargs: backslash at EOF\n");
-    tokenizer_set_error(t, TOKENIZER_ERR_BACKSLASH_AT_EOF);
+    tokenizer_set_error(self->base, TOKENIZER_ERR_BACKSLASH_AT_EOF);
     return NULL;
   }
+
   if (self->state == IN_QUOTED_TOKEN || self->state == IN_TOKEN_QUOTED) {
     fprintf(stderr, "phxargs: unterminated quote\n");
-    tokenizer_set_error(t, TOKENIZER_ERR_UNTERMINATED_QUOTE);
+    tokenizer_set_error(self->base, TOKENIZER_ERR_UNTERMINATED_QUOTE);
     return NULL;
   }
+
   if (line_has_token) {
     self->on_input_boundary(self->on_input_boundary_ctx);
     return space_tokenizer_end_token(self);
   }
+
   return NULL;
 }
 
@@ -206,7 +216,7 @@ static const char* next_space_token(tokenizer* t, FILE* token_source) {
       case IN_QUOTED_TOKEN:
         /* fallthrough */
       case IN_TOKEN_QUOTED:
-        if (handle_quoted_char(self, t, ch, &out)) {
+        if (handle_quoted_char(self, ch, &out)) {
           return out;
         }
         break;
@@ -216,7 +226,7 @@ static const char* next_space_token(tokenizer* t, FILE* token_source) {
     }
   }
 
-  return handle_eof(t, self, token_source, line_has_token);
+  return handle_eof(self, token_source, line_has_token);
 }
 
 static void space_tokenizer_destroy_impl(void* impl) {
