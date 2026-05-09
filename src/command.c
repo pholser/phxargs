@@ -306,16 +306,33 @@ pid_t command_execute_async(command* cmd) {
   char** exec_args = build_exec_args(cmd, &exec_args_count);
 
   if (cmd->trace) {
+    size_t trace_len = 0;
     for (size_t i = 0; i < exec_args_count; ++i) {
-      fprintf(stderr, "%s", exec_args[i]);
-
+      trace_len += strlen(exec_args[i]);
       if (i < exec_args_count - 1) {
-        fprintf(stderr, " ");
+        trace_len += 1;
       }
     }
     if (!cmd->prompt) {
-      fprintf(stderr, "\n");
+      trace_len += 1;
     }
+
+    char* trace_buf = phxargs_malloc(trace_len + 1);
+    char* p = trace_buf;
+    for (size_t i = 0; i < exec_args_count; ++i) {
+      size_t arg_len = strlen(exec_args[i]);
+      memcpy(p, exec_args[i], arg_len);
+      p += arg_len;
+      if (i < exec_args_count - 1) {
+        *p++ = ' ';
+      }
+    }
+    if (!cmd->prompt) {
+      *p++ = '\n';
+    }
+
+    write(STDERR_FILENO, trace_buf, trace_len);
+    free(trace_buf);
   }
 
   bool execute = true;
