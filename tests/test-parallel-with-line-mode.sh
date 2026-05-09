@@ -13,10 +13,11 @@ EOF
 out_dir=$(mktemp -d)
 trap 'rm -rf "$out_dir"' EXIT
 
+trace_file="$phx_test_output_dir/phxargs-$phx_test_name.trace"
 /usr/bin/env -i "$phx_build_dir/phxargs" \
-  -P 2 -L 1 \
+  -P 2 -L 1 -t \
   sh -c 'echo "$@" > "'"$out_dir"'/$1"' -- \
-  < "$phx_test_input"
+  < "$phx_test_input" 2>"$trace_file"
 
 actual=$(sort "$out_dir"/*)
 expected=$(printf '%s\n' 'arg1 arg2' 'arg3 arg4' 'arg5 arg6' | sort)
@@ -29,5 +30,7 @@ if [ "$actual" != "$expected" ]; then
   for f in "$out_dir"/*; do
     echo "$phx_test_name: file $(basename "$f"): $(cat "$f")" >&2
   done
+  echo "$phx_test_name: phxargs trace:" >&2
+  cat "$trace_file" >&2
   exit 1
 fi
