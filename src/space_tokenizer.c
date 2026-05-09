@@ -143,52 +143,52 @@ static bool handle_in_token_char(
 }
 
 static bool handle_quoted_char(
-  space_tokenizer* self,
+  space_tokenizer* t,
   int ch,
   const char** out) {
 
-  if (ch == self->quote_char) {
-    self->state = IN_TOKEN;
+  if (ch == t->quote_char) {
+    t->state = IN_TOKEN;
     return false;
   }
 
   if (ch == '\n') {
     fprintf(stderr, "phxargs: unterminated quote\n");
-    tokenizer_set_error(self->base, TOKENIZER_ERR_UNTERMINATED_QUOTE);
+    tokenizer_set_error(t->base, TOKENIZER_ERR_UNTERMINATED_QUOTE);
     *out = NULL;
     return true;
   }
 
-  space_tokenizer_append_to_token(self, ch);
+  space_tokenizer_append_to_token(t, ch);
   return false;
 }
 
 static const char* handle_eof(
-  space_tokenizer* self,
+  space_tokenizer* t,
   FILE* token_source,
   bool line_has_token) {
 
   if (ferror(token_source)) {
     fprintf(stderr, "phxargs: I/O error\n");
-    tokenizer_set_error(self->base, TOKENIZER_ERR_IO);
+    tokenizer_set_error(t->base, TOKENIZER_ERR_IO);
     return NULL;
   }
 
-  if (self->state == IN_TOKEN_ESCAPE || self->state == NO_TOKEN_ESCAPE) {
+  if (t->state == IN_TOKEN_ESCAPE || t->state == NO_TOKEN_ESCAPE) {
     fprintf(stderr, "phxargs: backslash at EOF\n");
-    tokenizer_set_error(self->base, TOKENIZER_ERR_BACKSLASH_AT_EOF);
+    tokenizer_set_error(t->base, TOKENIZER_ERR_BACKSLASH_AT_EOF);
     return NULL;
   }
 
-  if (self->state == IN_QUOTED_TOKEN || self->state == IN_TOKEN_QUOTED) {
+  if (t->state == IN_QUOTED_TOKEN || t->state == IN_TOKEN_QUOTED) {
     fprintf(stderr, "phxargs: unterminated quote\n");
-    tokenizer_set_error(self->base, TOKENIZER_ERR_UNTERMINATED_QUOTE);
+    tokenizer_set_error(t->base, TOKENIZER_ERR_UNTERMINATED_QUOTE);
     return NULL;
   }
 
   if (line_has_token) {
-    self->on_input_boundary(self->on_input_boundary_ctx);
-    return space_tokenizer_end_token(self);
+    t->on_input_boundary(t->on_input_boundary_ctx);
+    return space_tokenizer_end_token(t);
   }
 
   return NULL;
