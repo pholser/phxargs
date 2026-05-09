@@ -138,6 +138,51 @@ Run up to 4 compilations in parallel:
 
     echo src/*.c | tr ' ' '\n' | phxargs -n 1 -P 4 cc -c
 
+# STANDARDS
+
+**phxargs** implements the options defined in POSIX.1-2008 for **xargs**:
+**-E**, **-I**, **-L**, **-n**, **-p**, **-s**, **-t**, and **-x**.
+
+The following behaviors differ intentionally from POSIX:
+
+**Default EOF marker.**
+POSIX specifies **_** (underscore) as the default logical EOF string when
+**-E** is not given. **phxargs** has no default; the EOF marker is inactive
+unless explicitly set with **-E**. The POSIX default is a footgun for inputs
+that legitimately contain underscores.
+
+**Trailing content in delimiter mode.**
+When using **-d** or **-0**, POSIX-based implementations (including GNU xargs)
+strip a trailing newline from the final token. **phxargs** includes it as part
+of the token. Scripts that rely on stripped trailing newlines should strip them
+explicitly (e.g. with **tr -d '\\n'**).
+
+**-n and -L together.**
+POSIX treats **-n** and **-L** as mutually exclusive. **phxargs** accepts both;
+**-L** takes precedence for determining flush points.
+
+The following options are extensions beyond POSIX, drawn from GNU xargs or BSD
+xargs:
+
+**-0**
+:   NUL-delimited input (GNU).
+
+**-a** *file*
+:   Read from a file instead of standard input (GNU).
+
+**-d** *delim*
+:   Arbitrary single-character delimiter (GNU).
+
+**-P** *max-procs*
+:   Parallel execution, with SIGUSR1/SIGUSR2 runtime pool adjustment (GNU,
+    extended).
+
+**-r**
+:   Suppress execution on empty input (GNU).
+
+**-o**
+:   Reopen standard input as **/dev/tty** in the child (BSD).
+
 # SEE ALSO
 
 find(1), xargs(1)
