@@ -24,5 +24,10 @@ expected=$(printf '%s\n' 'arg1 arg2' 'arg3 arg4' 'arg5 arg6' | sort)
 if [ "$actual" != "$expected" ]; then
   echo "$phx_test_name: output differs" >&2
   diff <(echo "$expected") <(echo "$actual") >&2
+  echo "$phx_test_name: files in out_dir:" >&2
+  ls -la "$out_dir" >&2
+  for f in "$out_dir"/*; do
+    echo "$phx_test_name: file $(basename "$f"): $(cat "$f")" >&2
+  done
   exit 1
 fi
