@@ -40,6 +40,15 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
+      - name: Install
+        run: cmake --install build --prefix /tmp/phxargs-install
+
+      - name: Verify install
+        run: |
+          test -x /tmp/phxargs-install/bin/phxargs
+          echo hello | /tmp/phxargs-install/bin/phxargs echo
+          test -f /tmp/phxargs-install/share/man/man1/phxargs.1
+
   freebsd:
     name: FreeBSD / ${{ matrix.build_type }}
     runs-on: ubuntu-latest
@@ -62,6 +71,9 @@ jobs:
             cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
             cmake --build build
             ctest --test-dir build --output-on-failure
+            cmake --install build --prefix /tmp/phxargs-install
+            test -x /tmp/phxargs-install/bin/phxargs
+            echo hello | /tmp/phxargs-install/bin/phxargs echo
 
   sanitizers:
     name: ${{ matrix.os }} / sanitizers
