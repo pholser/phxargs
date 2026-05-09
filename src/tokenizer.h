@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-typedef void (*line_count_fn)(void* ctx);
+typedef void (*input_boundary_fn)(void* ctx);
 
 typedef enum {
   TOKENIZER_ERR_NONE = 0,

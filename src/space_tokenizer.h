@@ -10,8 +10,8 @@ typedef struct space_tokenizer_s space_tokenizer;
 space_tokenizer* space_tokenizer_create(
   size_t buffer_size,
   const char* logical_end_of_input_marker,
-  line_count_fn on_line,
-  void* on_line_ctx);
+  input_boundary_fn on_input_boundary,
+  void* on_input_boundary_ctx);
 
 tokenizer* space_tokenizer_as_tokenizer(const space_tokenizer* t);
 

@@ -26,8 +26,8 @@ struct space_tokenizer_s {
 
   char* logical_end_of_input_marker;
 
-  line_count_fn on_line;
-  void* on_line_ctx;
+  input_boundary_fn on_input_boundary;
+  void* on_input_boundary_ctx;
 };
 
 static void space_tokenizer_no_token(space_tokenizer* t) {
@@ -97,7 +97,7 @@ static const char* next_space_token(tokenizer* t, FILE* token_source) {
           continue;
         } else if (ch == '\n') {
           if (line_has_token) {
-            self->on_line(self->on_line_ctx);
+            self->on_input_boundary(self->on_input_boundary_ctx);
           }
         } else if (ch == '\'' || ch == '"') {
           space_tokenizer_start_quoted_token(self, ch);
@@ -120,7 +120,7 @@ static const char* next_space_token(tokenizer* t, FILE* token_source) {
           return space_tokenizer_end_token(self);
         } else if (ch == '\n') {
           if (line_has_token) {
-            self->on_line(self->on_line_ctx);
+            self->on_input_boundary(self->on_input_boundary_ctx);
           }
           return space_tokenizer_end_token(self);
         } else if (ch == '\'' || ch == '"') {
@@ -167,7 +167,7 @@ static const char* next_space_token(tokenizer* t, FILE* token_source) {
     return NULL;
   } else {
     if (line_has_token) {
-      self->on_line(self->on_line_ctx);
+      self->on_input_boundary(self->on_input_boundary_ctx);
       return space_tokenizer_end_token(self);
     }
     return NULL;
@@ -189,14 +189,14 @@ static const tokenizer_ops space_tokenizer_ops = {
 space_tokenizer* space_tokenizer_create(
   size_t buffer_size,
   const char* logical_end_of_input_marker,
-  line_count_fn on_line,
-  void* on_line_ctx) {
+  input_boundary_fn on_input_boundary,
+  void* on_input_boundary_ctx) {
 
   space_tokenizer* t = phxargs_malloc(sizeof(space_tokenizer));
 
   t->logical_end_of_input_marker = phxargs_strdup(logical_end_of_input_marker);
-  t->on_line = on_line;
-  t->on_line_ctx = on_line_ctx;
+  t->on_input_boundary = on_input_boundary;
+  t->on_input_boundary_ctx = on_input_boundary_ctx;
   t->base = tokenizer_create(&space_tokenizer_ops, buffer_size, t);
   space_tokenizer_no_token(t);
 

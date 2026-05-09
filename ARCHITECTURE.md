@@ -5,13 +5,13 @@
 phxargs is structured as a pipeline of four layered concerns:
 
 ```
-input source → tokenizer → xargs mode (command + process pool) → child processes
+input source → tokenizer → xargs mode (command + process pool) → child
+processes
 ```
 
-Each layer has a single responsibility and communicates through a narrow interface.
-The two places where runtime polymorphism is needed — tokenization strategy and
-execution mode — use C vtable structs rather than conditional logic scattered
-through the call sites.
+Each layer has a single responsibility and communicates through a narrow
+interface. The two places where runtime polymorphism is needed -- tokenization
+strategy and execution mode -- use C vtable structs rather than conditional logic scattered through the call sites.
 
 ## Source map
 
@@ -20,7 +20,8 @@ src/
   main.c              entry point
   options.c/.h        argument parsing and normalization
   xargs.c/.h          top-level orchestration
-  xargs_mode.c/.h     vtable base for execution modes; owns tokenizer, command, pool
+  xargs_mode.c/.h     vtable base for execution modes; owns tokenizer,
+                        command, pool
   appender_mode.c/.h  default mode: accumulate tokens, flush on limit
   replacer_mode.c/.h  -I mode: substitute placeholder, execute per token
   command.c/.h        argv construction, size accounting, fork/exec
@@ -61,7 +62,7 @@ and `destroy_impl`. The concrete struct (`tokenizer`) holds the shared growable
 on EOF or error. After returning `NULL`, callers check `tokenizer_get_error` to
 distinguish clean EOF from I/O error, backslash-at-EOF, and unterminated quote.
 
-Both tokenizer implementations accept an `on_line` callback (`line_count_fn`)
+Both tokenizer implementations accept an `on_input_boundary` callback (`input_boundary_fn`)
 that fires whenever a logical line boundary is consumed. This is the mechanism
 by which `-L` tracks line counts without the tokenizer needing to know about
 command limits.
@@ -70,7 +71,7 @@ command limits.
 
 ```
 NO_TOKEN → (non-ws) → IN_TOKEN → (ws) → NO_TOKEN          [token complete]
-                               → (\n) → NO_TOKEN           [token complete, on_line]
+                               → (\n) → NO_TOKEN           [token complete, on_input_boundary]
          → (quote)  → IN_QUOTED_TOKEN                      [quoted token]
          → (\\)     → NO_TOKEN_ESCAPE → IN_TOKEN           [escape outside token]
 IN_TOKEN → (quote)  → IN_TOKEN_QUOTED → IN_TOKEN           [mid-token quote]
@@ -81,7 +82,7 @@ The logical EOF marker (`-E`) is checked when a token completes: if it matches,
 `next_token` returns `NULL` as if EOF had been reached.
 
 **DelimTokenizer** is simpler: accumulate bytes until the delimiter is seen or
-EOF, fire `on_line` on each delimiter, return the accumulated token.
+EOF, fire `on_input_boundary` on each delimiter, return the accumulated token.
 
 ### xargs_mode
 
@@ -179,7 +180,7 @@ readable, and makes the tokenizer implementations fully self-contained.
 the two modes only depend on the operations they actually use, not on the
 internal structure of the objects below them.
 
-**`on_line` callback for line counting.** Rather than having the tokenizer
+**`on_input_boundary` callback for line counting.** Rather than having the tokenizer
 expose a "lines consumed" counter and the command poll it, the tokenizer calls
 back into the command on each line boundary. This keeps the coupling unidirectional
 and avoids a polling loop.
@@ -191,7 +192,7 @@ straightforward to add trace output, prompt confirmation, and `/dev/tty`
 reopening in the child path without touching the pool.
 
 **`line_has_token` as a local in `next_space_token`.** The flag that controls
-whether `on_line` fires is local to each invocation of `next_space_token`,
+whether `on_input_boundary` fires is local to each invocation of `next_space_token`,
 not a field on the tokenizer. This means the tokenizer correctly fires
-`on_line` only for lines that actually contained a token, regardless of whether
+`on_input_boundary` only for lines that actually contained a token, regardless of whether
 the previous call ended mid-line or at a line boundary.

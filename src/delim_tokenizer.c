@@ -13,8 +13,8 @@ struct delim_tokenizer_s {
   size_t token_start;
   char delim;
 
-  line_count_fn on_line;
-  void* on_line_ctx;
+  input_boundary_fn on_input_boundary;
+  void* on_input_boundary_ctx;
 };
 
 static void delim_tokenizer_start_token(delim_tokenizer* t) {
@@ -41,7 +41,7 @@ static const char* next_delim_token(tokenizer* t, FILE* token_source) {
     if (ch != self->delim) {
       delim_tokenizer_append_to_token(self, ch);
     } else {
-      self->on_line(self->on_line_ctx);
+      self->on_input_boundary(self->on_input_boundary_ctx);
       return delim_tokenizer_end_token(self);
     }
   }
@@ -69,15 +69,15 @@ static const tokenizer_ops delim_tokenizer_ops = {
 delim_tokenizer* delim_tokenizer_create(
   size_t buffer_size,
   char arg_delimiter,
-  line_count_fn on_line,
-  void* on_line_ctx) {
+  input_boundary_fn on_input_boundary,
+  void* on_input_boundary_ctx) {
 
   delim_tokenizer* t = phxargs_malloc(sizeof(delim_tokenizer));
 
   t->delim = arg_delimiter;
   t->token_start = 0;
-  t->on_line = on_line;
-  t->on_line_ctx = on_line_ctx;
+  t->on_input_boundary = on_input_boundary;
+  t->on_input_boundary_ctx = on_input_boundary_ctx;
   t->base = tokenizer_create(&delim_tokenizer_ops, buffer_size, t);
 
   return t;
