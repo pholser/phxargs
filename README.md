@@ -3,19 +3,31 @@
 Thought I'd try something with just C and its standard library after all
 these years.
 
+See [ARCHITECTURE.md](ARCHITECTURE.md) for a design overview.
+
 ## Dependencies
 
-- C99-compatible compiler (e.g. `clang` or `gcc`)
+Required:
+
+- C99-compatible compiler (`clang` or `gcc`)
 - [CMake](https://cmake.org/) 3.10 or later
-- [Bash](https://www.gnu.org/software/bash/) -- required for running the shell-based tests
-- [Check](https://libcheck.github.io/check/) -- required for building and running the C unit tests
-- [expect](https://core.tcl-lang.org/expect/index) -- required for running the interactive (`*.exp`) tests
-- [include-what-you-use](https://include-what-you-use.org/) (`iwyu`) -- optional, for include analysis
+- [Bash](https://www.gnu.org/software/bash/) — for the shell-based tests
+- [Check](https://libcheck.github.io/check/) — for the C unit tests
+- [expect](https://core.tcl-lang.org/expect/index) — for the interactive (`*.exp`) tests
+- [pandoc](https://pandoc.org/) — for man page generation
+
+Optional:
+
+- [cppcheck](https://cppcheck.sourceforge.io/) — static analysis (`cppcheck` target)
+- [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) — static analysis (`clang-tidy` target)
+- [include-what-you-use](https://include-what-you-use.org/) — include analysis (`iwyu` target)
+- [lcov](https://github.com/linux-test-project/lcov) + genhtml — coverage reports (`coverage` target)
+- clang with libFuzzer — fuzz targets
 
 On macOS with Homebrew:
 
 ```sh
-brew install bash cmake check expect include-what-you-use
+brew install bash cmake check expect pandoc
 ```
 
 ## Building
@@ -32,33 +44,49 @@ Build:
 cmake --build build
 ```
 
-The `phxargs` binary is placed in `build/`.
+The `phxargs` binary and `phxargs.1` man page are placed in `build/`.
+
+## Installing
+
+```sh
+cmake --install build --prefix /usr/local
+```
 
 ## Running tests
 
 ```sh
-cd build && ctest --output-on-failure
+ctest --test-dir build --output-on-failure
 ```
 
-Or via the custom target:
+Tests include shell-based tests (`tests/test-*.sh`, `tests/test-*.exp`),
+a compatibility test against the system `xargs`, and C unit tests using
+the Check framework.
+
+## Static analysis
 
 ```sh
-cmake --build build --target run_tests
+cmake --build build --target cppcheck
+cmake --build build --target clang-tidy
 ```
 
-Tests include both shell-based tests (`tests/test-*.sh`, `tests/test-*.exp`) and C unit tests using the Check framework.
-
 ## Include analysis (IWYU)
-
-If `include-what-you-use` is installed:
 
 ```sh
 cmake --build build --target iwyu
 ```
 
+## Coverage
+
+Build and generate an HTML report in `build-cov/coverage/`:
+
+```sh
+cmake -S . -B build-cov -DENABLE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-cov --target coverage
+```
+
 ## Sanitizer build
 
-To build with AddressSanitizer and UndefinedBehaviorSanitizer:
+Build with AddressSanitizer and UndefinedBehaviorSanitizer:
 
 ```sh
 cmake -S . -B build-san -DENABLE_SANITIZERS=ON
@@ -68,11 +96,11 @@ ctest --test-dir build-san --output-on-failure
 
 ## Fuzzing
 
-To build the libFuzzer fuzz targets (requires a Clang with libFuzzer support):
+Build the libFuzzer fuzz targets (requires a Clang with libFuzzer support):
 
 ```sh
-cmake -S . -B build-fuzz -DENABLE_FUZZING=ON
-cmake --build build-fuzz --target fuzz_space_tokenizer --target fuzz_delim_tokenizer
+cmake -S . -B build-fuzz -DENABLE_FUZZING=ON -DCMAKE_C_COMPILER=clang
+cmake --build build-fuzz --target fuzz_space_tokenizer fuzz_delim_tokenizer
 ./build-fuzz/fuzz_space_tokenizer -max_total_time=60
 ./build-fuzz/fuzz_delim_tokenizer -max_total_time=60
 ```
@@ -83,7 +111,9 @@ cmake --build build-fuzz --target fuzz_space_tokenizer --target fuzz_delim_token
 phxargs [options] [command [initial-arguments]]
 ```
 
-Reads arguments from standard input (or a file with `-a`) and executes `command` with those arguments appended. If no `command` is given, `/bin/echo` is used.
+Reads arguments from standard input (or a file with `-a`) and executes
+`command` with those arguments appended. If no `command` is given,
+`/bin/echo` is used.
 
 ## Supported options
 
