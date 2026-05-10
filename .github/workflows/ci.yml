@@ -192,3 +192,21 @@ jobs:
 
       - name: Run cppcheck
         run: cmake --build build --target cppcheck
+
+  clang-tidy:
+    name: clang-tidy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install clang-tidy
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y cmake clang-tidy
+
+      - name: Configure
+        run: cmake -S . -B build -DBUILD_TESTING=OFF
+
+      - name: Run clang-tidy
+        run: cmake --build build --target clang-tidy

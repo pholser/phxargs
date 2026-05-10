@@ -2,14 +2,21 @@
 Checks: >
   clang-diagnostic-*,
   clang-analyzer-*,
+  bugprone-*,
+  cert-*,
+  misc-*,
+  portability-*,
   readability-braces-around-statements,
   readability-identifier-naming,
   readability-redundant-declaration,
   readability-redundant-preprocessor,
-  misc-redundant-expression,
-  misc-unused-parameters,
-  bugprone-*,
-  -bugprone-easily-swappable-parameters
+  -bugprone-easily-swappable-parameters,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -cert-err33-c,
+  -misc-include-cleaner
+
+WarningsAsErrors: '*'
 
 CheckOptions:
   # Functions: snake_case
@@ -36,12 +43,9 @@ CheckOptions:
   # Macros: UPPER_SNAKE_CASE
   - key: readability-identifier-naming.MacroDefinitionCase
     value: UPPER_CASE
-  # Global constants: UPPER_SNAKE_CASE
+  # Global constants: snake_case (C convention for static consts, not macros)
   - key: readability-identifier-naming.GlobalConstantCase
-    value: UPPER_CASE
-  # Function pointer typedefs: snake_case with _fn suffix
-  - key: readability-identifier-naming.TypedefSuffix
-    value: ''
+    value: lower_case
 
 FormatStyle: file
-HeaderFilterRegex: '.*'
+HeaderFilterRegex: 'src/.*\.h$'

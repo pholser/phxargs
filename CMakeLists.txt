@@ -200,6 +200,23 @@ if(BUILD_TESTING)
   endif()
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+find_program(CLANG_TIDY_PATH NAMES clang-tidy)
+if(CLANG_TIDY_PATH)
+  message(STATUS "clang-tidy found: ${CLANG_TIDY_PATH}")
+  add_custom_target(clang-tidy
+    COMMAND ${CLANG_TIDY_PATH}
+      -p ${CMAKE_BINARY_DIR}
+      ${SOURCES}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Running clang-tidy"
+    VERBATIM
+  )
+else()
+  message(STATUS "clang-tidy not found -- clang-tidy target unavailable")
+endif()
+
 find_program(CPPCHECK_PATH NAMES cppcheck)
 if(CPPCHECK_PATH)
   message(STATUS "cppcheck found: ${CPPCHECK_PATH}")
