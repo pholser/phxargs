@@ -105,6 +105,8 @@ jobs:
         run: cmake --build build-san
 
       - name: Test
+        env:
+          MallocNanoZone: "0"
         run: ctest --test-dir build-san --output-on-failure
 
   coverage:
