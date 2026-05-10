@@ -43,13 +43,13 @@ char* str_replace(
     memcpy(new_pos, pos, prefix_len);
     new_pos += prefix_len;
 
-    memcpy(new_pos, repl, replacement_len);
+    memcpy(new_pos, repl, replacement_len); // NOLINT(bugprone-not-null-terminated-result): buffer is calloc'd; null is already in place
     new_pos += replacement_len;
 
     pos = tmp + placeholder_len;
   }
 
-  strcpy(new_pos, pos);
+  memcpy(new_pos, pos, strlen(pos) + 1);
 
   return result;
 }
