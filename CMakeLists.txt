@@ -308,21 +308,21 @@ endif()
 if(BUILD_TESTING)
   find_program(EXPECT_PATH NAMES expect)
 
-  file(GLOB SHELL_TESTS "${TEST_DIR}/test-*.sh")
+  file(GLOB SHELL_TESTS CONFIGURE_DEPENDS "${TEST_DIR}/test-*.sh")
   foreach(script ${SHELL_TESTS})
     get_filename_component(test_name ${script} NAME_WE)
     add_test(NAME ${test_name}
       COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${script}")
   endforeach()
 
-  file(GLOB EXPECT_TESTS "${TEST_DIR}/test-*.exp")
+  file(GLOB EXPECT_TESTS CONFIGURE_DEPENDS "${TEST_DIR}/test-*.exp")
   foreach(script ${EXPECT_TESTS})
     get_filename_component(test_name ${script} NAME_WE)
     add_test(NAME ${test_name}
       COMMAND ${CMAKE_COMMAND} -E env "PHX_BUILD_DIR=${CMAKE_BINARY_DIR}" "${EXPECT_PATH}" "${script}")
   endforeach()
 
-  file(GLOB C_TEST_SOURCES "${TEST_DIR}/*.c")
+  file(GLOB C_TEST_SOURCES CONFIGURE_DEPENDS "${TEST_DIR}/*.c")
   list(FILTER C_TEST_SOURCES EXCLUDE REGEX ".*fuzz_.*\\.c$")
   foreach(test_source ${C_TEST_SOURCES})
     get_filename_component(test_name ${test_source} NAME_WE)
