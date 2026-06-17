@@ -226,7 +226,7 @@ if(CPPCHECK_PATH)
       --error-exitcode=1
       --std=c99
       --suppress=missingIncludeSystem
-      "--suppress=constParameterCallback:${SRC_DIR}/space_tokenizer.c"
+      "--suppress=constParameterCallback:${CMAKE_SOURCE_DIR}/${SRC_DIR}/space_tokenizer.c"
       -I ${SRC_DIR}
       ${SOURCES}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
