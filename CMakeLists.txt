@@ -90,7 +90,7 @@ function(get_system_include_paths out_var)
   endif()
 endfunction()
 
-file(GLOB SOURCES "${SRC_DIR}/*.c")
+file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/*.c")
 set(LIB_SOURCES ${SOURCES})
 list(FILTER LIB_SOURCES EXCLUDE REGEX ".*main\\.c$")
 include_directories(${SRC_DIR})
