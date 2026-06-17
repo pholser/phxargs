@@ -178,8 +178,8 @@ static bool confirm_execution(void) {
 
   const int first = fgetc(tty);
 
-  int ch;
   if (first != EOF) {
+    int ch;
     while ((ch = fgetc(tty)) != '\n' && ch != EOF) {
     }
   }
