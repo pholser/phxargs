@@ -27,6 +27,11 @@ struct appender_mode_s {
  *       to exceed implied or explicit size bound. Execute cmd.
  *
  * (3) Add `x` to cmd.
+ *
+ * If a prior invocation halted the pool (child exited 255), Execute cmd
+ * becomes a no-op that never recycles input_args, so the loop checks for
+ * halt after every such step and stops reading input rather than
+ * buffering the rest of stdin for nothing.
  */
 static int appender_mode_run(xargs_mode* mode) {
   const appender_mode* self = (const appender_mode*) xargs_mode_impl(mode);
@@ -43,11 +48,17 @@ static int appender_mode_run(xargs_mode* mode) {
 
     if (xargs_mode_arg_would_exceed_limits(mode, token)) {
       xargs_mode_execute_command(mode);
+      if (xargs_mode_halted(mode)) {
+        break;
+      }
     }
 
     xargs_mode_add_input_argument(mode, token);
     if (xargs_mode_should_execute_command_after_arg_added(mode)) {
       xargs_mode_execute_command(mode);
+      if (xargs_mode_halted(mode)) {
+        break;
+      }
     }
   }
 

@@ -21,6 +21,9 @@ static int replacer_mode_run(xargs_mode* mode) {
     xargs_mode_ensure_command_length_not_exceeded(mode, token);
     xargs_replace_args(mode, token);
     xargs_mode_execute_command(mode);
+    if (xargs_mode_halted(mode)) {
+      break;
+    }
   }
 
   if (xargs_mode_tokenizer_errored(mode)) {

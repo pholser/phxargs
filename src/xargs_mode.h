@@ -37,6 +37,8 @@ bool xargs_mode_should_execute_command_after_arg_added(xargs_mode* mode);
 
 void xargs_mode_execute_command(xargs_mode* mode);
 
+bool xargs_mode_halted(const xargs_mode* mode);
+
 int xargs_mode_drain(xargs_mode* mode);
 
 void xargs_mode_add_input_argument(xargs_mode* mode, const char* new_arg);

@@ -105,6 +105,10 @@ void xargs_mode_execute_command(xargs_mode* mode) {
   process_pool_submit(mode->pool, command_execute_async(mode->cmd));
 }
 
+bool xargs_mode_halted(const xargs_mode* mode) {
+  return process_pool_halted(mode->pool);
+}
+
 int xargs_mode_drain(xargs_mode* mode) {
   return process_pool_drain(mode->pool);
 }
