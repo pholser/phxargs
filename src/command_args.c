@@ -14,7 +14,7 @@ struct command_args_s {
 
 static void reallocate_if_needed(command_args* args) {
   if (args->count >= args->capacity) {
-    args->capacity *= 2;
+    args->capacity = phxargs_double_capacity(args->capacity);
     args->args =
       (char**) phxargs_realloc(
         (void*) args->args,

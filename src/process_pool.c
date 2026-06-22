@@ -185,7 +185,7 @@ void process_pool_wait_if_full(process_pool* pool) {
 
 void process_pool_submit(process_pool* pool, pid_t pid) {
   if (pool->count == pool->capacity) {
-    pool->capacity *= 2;
+    pool->capacity = phxargs_double_capacity(pool->capacity);
     pool->pids = phxargs_realloc(pool->pids, pool->capacity * sizeof(pid_t));
   }
 

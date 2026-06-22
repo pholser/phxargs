@@ -13,6 +13,8 @@ char* phxargs_strdup(const char* s);
 
 long phxargs_sysconf(int name);
 
+size_t phxargs_double_capacity(size_t capacity);
+
 static inline size_t phxargs_min(size_t a, size_t b) {
   return a < b ? a : b;
 }

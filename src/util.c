@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,4 +60,13 @@ long phxargs_sysconf(int name) {
   }
 
   return result;
+}
+
+size_t phxargs_double_capacity(size_t capacity) {
+  if (capacity > SIZE_MAX / 2) {
+    fprintf(stderr, "phxargs: internal limit exceeded\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return capacity * 2;
 }

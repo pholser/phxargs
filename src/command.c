@@ -92,11 +92,16 @@ static size_t decide_max_length(const command* cmd, const options* opts) {
   /* Subtract 2x env_length as a conservative hedge: some platforms count
    * environment variables twice in their ARG_MAX accounting (once for the
    * string data, once for the pointer array). The extra 2048 bytes covers
-   * the argv pointer array overhead and other kernel bookkeeping. */
-  size_t max_length =
-    sc_arg_max > 0
-      ? (size_t) sc_arg_max - (2 * cmd->env_length) - 2048
-      : (size_t) 128 * 1024;
+   * the argv pointer array overhead and other kernel bookkeeping. Floor at
+   * 0 rather than letting the subtraction wrap if the environment alone
+   * is close to or exceeds ARG_MAX. */
+  size_t max_length;
+  if (sc_arg_max > 0) {
+    const size_t margin = (2 * cmd->env_length) + 2048;
+    max_length = (size_t) sc_arg_max > margin ? (size_t) sc_arg_max - margin : 0;
+  } else {
+    max_length = (size_t) 128 * 1024;
+  }
 
   if (!options_max_command_length_specified(opts)) {
     return phxargs_min((size_t) 128 * 1024, max_length);
