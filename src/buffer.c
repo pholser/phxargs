@@ -1,6 +1,8 @@
 #include "buffer.h"
 
 #include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "util.h"
@@ -31,6 +33,10 @@ size_t buffer_pos(const buffer* buf) {
 
 void buffer_put(buffer* buf, char ch) {
   if (buf->pos == buf->sz) {
+    if (buf->sz > SIZE_MAX / 2) {
+      fprintf(stderr, "phxargs: token too large\n");
+      exit(EXIT_FAILURE);
+    }
     buf->sz *= 2;
     buf->buf = phxargs_realloc(buf->buf, buf->sz + 1);
   }
