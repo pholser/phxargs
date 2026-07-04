@@ -119,9 +119,9 @@ Reads arguments from standard input (or a file with `-a`) and executes
 
 | Option | Description |
 |--------|-------------|
-| `-0` | Input items are terminated by a NUL character instead of whitespace. Disables `-d`. |
+| `-0` | Input items are terminated by a NUL character instead of whitespace. A trailing newline on the final item is stripped. Disables `-d`. |
 | `-a file` | Read arguments from `file` instead of standard input. |
-| `-d delim` | Use `delim` as the input delimiter (single character). Disables `-0`. |
+| `-d delim` | Use `delim` as the input delimiter (single character). Unless `delim` is a newline, a trailing newline on the final item is stripped. Disables `-0`. |
 | `-E marker` | Stop processing input when a line equals `marker` (logical end-of-file). Nullified by `-I` or a NUL/custom delimiter. |
 | `-I replstr` | Replace occurrences of `replstr` in the initial arguments with input lines. Implies `-L 1` and `-x`; nullifies `-E`. |
 | `-L max-lines` | Use at most `max-lines` non-empty input lines per command invocation. Implies `-x`. Mutually exclusive with `-I` and `-n`. |

@@ -26,6 +26,7 @@ Execution continues until input is exhausted or a child exits with status 255.
 
 **-0**
 :   Input items are terminated by a NUL character instead of whitespace.
+    A trailing newline on the final item is stripped.
     Disables **-d**.
 
 **-a** *file*
@@ -33,7 +34,9 @@ Execution continues until input is exhausted or a child exits with status 255.
 
 **-d** *delim*
 :   Use *delim* as the input item delimiter. *delim* must be a single
-    character. Disables **-0** and **-E**.
+    character. Unless *delim* is a newline, a trailing newline on the
+    final item is stripped.
+    Disables **-0** and **-E**.
 
 **-E** *marker*
 :   Stop processing input when an input item equals *marker* (logical
@@ -150,12 +153,6 @@ POSIX specifies **_** (underscore) as the default logical EOF string when
 **-E** is not given. **phxargs** has no default; the EOF marker is inactive
 unless explicitly set with **-E**. The POSIX default is a footgun for inputs
 that legitimately contain underscores.
-
-**Trailing content in delimiter mode.**
-When using **-d** or **-0**, POSIX-based implementations (including GNU xargs)
-strip a trailing newline from the final token. **phxargs** includes it as part
-of the token. Scripts that rely on stripped trailing newlines should strip them
-explicitly (e.g. with **tr -d '\\n'**).
 
 **-n and -L together.**
 POSIX treats **-n** and **-L** as mutually exclusive. **phxargs** accepts both;

@@ -51,6 +51,10 @@ void tokenizer_add(tokenizer* t, char ch) {
   buffer_put(t->buf, ch);
 }
 
+void tokenizer_drop_last(tokenizer* t) {
+  buffer_drop_last(t->buf);
+}
+
 const char* tokenizer_token(const tokenizer* t, size_t pos) {
   return buffer_start(t->buf) + pos;
 }

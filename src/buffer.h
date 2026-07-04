@@ -13,6 +13,8 @@ size_t buffer_pos(const buffer* buf);
 
 void buffer_put(buffer* buf, char ch);
 
+void buffer_drop_last(buffer* buf);
+
 void buffer_reset(buffer* buf);
 
 void buffer_destroy(buffer* buf);

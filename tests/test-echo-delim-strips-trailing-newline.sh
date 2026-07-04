@@ -2,12 +2,15 @@
 
 source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
-cat > "$phx_test_input" <<EOF
-arg1,arg2,arg3
-EOF
+# GNU/POSIX xargs strips a trailing newline from the final token when using
+# -d with a non-newline delimiter.  Input ends with \n; "baz" should arrive
+# without it.
+printf 'foo,bar,baz\n' > "$phx_test_input"
 
 cat > "$phx_expected_output" <<EOF
-arg1 arg2 arg3
+foo
+bar
+baz
 EOF
 
 cat > "$phx_expected_error" <<EOF
@@ -18,5 +21,5 @@ EOF
   "$phx_test_input" \
   "$phx_expected_output" \
   "$phx_expected_error" \
-  '-d ,' \
-  ''
+  '-d , -n 1' \
+  'echo'

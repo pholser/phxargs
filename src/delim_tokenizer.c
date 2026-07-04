@@ -53,6 +53,14 @@ static const char* next_delim_token(tokenizer* t, FILE* token_source) {
   } else if (self->token_start == tokenizer_pos(t)) {
     return NULL;
   } else {
+    /* GNU/POSIX compatibility: strip a trailing newline from the final
+       token at EOF, unless newline is the delimiter itself. */
+    if (self->delim != '\n') {
+      const size_t pos = tokenizer_pos(t);
+      if (*tokenizer_token(t, pos - 1) == '\n') {
+        tokenizer_drop_last(t);
+      }
+    }
     return delim_tokenizer_end_token(self);
   }
 }

@@ -38,6 +38,12 @@ void buffer_put(buffer* buf, char ch) {
   buf->buf[buf->pos++] = ch;
 }
 
+void buffer_drop_last(buffer* buf) {
+  if (buf->pos > 0) {
+    --buf->pos;
+  }
+}
+
 void buffer_reset(buffer* buf) {
   buf->pos = 0;
 }

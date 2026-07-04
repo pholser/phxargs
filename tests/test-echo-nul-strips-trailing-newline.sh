@@ -2,12 +2,14 @@
 
 source "$(cd "$(dirname "$0")" && pwd -P)"/set-test-context.sh
 
-cat > "$phx_test_input" <<EOF
-arg1,arg2,arg3
-EOF
+# GNU/POSIX xargs strips a trailing newline from the final token when using
+# -0.  Input ends with \n (no trailing NUL); "baz" should arrive without it.
+printf 'foo\0bar\0baz\n' > "$phx_test_input"
 
 cat > "$phx_expected_output" <<EOF
-arg1 arg2 arg3
+foo
+bar
+baz
 EOF
 
 cat > "$phx_expected_error" <<EOF
@@ -18,5 +20,5 @@ EOF
   "$phx_test_input" \
   "$phx_expected_output" \
   "$phx_expected_error" \
-  '-d ,' \
-  ''
+  '-0 -n 1' \
+  'echo'

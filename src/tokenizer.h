@@ -37,6 +37,8 @@ size_t tokenizer_pos(const tokenizer* t);
 
 void tokenizer_add(tokenizer* t, char ch);
 
+void tokenizer_drop_last(tokenizer* t);
+
 const char* tokenizer_token(const tokenizer* t, size_t pos);
 
 void tokenizer_reset(tokenizer* t);
