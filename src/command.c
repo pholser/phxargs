@@ -269,7 +269,7 @@ int command_should_execute_after_arg_added(const command* cmd) {
 }
 
 void command_replace_args(command* cmd, const char* new_arg) {
-  // Do not perform replacement on command word
+  /* Do not perform replacement on command word */
   command_args_add(
     cmd->replaced_fixed_args,
     command_args_at(cmd->fixed_args, 0));
