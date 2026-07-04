@@ -63,6 +63,9 @@ long phxargs_sysconf(int name) {
 }
 
 size_t phxargs_double_capacity(size_t capacity) {
+  if (capacity == 0) {
+    return 1;
+  }
   if (capacity > SIZE_MAX / 2) {
     fprintf(stderr, "phxargs: internal limit exceeded\n");
     exit(EXIT_FAILURE);

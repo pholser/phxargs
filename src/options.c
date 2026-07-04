@@ -128,7 +128,7 @@ static void set_max_lines_per_command(
   options* opts,
   int opt,
   const char* new_val) {
- 
+
   opts->max_lines_per_command = parse_number_arg(opt, new_val);
   opts->line_mode_specified = 1;
 

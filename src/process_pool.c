@@ -161,7 +161,7 @@ process_pool* process_pool_create(size_t max_procs) {
 void process_pool_install_signal_handlers(void) {
   signal(SIGCHLD, SIG_DFL);
 
-  struct sigaction sa;
+  struct sigaction sa = {0};
 
   sa.sa_flags = SA_RESTART;
   sigemptyset(&sa.sa_mask);
