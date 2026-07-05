@@ -83,6 +83,8 @@ The logical EOF marker (`-E`) is checked when a token completes: if it matches,
 
 **DelimTokenizer** is simpler: accumulate bytes until the delimiter is seen or
 EOF, fire `on_input_boundary` on each delimiter, return the accumulated token.
+At EOF, if the delimiter is not `\n`, a single trailing `\n` is stripped from
+the final token to match GNU/POSIX xargs behaviour.
 
 ### xargs_mode
 
@@ -164,6 +166,8 @@ or opens the file and exits on failure. `arg_source_close` skips `fclose` for
 
 A heap-allocated growable byte array used as the token accumulation buffer
 inside each tokenizer. `buffer_put` doubles capacity on overflow.
+`buffer_drop_last` decrements the position by one, used by `DelimTokenizer`
+to strip a trailing newline before finalising the last token.
 `buffer_reset` resets the position without freeing, allowing the buffer to be
 reused across tokens within a single `next_token` call.
 

@@ -117,5 +117,11 @@ gnu_run "-r skips empty input" -r echo nothing
 inp 'a:b:c'
 gnu_run "-d single-char delimiter" -d : echo
 
+printf 'a:b:c\n' > "$input_file"
+gnu_run "-d strips trailing newline from final token" -d : -n 1 echo
+
+printf 'a\0b\0c\n' > "$input_file"
+gnu_run "-0 strips trailing newline from final token" -0 -n 1 echo
+
 echo "$phx_test_name: $pass passed, $fail failed, $skip skipped"
 [ $fail -eq 0 ]
