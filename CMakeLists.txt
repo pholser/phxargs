@@ -237,6 +237,42 @@ else()
   message(STATUS "cppcheck not found -- static analysis target unavailable")
 endif()
 
+find_program(LIZARD_PATH NAMES lizard)
+if(LIZARD_PATH)
+  message(STATUS "lizard found: ${LIZARD_PATH}")
+  set(LIZARD_CMD "${LIZARD_PATH} --CCN 10 --sort cyclomatic_complexity ${CMAKE_SOURCE_DIR}/${SRC_DIR} || true")
+  add_custom_target(lizard
+    COMMAND /bin/sh -c "${LIZARD_CMD}"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Running cyclomatic complexity analysis (threshold CC > 10)"
+    VERBATIM
+  )
+else()
+  message(STATUS "lizard not found -- lizard target unavailable (pip install lizard)")
+endif()
+
+find_program(PYTHON3_PATH NAMES python3)
+find_program(DOT_PATH NAMES dot)
+if(PYTHON3_PATH AND DOT_PATH)
+  message(STATUS "python3 found: ${PYTHON3_PATH}")
+  message(STATUS "dot found: ${DOT_PATH}")
+  set(DEPS_GRAPH ${CMAKE_BINARY_DIR}/module-deps.png)
+  set(MODULE_GRAPH_CMD "${PYTHON3_PATH} \"${CMAKE_SOURCE_DIR}/cmake/module_graph.py\" \"${CMAKE_SOURCE_DIR}/${SRC_DIR}\" | ${DOT_PATH} -Tpng -o \"${DEPS_GRAPH}\"")
+  add_custom_target(module-graph
+    COMMAND /bin/sh -c "${MODULE_GRAPH_CMD}"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Generating module dependency graph -> ${DEPS_GRAPH}"
+    VERBATIM
+  )
+else()
+  if(NOT PYTHON3_PATH)
+    message(STATUS "python3 not found -- module-graph target unavailable")
+  endif()
+  if(NOT DOT_PATH)
+    message(STATUS "dot not found -- module-graph target unavailable (brew install graphviz)")
+  endif()
+endif()
+
 if(ENABLE_COVERAGE)
   find_program(LCOV_PATH NAMES lcov)
   find_program(GENHTML_PATH NAMES genhtml)
