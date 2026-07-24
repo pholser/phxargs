@@ -335,7 +335,7 @@ static void write_trace(
 }
 
 __attribute__((noreturn))
-static void exec_child(command* cmd) {
+static void exec_child(const command* cmd) {
   size_t exec_args_count = 0;
   char** exec_args = build_exec_args(cmd, &exec_args_count);
 
