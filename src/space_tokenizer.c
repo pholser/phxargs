@@ -94,9 +94,6 @@ static void handle_no_token_char(
   }
 
   if (ch == '\n') {
-    if (*line_has_token) {
-      t->on_input_boundary(t->on_input_boundary_ctx);
-    }
     return;
   }
 
