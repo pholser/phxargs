@@ -212,3 +212,22 @@ jobs:
 
       - name: Run clang-tidy
         run: cmake --build build --target clang-tidy
+
+  lizard:
+    name: lizard
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y cmake
+          pip install lizard
+
+      - name: Configure
+        run: cmake -S . -B build -DBUILD_TESTING=OFF
+
+      - name: Run lizard
+        run: cmake --build build --target lizard
