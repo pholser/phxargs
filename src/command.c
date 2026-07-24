@@ -299,48 +299,48 @@ void command_ensure_length_not_exceeded(
   }
 }
 
-pid_t command_execute_async(command* cmd) {
-  pid_t pid = phxargs_fork();
+static void write_trace(
+  char** exec_args,
+  size_t exec_args_count,
+  bool with_newline) {
 
-  // Parent process
-  if (pid > 0) {
-    recycle_command(cmd);
-    return pid;
+  size_t trace_len = 0;
+  for (size_t i = 0; i < exec_args_count; ++i) {
+    trace_len += strlen(exec_args[i]);
+    if (i < exec_args_count - 1) {
+      trace_len += 1;
+    }
+  }
+  if (with_newline) {
+    trace_len += 1;
   }
 
-  // Child process
+  char* trace_buf = phxargs_malloc(trace_len + 1);
+  char* p = trace_buf;
+  for (size_t i = 0; i < exec_args_count; ++i) {
+    size_t arg_len = strlen(exec_args[i]);
+    memcpy(p, exec_args[i], arg_len);
+    p += arg_len;
+    if (i < exec_args_count - 1) {
+      *p++ = ' ';
+    }
+  }
+  if (with_newline) {
+    *p++ = '\n';
+  }
+
+  ssize_t nw = write(STDERR_FILENO, trace_buf, trace_len);
+  (void) nw;
+  free(trace_buf);
+}
+
+__attribute__((noreturn))
+static void exec_child(command* cmd) {
   size_t exec_args_count = 0;
   char** exec_args = build_exec_args(cmd, &exec_args_count);
 
   if (cmd->trace) {
-    size_t trace_len = 0;
-    for (size_t i = 0; i < exec_args_count; ++i) {
-      trace_len += strlen(exec_args[i]);
-      if (i < exec_args_count - 1) {
-        trace_len += 1;
-      }
-    }
-    if (!cmd->prompt) {
-      trace_len += 1;
-    }
-
-    char* trace_buf = phxargs_malloc(trace_len + 1);
-    char* p = trace_buf;
-    for (size_t i = 0; i < exec_args_count; ++i) {
-      size_t arg_len = strlen(exec_args[i]);
-      memcpy(p, exec_args[i], arg_len);
-      p += arg_len;
-      if (i < exec_args_count - 1) {
-        *p++ = ' ';
-      }
-    }
-    if (!cmd->prompt) {
-      *p++ = '\n';
-    }
-
-    ssize_t nw = write(STDERR_FILENO, trace_buf, trace_len);
-    (void) nw;
-    free(trace_buf);
+    write_trace(exec_args, exec_args_count, !cmd->prompt);
   }
 
   bool execute = true;
@@ -359,6 +359,17 @@ pid_t command_execute_async(command* cmd) {
   }
 
   exit(EXIT_SUCCESS);
+}
+
+pid_t command_execute_async(command* cmd) {
+  pid_t pid = phxargs_fork();
+  /* parent */
+  if (pid > 0) {
+    recycle_command(cmd);
+    return pid;
+  }
+  /* child */
+  exec_child(cmd);
 }
 
 size_t command_max_length(const command* cmd) {
