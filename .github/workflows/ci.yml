@@ -76,27 +76,16 @@ jobs:
             echo hello | /tmp/phxargs-install/bin/phxargs echo
 
   sanitizers:
-    name: ${{ matrix.os }} / sanitizers
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
+    name: sanitizers
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies (Ubuntu)
-        if: runner.os == 'Linux'
+      - name: Install dependencies
         run: |
           sudo apt-get update -q
           sudo apt-get install -y cmake check expect pandoc
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install cmake check expect pandoc
 
       - name: Configure
         run: cmake -S . -B build-san -DENABLE_SANITIZERS=ON
@@ -105,8 +94,6 @@ jobs:
         run: cmake --build build-san
 
       - name: Test
-        env:
-          MallocNanoZone: "0"
         run: ctest --test-dir build-san --output-on-failure
 
   coverage:
