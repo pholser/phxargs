@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-07-25
+
+### Added
+
+- Tests for `-s` bounds checking (too-small and too-large command length).
+- Test for exit-255 halt in `-I` (replace-mode) confirming only the first
+  argument is processed before phxargs stops.
+- Test for `process_pool_submit` capacity doubling: `-P 0` with 17 tokens
+  exercises the realloc path that grows the PID array beyond its initial
+  capacity.
+- `lizard` and `module-graph` CMake targets for cyclomatic-complexity
+  analysis and module-dependency visualisation.
+- `lizard` and GitHub Release CI jobs.
+
+### Changed
+
+- Signal tests now use a slow child command (`sleep 0.5`) so SIGUSR1/SIGUSR2
+  arrive while phxargs is still running; previously, fast `echo` children
+  finished before the signal was delivered, leaving the signal-handling paths
+  untested.
+- `command_execute_async` (CC 12) split into `write_trace` (CC 7) and
+  `exec_child` (CC 5), bringing all functions under the CC > 10 warning
+  threshold. `exec_child` is correctly annotated `__attribute__((noreturn))`.
+- Sanitizers CI job restricted to Linux; macOS Apple Clang ASan intercepts
+  `pthread_init` and `openpty` in ways that crash the test harness before
+  any test code runs.
+
+### Fixed
+
+- Removed dead `on_input_boundary` guard in `handle_no_token_char`: the
+  condition could never be true because `line_has_token` is reset at the
+  start of every `next_space_token` call.
+- `exec_child` parameter tightened to `const command*` (cppcheck finding).
+- Removed redundant `#include <stddef.h>` from `str.c` (IWYU finding).
+
 ## [1.1.0] - 2026-07-04
 
 ### Changed
